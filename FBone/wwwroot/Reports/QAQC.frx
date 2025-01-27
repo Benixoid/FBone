@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="04/15/2022 10:19:11" ReportInfo.Modified="11/17/2022 10:01:19" ReportInfo.CreatorVersion="2022.1.0.0">
+  <ScriptText>using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Data;
+using FastReport;
+using FastReport.Data;
+using FastReport.Dialog;
+using FastReport.Barcode;
+using FastReport.Table;
+using FastReport.Utils;
+using System.Globalization;
+
+namespace FastReport
+{
+  public class ReportScript
+  {
+
+    private void Text15_AfterData(object sender, EventArgs e)
+    {
+      //Text15.FillColor = Color.Red;
+      string message1 = &quot;&quot;;
+      string message2 = &quot;&quot;;
+      string message3 = &quot;&quot;;
+      //string message4 = &quot;&quot;;
+      //string message5 = &quot;&quot;;
+      CultureInfo provider = new CultureInfo(&quot;ru-RU&quot;);
+      string format = &quot;dd-MM-yyyy HH:mm:ss&quot;;
+      DateTime eventStart = DateTime.ParseExact(Text15.Text,format,provider);
+      DateTime actStart = new DateTime(2000,1,1);
+      if (Text11.Text != &quot;&quot;)        
+      {
+        actStart = DateTime.ParseExact(Text11.Text,format,provider);      
+      }        
+      DateTime actCreate = new DateTime(2500,1,1);
+      if (Text5.Text != &quot;&quot;)        
+      {
+        actCreate = DateTime.ParseExact(Text5.Text,format,provider);      
+      }
+      DateTime actApproved = new DateTime(2500,1,1);
+      if (Text22.Text != &quot;&quot;)        
+      {
+        actApproved = DateTime.ParseExact(Text22.Text,format,provider);      
+      }
+      
+      if (eventStart &lt; actStart){
+        Text15.FillColor = Color.Red;
+        Text11.FillColor = Color.Pink;
+        message1 = &quot; - Установлен раньше запуска акта в работу (Начать работы).\n&quot;;
+      }
+      if (eventStart &lt; actCreate){
+        Text15.FillColor = Color.Red;
+        Text5.FillColor = Color.Pink;
+        message2 = &quot; - Установлен раньше создания акта.\n&quot;;
+      }
+      //DateTime actApproved = DateTime.Parse(Text21.Value.ToString());
+      //Text21.Text = &quot;11&quot;;
+      //message3=&quot;appr/&quot; + Text22.Text.Length + &quot;/ - &quot; + Text22.Text+&quot;\n&quot;;
+      //message4=&quot;create/&quot; + Text5.Text.Length + &quot;/ - &quot; + Text5.Text + &quot;\n&quot;;
+      //message5=&quot;start/&quot; + Text11.Text.Length + &quot;/ - &quot; + Text11.Text + &quot;\n&quot;;
+      //DateTime actApproved = DateTime.Parse(Text5.Text);
+      
+      
+      
+      if (eventStart &lt; actApproved){
+        Text15.FillColor = Color.Red;
+        Text22.FillColor = Color.Pink;
+        message3 = &quot; - Установлен раньше утверждения акта.\n&quot;;
+      }
+      Text17.Text = message2 + message3 + message1;
+    }
+  }
+}
+</ScriptText>
+  <Styles Name="Blue">
+    <Style Name="Title" Font="Arial, 12pt, style=Bold"/>
+    <Style Name="Header" Fill.Color="LightSkyBlue" Font="Arial, 10pt, style=Bold"/>
+    <Style Name="Group" Font="Arial, 10pt, style=Bold"/>
+    <Style Name="Data" Font="Arial, 10pt"/>
+    <Style Name="Footer" Fill.Color="LightSkyBlue" Font="Arial, 10pt"/>
+    <Style Name="EvenRows" Fill.Color="AliceBlue" Font="Arial, 10pt"/>
+  </Styles>
+  <Dictionary>
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqM7gJFg/iaLrqMhRfGy5lGrhqLDVVYdU5WlBObJbfDIqJU3Q6+s60IVDS5iOsXfOqMrc9IaAJeqB4u5qABHcclWSPV03wd2ZnfsyVPYf74AgRTWTT/CcVc28fyfdCTY4pDuajrlnikwXyd9X4GlT5B8gR2nprqskavoChMTo3SA1sxV70BEqSxoHN3tYGAeyWLIZNc7B0PYlIZOeskC/B5g==">
+      <TableDataSource Name="Table1" Alias="QAQC" DataType="System.Int32" Enabled="true" SelectCommand="--declare @ReportGroup as nvarchar(100) = 'KTL'&#13;&#10;--declare @start1 as nvarchar(100) = N'2022-04-14'&#13;&#10;--declare @end1 as nvarchar(100) = N'2022-04-15'&#13;&#10;&#13;&#10;declare @start as datetime = CAST(@start1 AS DateTime2)&#13;&#10;declare @end as datetime = CAST(@end1 AS DateTime2)&#13;&#10;SELECT &#13;&#10;ta.Name_EN, &#13;&#10;a.id, &#13;&#10;t.Tagnumber, &#13;&#10;CONVERT(varchar,a.CreatedOn,105) + ' ' + CONVERT(varchar,a.CreatedOn,24) as CreatedOn,&#13;&#10;iif(a.StartedOn=N'0001-01-01 00:00:00.0000000','',cast(CONVERT(varchar,a.StartedOn,105) + ' ' + CONVERT(varchar,a.StartedOn,24) as varchar)) as StartedOn, &#13;&#10;iif(a.ClosedOn=N'0001-01-01 00:00:00.0000000','',cast(CONVERT(varchar,a.ClosedOn,105) + ' ' + CONVERT(varchar,a.ClosedOn,24) as varchar)) as ClosedOn, &#13;&#10;CONVERT(varchar,e.EventDateTimeSet,105) + ' ' + CONVERT(varchar,e.EventDateTimeSet,24) as EventDateTimeStart,&#13;&#10;iif(e.EventDateTimeClear=N'0001-01-01 00:00:00.0000000','',cast(CONVERT(varchar,e.EventDateTimeClear,105) + ' ' + CONVERT(varchar,e.EventDateTimeClear,24) as varchar)) as EventDateTimeClear, &#13;&#10;CONVERT(varchar,ah.date,105) + ' ' + CONVERT(varchar,ah.date,24) as approvedOn&#13;&#10;FROM Event e &#13;&#10;INNER JOIN tActItems ai ON e.ActItemId = ai.Id &#13;&#10;INNER JOIN tAct a ON ai.ActId = a.Id&#13;&#10;INNER JOIN Tag t ON e.TagId = t.Id&#13;&#10;INNER JOIN tArea ta ON t.AreaId = ta.Id&#13;&#10;left JOIN ActHistory ah ON a.Id = ah.ActId&#13;&#10;where e.ShiftDate&gt;=@start and e.ShiftDate&lt;=@end and e.DataOrigin='PSS' and ta.id in (select id from tArea where ReportGroup = @ReportGroup)&#13;&#10;and ah.ActionCode = 7">
+        <Column Name="Name_EN" DataType="System.String"/>
+        <Column Name="id" DataType="System.Int32"/>
+        <Column Name="Tagnumber" DataType="System.String"/>
+        <Column Name="CreatedOn" DataType="System.String"/>
+        <Column Name="StartedOn" DataType="System.String"/>
+        <Column Name="ClosedOn" DataType="System.String"/>
+        <Column Name="EventDateTimeStart" DataType="System.String"/>
+        <Column Name="EventDateTimeClear" DataType="System.String"/>
+        <Column Name="approvedOn" DataType="System.String"/>
+        <CommandParameter Name="@ReportGroup" DataType="22" Expression="[ReportGroup]"/>
+        <CommandParameter Name="@start1" DataType="22" Expression="[start1]"/>
+        <CommandParameter Name="@end1" DataType="22" Expression="[end1]"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Parameter Name="ReportGroup" DataType="System.String"/>
+    <Parameter Name="start1" DataType="System.String"/>
+    <Parameter Name="end1" DataType="System.String"/>
+  </Dictionary>
+  <ReportPage Name="Page1" Landscape="true" PaperWidth="297" PaperHeight="210" RawPaperSize="9" Watermark.Font="Arial, 60pt">
+    <ReportTitleBand Name="ReportTitle1" Width="1047.06" Height="37.8">
+      <TextObject Name="Text1" Width="1047.06" Height="37.8" Dock="Fill" Text="Отчет качества создания акта и установки блокировок (байпас/форсаж)" HorzAlign="Center" VertAlign="Center" Font="Arial, 12pt, style=Bold" Style="Title"/>
+    </ReportTitleBand>
+    <GroupHeaderBand Name="GroupHeader1" Top="41.8" Width="1047.06" Height="56.7" Style="Title" Condition="[QAQC.Name_EN]">
+      <TextObject Name="Text4" Left="9.45" Width="94.5" Height="18.9" Text="[QAQC.Name_EN]" Font="Arial, 10pt"/>
+      <TextObject Name="Text6" Top="18.9" Width="56.7" Height="37.8" Border.Lines="All" Text="Акт №" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+      <TextObject Name="Text7" Left="56.7" Top="18.9" Width="113.4" Height="37.8" Border.Lines="All" Text="Номер точки" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+      <TextObject Name="Text8" Left="170.1" Top="37.8" Width="94.5" Height="18.9" Border.Lines="All" Text="создан" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+      <TextObject Name="Text9" Left="359.1" Top="37.8" Width="94.5" Height="18.9" Border.Lines="All" Text="в работу" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+      <TextObject Name="Text10" Left="453.6" Top="37.8" Width="94.5" Height="18.9" Border.Lines="All" Text="закрыт" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+      <TextObject Name="Text13" Left="548.1" Top="37.8" Width="94.5" Height="18.9" Border.Lines="All" Text="установлен" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+      <TextObject Name="Text14" Left="642.6" Top="37.8" Width="94.5" Height="18.9" Border.Lines="All" Text="снят" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+      <TextObject Name="Text18" Left="737.1" Top="18.9" Width="311.85" Height="37.8" Border.Lines="All" Text="Причина" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+      <TextObject Name="Text19" Left="264.6" Top="37.8" Width="94.5" Height="18.9" Border.Lines="All" Text="утвержден" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+      <TextObject Name="Text20" Left="170.1" Top="18.9" Width="378" Height="18.9" Border.Lines="All" Text="Акт" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+      <TextObject Name="Text21" Left="548.1" Top="18.9" Width="189" Height="18.9" Border.Lines="All" Text="Форсаж/байпас" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+      <DataBand Name="Data1" Top="102.5" Width="1047.06" Height="18.9" CanGrow="true" Style="Data" DataSource="Table1">
+        <TextObject Name="Text2" Left="56.7" Width="113.4" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[QAQC.Tagnumber]" Font="Arial, 10pt"/>
+        <TextObject Name="Text3" Width="56.7" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[QAQC.id]" Font="Arial, 10pt"/>
+        <TextObject Name="Text5" Left="170.1" Width="94.5" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[QAQC.CreatedOn]" Font="Arial, 10pt"/>
+        <TextObject Name="Text11" Left="359.1" Width="94.5" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[QAQC.StartedOn]" Font="Arial, 10pt"/>
+        <TextObject Name="Text12" Left="453.6" Width="94.5" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[QAQC.ClosedOn]" Format="Date" Format.Format="d" Font="Arial, 10pt"/>
+        <TextObject Name="Text16" Left="642.6" Width="94.5" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[QAQC.EventDateTimeClear]" Font="Arial, 10pt"/>
+        <TextObject Name="Text17" Left="737.1" Width="311.85" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Font="Arial, 10pt"/>
+        <TextObject Name="Text22" Left="264.6" Width="94.5" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[QAQC.approvedOn]" Font="Arial, 10pt"/>
+        <TextObject Name="Text15" Left="548.1" Width="94.5" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" AfterDataEvent="Text15_AfterData" Text="[QAQC.EventDateTimeStart]" Font="Arial, 10pt"/>
+      </DataBand>
+      <GroupFooterBand Name="GroupFooter1" Top="125.4" Width="1047.06" Height="9.45"/>
+    </GroupHeaderBand>
+  </ReportPage>
+</Report>

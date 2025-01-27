@@ -1,0 +1,975 @@
+﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+@model FBone.Models.Reporting.ReportingModel
+
+@{
+    ViewData["Title"] = @localizer["welcome"];
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string flag = "";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <table width="100%" role="banner" aria-describedby="filters">
+            <tr>
+                <th>
+                    <h3 class="text-center">@ViewData["Title"]</h3>
+                </th>
+                <th>
+                    <div class="input-group">
+                        <div class="input-group">
+                            @localizer["from"]
+                            @*<span class="input-group-addon">@localizer["from"]&nbsp;<span class="glyphicon glyphicon-calendar"></span></span>*@
+                            @*<input type="text" class="form-control" value="@Model.EventFrom"/>*@
+                            <input asp-for="EventFrom" class="form-control"/>
+                        </div>
+                    </div>
+                </th>
+                <th>
+                    <div class="input-group">
+                        <div class='input-group'>
+                            @*@localizer["till"]*@
+                            @*<span class="input-group-addon">@localizer["till"]&nbsp;<span class="glyphicon glyphicon-calendar"></span></span>                            *@
+                            @*<input type='text' class="form-control" value="@Model.EventTo"/>*@
+                            <input asp-for="EventTo" class="form-control"/>
+                        </div>
+                    </div>
+                </th>
+                <th>
+                    <div class='form-group'>
+                        @localizer["col_reportit"]
+                        @*<label asp-for="DefaultReportIt" class="control-label">@localizer["col_reportit"]</label>*@
+                        @*<span class="input-group-addon">@localizer["col_reportit"]</span>*@
+                        <select asp-for="DefaultReportIt" class="my-form-control" id="SelectedReportIt" name="SelectedReportIt" onchange="">
+                            @if(Model.DefaultReportIt == 1){
+                                <option value="1" selected="selected">@localizer["cmb_reportit1"]</option>
+                            } else {
+                                <option value="1">@localizer["cmb_reportit1"]</option>
+                            }
+                            @if(Model.DefaultReportIt == 2){
+                                <option value="2" selected="selected">@localizer["cmb_reportit2"]</option>
+                            } else {
+                                <option value="2">@localizer["cmb_reportit2"]</option>
+                            }
+                            @if (Model.DefaultReportIt == 3)
+                            {
+                                <option value="3" selected="selected">@localizer["cmb_reportit3"]</option>
+                            } else {
+                                <option value="3">@localizer["cmb_reportit3"]</option>
+                            }                            
+                        </select>
+                    </div>
+                </th>
+                <th>
+                    <div class='input-group'>
+                        @localizer["col_eventtype"]
+                        @*<span class="input-group-addon">@localizer["col_eventtype"]</span>*@
+                        <select class="my-form-control" id="SelectedEventType" name="SelectedReportIt" onchange="">
+                            @if(Model.DefaultEventType == 1){
+                                <option value="1" selected="selected">@localizer["cmb_eventtype1"]</option>
+                            } else {
+                                <option value="1">@localizer["cmb_eventtype1"]</option>
+                            }
+                            @if(Model.DefaultEventType == 2){
+                                <option value="2" selected="selected">@localizer["cmb_eventtype2"]</option>
+                            } else {
+                                <option value="2">@localizer["cmb_eventtype2"]</option>
+                            }
+                            @if(Model.DefaultEventType == 3){
+                                <option value="3" selected="selected">@localizer["cmb_eventtype3"]</option>
+                            } else {
+                                <option value="3">@localizer["cmb_eventtype3"]</option>
+                            } 
+                            
+                        </select>
+                    </div>
+                </th>
+                <th>
+                    <div class='input-group'>
+                        <button title="@localizer["title_reload"]" type="button" class="btn btn-default btn-sm" aria-label="Left Align" onclick="ReloadEvent()">
+                            <img src="/images/reload.png" alt="reload" width="22"/>
+                        </button>
+                    </div>
+                </th>
+            </tr>
+        </table>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <table class="my-table nowrap table-sm hover" id="eventTable" role="banner" aria-describedby="events">
+            <thead>                
+                <th>
+                    @localizer["col_facility"]
+                </th>
+                <th>
+                    @localizer["col_area"]
+                </th>
+                <th>
+                    @localizer["col_device"]
+                </th>
+                <th>
+                    @localizer["col_tagnumber"]
+                </th>
+                <th>
+                    @localizer["col_eventtype"]
+                </th>                
+                <th>
+                    @localizer["col_service"]
+                </th>
+                <th>
+                    @localizer["col_settime"]
+                </th>
+                <th>
+                    @localizer["col_cleartime"]
+                </th>
+                <th>
+                    @localizer["col_actnum"]
+                </th>
+                <th>
+                    @localizer["col_cause"]
+                </th>
+                <th>
+                    @localizer["col_from"]
+                </th>                
+                <th>
+                    @localizer["col_reportit"]
+                </th>
+                @*<th>
+                    @localizer["col_action"]
+                </th>*@
+                <th></th>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.EventList)
+                {
+                    var rowclass = "";
+                    @if(item.ActNum==0 && item.ReportIt)
+                    {
+                        rowclass = "rose_bg";
+                    }
+                    else
+                    {
+                        rowclass = "";
+                    }
+
+                    <tr class="gradeA @rowclass">
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Facility)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Area)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Device)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Tagnumber)
+                        </td>
+                        <td>
+                            @if (item.EventType == 1)
+                            {
+                                @localizer["force"]
+                            }
+                            else if (item.EventType == 2)
+                            {
+                                @localizer["bypass"]
+                            }
+                            else if (item.EventType == 3)
+                            {
+                                @localizer["disable"]
+                            }
+                            else if (item.EventType == 4)
+                            {
+                                @localizer["inhibit"]
+                            }
+                        </td>
+                        @*<td>
+                            @Html.DisplayFor(modelItem => item.Unit)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Type)
+                        </td>*@
+                        <td>
+                            @*@Html.DisplayFor(modelItem => item.Service)*@
+                            @{
+                                string service = "";
+                                if (!string.IsNullOrEmpty(item.Service))
+                                {
+                                    if (item.Service.Length < 10 && item.Service.Length > 0)
+                                    {
+                                        service = item.Service;
+                                    }
+                                    else if (item.Service.Length > 9)
+                                    {
+                                        service = item.Service.Substring(0, 10);
+                                    }
+                                }
+                            }
+                            <span title="@item.Service">@service</span>
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.SetTimeS)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ClearTimeS)
+                        </td>
+                        <td>
+                            @if (item.ActNum != 0)
+                            {
+                                @*@Html.DisplayFor(modelItem => item.ActNum)*@
+                                <span id="actnume_@item.Id" value="@item.ActNum">@item.ActNum</span>
+                            }
+                            else
+                            {
+                                <span id="actnume_@item.Id" value=""></span>
+                            }
+                        </td>
+                        <td>                            
+                            @{
+                                string cause = "";
+                                if (!string.IsNullOrEmpty(item.Cause))
+                                {
+                                    if (item.Cause.Length < 15 && item.Cause.Length > 0)
+                                    {
+                                        cause = item.Cause;
+                                    }
+                                    else if (item.Cause.Length > 14)
+                                    {
+                                        cause = item.Cause.Substring(0, 15);
+                                    }
+                                }
+                            }
+                            <span id="causee_@item.Id" title="@item.Cause">@cause</span>
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DataOrigin)
+                        </td>
+                        <td>
+                            @{ flag = item.ReportIt ? "checked" : ""; }
+                            <input type="checkbox" id="reportit_@item.Id" class="reportit_chk" onclick="ReportItClick(@item.Id);" @flag>
+                        </td>
+                        @*<td>
+                            <input type="text" id="action_@item.Id" class="reportit_chk" onchange="OnChangeAction(@item.Id)" value="@item.Action"/>
+                        </td>*@
+                        <td>
+                            @if (!item.AddedManually)
+                            {
+                                if (item.ActNum == 0)
+                                {
+                                    <button title="@localizer["title_link"]" type="button" class="btn btn-default btn-sm" aria-label="Left Align" id="LinkBtn_@item.Id" onclick="LinkEvent(@item.Id,'@item.Tagnumber');">
+                                        <img src="/images/link.png" alt="link" width="15"/>
+                                    </button>
+                                    <button title="@localizer["title_unlink"]" type="button" class="btn btn-default btn-sm" aria-label="Left Align" id="UnLinkBtn_@item.Id" onclick="UnLinkEvent(@item.Id);" hidden>
+                                        <img src="/images/unlink.png" alt="unlink" width="15" />
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button title="@localizer["title_link"]" type="button" class="btn btn-default btn-sm" aria-label="Left Align" id="LinkBtn_@item.Id" onclick="LinkEvent(@item.Id,'@item.Tagnumber');" hidden>
+                                        <img src="/images/link.png" alt="link" width="15"/>
+                                    </button>
+                                    <button title="@localizer["title_unlink"]" type="button" class="btn btn-default btn-sm" aria-label="Left Align" id="UnLinkBtn_@item.Id" onclick="UnLinkEvent(@item.Id);">
+                                        <img src="/images/unlink.png" alt="unlink" width="15"/>
+                                    </button>
+                                }
+                            }
+                            else
+                            {
+                                <button type="button" class="btn btn-light btn-sm" aria-label="Left Align" disabled>
+                                    <img src="/images/blank.png" alt="blank" width="15" />
+                                </button>
+                            }
+
+                            <button title="@localizer["title_delete"]" type="button" class="btn btn-default btn-sm" aria-label="Left Align" id="Delete_@item.Id" onclick="DeleteEvent(@item.Id);">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
+                                  <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
+                                </svg>
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-1"></div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <div class="row">
+            <div class="panel panel-info"> 
+                <div class="panel-heading"> 
+                    <h3 class="panel-title">@localizer["buffer"]</h3> 
+                </div> 
+                <div class="panel-body">                    
+                    <input type="hidden" name="actitemid" value="0" id="buf_actitemid">
+                    <div class="row text-center">
+                        <button title="@localizer["title_up"]" type="button" class="btn btn-light btn-sm" aria-label="Left Align" onclick="MoveEventUp();" disabled id="btn_moveup">
+                            <img src="/images/arrow_up.png" alt="arrup" width="25" />
+                        </button>
+                        <input type="hidden" name="causelit" value="" id="buf_causelit">
+                    </div>
+                    <div class="row text-left">
+                        <div class="col-md-6">@localizer["col_area"]<select class="form-select" asp-items="@Model.Areas" id="buf_Area"></select></div>
+                        <div class="col-md-6">@localizer["col_device"]<select class="form-select" asp-for="@Model.DefaultDevice" asp-items="@Model.Devices" id="buf_device"></select></div>
+                    </div>
+                    <div class="row">                        
+                            <div class="col-md-6">@localizer["col_tagnumber"] <input class="form-control" type="text" id="buf_tagnumber" /></div>
+                            <div class="col-md-6">@localizer["col_eventtype"]
+                                                        <select class="form-select" id="buf_acttype" name="ActType">
+                                                            <option value="0" selected="selected">...</option>}
+                                                            <option value="1">@localizer["force"] </option>}
+                                                            <option value="2">@localizer["bypass"] </option>}
+                                                            <option value="3">@localizer["disable"] </option>}
+                                                            <option value="4">@localizer["inhibit"]</option>}
+                                                        </select>
+                            </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            @localizer["col_service"] <input type="text" class="form-control" id="buf_service" />
+                        </div>                        
+                    </div>
+                    <div class="row">
+                            <div class="col-md-6">@localizer["col_actnum"] <input type="text" class="form-control bg_gray" disabled="" id="buf_actnum" /></div>
+                            <div class="col-md-6">@localizer["col_settime"]<input type="text" class="form-control bg_gray" disabled id="buf_startedon" /></div>
+                    </div>
+                    <div class="row">
+                            <div class="col-md-12">@localizer["col_cause"] <input type="text" class="form-control bg_gray" disabled="" id="buf_cause" /></div>                            
+                    </div>
+                </div>                
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 text-center">@localizer["forcereport"]</div>
+        </div>
+        <div class="text-center">
+            @foreach (var item in Model.ReportGroups)
+            {
+                <a asp-action="PrintDailyReport" asp-route-reportgroup="@item" class="btn btn-info"> @item</a>
+            }
+        </div>
+        <div class="row">
+            <div class="col-md-12 text-center">@localizer["alarmreport"]</div>
+        </div>
+        <div class="text-center">
+            @foreach (var item in Model.ReportGroups)
+            {
+                <a asp-action="PrintDailyReportAlarm" asp-route-reportgroup="@item" class="btn btn-info"> @item</a>
+            }
+        </div>
+        <a asp-action="WriteToPI" class="btn btn-info">@localizer["writetopi"]</a>
+    </div>
+    <div class="col-md-8">        
+        <h2 class="text-center no-padding">@localizer["title_act"]
+            <button title="@localizer["title_allup"]" type="button" class="btn btn-default btn-sm" aria-label="Left Align" onclick="MoveAllEventsUp();">
+                <img src="/images/allup.png" alt="allup" width="20" />
+            </button>
+        </h2>
+        
+        
+        <table class="my-table nowrap hover" id="actItemsTable" role="banner" aria-describedby="actitems">
+            <thead>
+            <th></th>
+            <th>@localizer["col_facility"]</th>
+            <th>@localizer["col_area"]</th>
+            <th>@localizer["col_device"]</th>
+            <th>@localizer["col_tagnumber"]</th>            
+            <th>@localizer["col_equipment"]</th>
+            <th>@localizer["col_cause"]</th>
+            <th>@localizer["col_settime"]</th>
+            <th>@localizer["col_closed"]</th>
+            <th>@localizer["col_actnum"]</th>
+            </thead>
+            @foreach (var item in Model.ActItemsList)
+            {
+                <tr>
+                    <td>
+                        <button title="@localizer["title_left"]" type="button" class="btn btn-default btn-sm" aria-label="Left Align" onclick="MoveEventLeft(@item.Id);" id="BtnEventLeft_@item.Id">
+                            <img src="/images/arrow_left.png" width="12" alt="arrleft"/>
+                        </button>
+                        @*<input type="hidden" name="act.type" value="@item.Id" id="actitemid_@item.Id">*@
+                        <input type="hidden" name="areaid" value="@item.AreaId" id="areaid_@item.Id">
+                        <input type="hidden" name="acttype" value="@item.ActType" id="acttype_@item.Id">
+                        <input type="hidden" name="deviceid" value="@item.DeviceId" id="deviceid_@item.Id">
+                    </td>
+                    <td>@item.Facility</td>
+                    <td>@item.Area</td>
+                    <td id="device_@item.Id">@item.Device</td>
+                    <td id="tagnumber_@item.Id">@item.TagNumber</td>
+                    @*<td id="unit_@item.Id">@item.Unit</td>*@
+                    <td>
+                        @{
+                            string equipment = "";
+                            if (!string.IsNullOrEmpty(item.Equipment))
+                            {
+                                if (item.Equipment.Length < 10 && item.Equipment.Length > 0)
+                                {
+                                    equipment = item.Equipment;
+                                }
+                                else if (item.Equipment.Length > 9)
+                                {
+                                    equipment = item.Equipment.Substring(0, 10);
+                                }
+                            }
+                        }
+                        <span title="@item.Equipment">@equipment</span>
+                    </td>
+                    <td>                        
+                        @{
+                            string cause = "";
+                            if (!string.IsNullOrEmpty(item.Cause))
+                            {
+                                if (item.Cause.Length < 15 && item.Cause.Length > 0)
+                                {
+                                    cause = item.Cause;
+                                }
+                                else if (item.Cause.Length > 14)
+                                {
+                                    cause = item.Cause.Substring(0, 15);
+                                }
+                            }
+                        }
+                        <span id="cause_@item.Id" title="@item.Cause">@cause</span>
+                    </td>
+                    <td id="startedon_@item.Id">@item.StartedOn</td>
+                    <td>@item.ClosedOn</td>
+                    <td id="actnum_@item.Id">@item.ActId</td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>
+<div class="modal" id="pleasewait" tabindex="-1" aria-labelledby="delegateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <p class="text-center">@localizer["pleasewait"]</p>
+        </div>
+    </div>
+</div>
+
+@section scripts
+    {
+    @{await Html.RenderPartialAsync($"_ValidationScriptsPartial");}
+
+<script type="text/javascript">
+        function MoveAllEventsUp() {
+            var host = "@Model.URL";
+            bootbox.confirm("@localizer["link_all_event"]", function (result) {
+                if (result) {
+                    $.ajax({
+                        url: host + "/Reporting/AddToEventAllActs",
+                        method: "PUT",
+                        success: function (data) {
+                            ReloadEvent();
+                            ReloadActItems();
+                            ClearBuffer();
+                        },
+                        error: function (xhr, status, error) {
+                            toastr.error("An error occurred... Status: " + status + " " + error + " " + xhr.status + " " + xhr.statusText);
+                        }
+                    });
+                }
+            });
+        }
+
+        function ReportItClick(id) {
+            var host = "@Model.URL";
+            var chBox = $("#reportit_" + id)
+            $.ajax({
+                url: host + "/api/Events/" + id,
+                method: "GET",
+                error: function (xhr, status, error) {
+                    toastr.error("An error occurred... Status: " + status + " " + error + " " + xhr.status + " " + xhr.statusText);
+                },
+                success: function (data) {
+                    if (!chBox.is(':checked')){
+                        chBox.closest("tr").removeClass('rose_bg');
+                    }
+                    else
+                    {
+                        //console.log($("#actnume_" + data.id).attr('value'));
+                        if ($("#actnume_" + data.id).attr('value') == "")
+                            chBox.closest("tr").addClass('rose_bg');
+                    }
+                        
+                }
+            });
+        }
+
+        function OnChangeAction(id) {
+            var host = "@Model.URL";
+            const action = document.getElementById(`action_${id}`).value
+            console.log(action);
+            $.ajax({
+                url:`${host}/api/Events/${id}?action=${action}`,
+                method: "PUT",
+                success: function(data) {
+                    toastr.success("Действие обновлено", "Успешно")
+                },
+                error: function (xhr, status, error) {
+                    toastr.error("An error occurred... Status: " + status + " " + error + " " + xhr.status + " " + xhr.statusText);
+                }
+            });
+        }
+
+        function LinkEvent(id, val1) {
+            var host = "@Model.URL";
+            var actitemid = $("#buf_actitemid").val();
+            if (actitemid == 0) {
+                bootbox.alert("@localizer["link_alert"]");
+                return;
+            }
+            var val2 = $("#buf_tagnumber").val();
+            var msg = "@localizer["link_event"]";
+            var msg = msg.replace('111', val1);
+            var msg = msg.replace('222', val2);
+            var resConf = confirm(msg);
+            if (resConf) {
+                $.ajax({
+                        url: host + "/api/Events/" + id + "?actitemid=" + actitemid + "&linkFlag=true",
+                        method: "PUT",
+                        success: function (data) {
+                            //ReloadEvent();
+                            //var dialog = bootbox.dialog({
+                            //message: '<div class="text-center"><i class="fas fa-spin fa-spinner"></i> Loading...</div>',
+                            //    closeButton: false
+                            //});
+                            $("#actnume_" + id).text($("#buf_actnum").val());
+                            $("#actnume_" + id).attr('value',$("#buf_actnum").val());
+                            $("#causee_" + id).text($("#buf_causelit").val());
+                            $("#causee_" + id).attr("title", $("#buf_cause").val());
+                            //$("#LinkBtn_" + id).hide();                            
+                            //$("#UnLinkBtn_" + id).show();
+                            $("#LinkBtn_" + id).attr('hidden', true);
+                            $("#UnLinkBtn_" + id).attr('hidden', false);
+                            ReloadActItems();
+                            ClearBuffer();
+                            var eventtable = $('#eventTable').DataTable();
+                            //eventtable.search("").draw();
+                            $("#actnume_" + id).closest("tr").removeClass('rose_bg');
+                            //dialog.modal('hide');
+                        },
+                        error: function (xhr, status, error) {
+                            toastr.error("An error occurred... Status: " + status + " " + error + " " + xhr.status + " " + xhr.statusText);
+                        }
+                    });
+            }
+
+            //bootbox.confirm(msg, function (result) {
+            //    if (result) {
+                    
+            //    }
+            //});
+
+        }
+
+        function UnLinkEvent(id) {
+            var host = "@Model.URL";
+            bootbox.confirm("@localizer["unlink_event"]", function (result) {
+                if (result) {
+                    $.ajax({
+                        url: host + "/api/Events/" + id + "?actitemid=0&linkFlag=false",
+                        method: "PUT",
+                        success: function (data) {
+                            //ReloadEvent();
+                            $("#actnume_" + id).text("");
+                            $("#actnume_" + id).attr('value', "");
+                            $("#causee_" + id).text("");
+                            $("#causee_" + id).attr("title", "");
+                            //$("#LinkBtn_" + id).show();
+                            //$("#UnLinBbtn_" + id).hide();
+                            $("#LinkBtn_" + id).attr('hidden', false);
+                            $("#UnLinkBtn_" + id).attr('hidden', true);
+                            if ($("#reportit_" + id).is(':checked')) {
+                                $("#reportit_" + id).closest("tr").addClass('rose_bg');
+                            }
+                            ReloadActItems();
+                            ClearBuffer();
+                        },
+                        error: function (xhr, status, error) {
+                            toastr.error("An error occurred... Status: " + status + " " + error + " " + xhr.status + " " + xhr.statusText);
+                        }
+                    });
+                }
+            });
+
+        }
+
+        function MoveEventUp() {
+            var host = "@Model.URL";
+            var tagnumber = $("#buf_tagnumber").val();
+            var tagid = 0;
+            if (tagnumber.length == 0) {
+                $("#buf_tagnumber").addClass('input-validation-error');
+                return;
+            } else {
+                $("#buf_tagnumber").removeClass('input-validation-error');
+            }
+
+            var deviceid = $("#buf_device").val();
+            //var type = $("#buf_type").val();
+            var service = $("#buf_service").val();
+            //var unit = $("#buf_unit").val();
+            var area = $("#buf_Area").val();
+            bootbox.confirm("@localizer["move_event_up"]", function (result) {
+                if (result) {
+                   $.ajax({
+                        url: host + "/api/Tags?deviceid=" + deviceid + "&tagnumber=" + tagnumber + "&service="+ service + "&area=" + area,
+                        method: "POST",
+                        success: function (data) {
+                            tagid = parseInt(data);
+                            if (tagid !== 0) {
+                                var acttype = $("#buf_acttype").val();
+                                var actitemid = $("#buf_actitemid").val();
+                                $.ajax({
+                                    url: host + "/api/Events?acttype=" + acttype + "&actitemid=" + actitemid + "&tagid=" + tagid,
+                                    method: "POST",
+                                    itemid: actitemid,
+                                    success: function () {
+                                        var eventtable = $('#eventTable').DataTable();
+                                        eventtable.search("").draw();
+                                        ReloadEvent();
+                                        var buttonLeft = $("#BtnEventLeft_" + this.itemid);
+                                        var table = $("#actItemsTable").DataTable();
+                                        table.row(buttonLeft.parents("tr")).remove().draw();
+                                        ClearBuffer();
+                                        //ReloadActItems();
+                                        toastr.success("@localizer["event_add_success"]");
+                                    },
+                                    error: function (xhr, status, error) {
+                                        toastr.error("An error occurred... Status: " + status + " " + error + " " + xhr.status + " " + xhr.statusText);
+                                    }
+                                });
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            toastr.error("An error occurred... Status: " + status + " " + error + " " + xhr.status + " " + xhr.statusText);
+                        }
+                    });
+                }
+            });
+
+        }
+
+        function MoveEventLeft(id) {
+            var areaid = $("#actItemsTable #areaid_" + id).val();
+            var deviceid = $("#actItemsTable #deviceid_" + id).val();
+            var cause = $("#actItemsTable #cause_" + id).attr("title");
+            var tagnumber = $("#actItemsTable #tagnumber_" + id).text();
+            $("#buf_Area").val(areaid);
+            $("#buf_causelit").val($("#actItemsTable #cause_" + id).text());
+
+            $("#buf_device").val(deviceid);
+            //$("#buf_device").val($("#actItemsTable #device_" + id).text());
+            $("#buf_tagnumber").val(tagnumber);
+            $("#buf_cause").val(cause);
+            $("#buf_startedon").val($("#actItemsTable #startedon_" + id).text());
+            //$("#buf_unit").val($("#actItemsTable #unit_" + id).text());
+            $("#buf_actnum").val($("#actItemsTable #actnum_" + id).text());
+            $("#buf_actitemid").val(id);
+            $("#buf_acttype").val($("#actItemsTable #acttype_" + id).val());
+
+            $("#btn_moveup").prop('disabled', false);
+            var eventtable = $('#eventTable').DataTable();
+            eventtable.search(tagnumber).draw();
+
+            /*$("#eventTable tbody #LinkBtn").prop('disabled', false);*/
+        }
+
+        function ClearBuffer() {
+            $("#btn_moveup").prop('disabled', true);
+            /*$("#eventTable tbody #LinkBtn").prop('disabled', true);*/
+            $("#buf_Area").val(0);
+            $("#buf_device").val("");
+            $("#buf_tagnumber").val("");
+            $("#buf_startedon").val("");
+            $("#buf_cause").val("");
+            $("#buf_causelit").val("");
+            //$("#buf_unit").val("");
+            $("#buf_actnum").val("");
+            $("#buf_actitemid").val(0);
+            $("#buf_acttype").val(0);
+            //$("#buf_type").val("");
+            $("#buf_service").val("");
+        }
+
+        function DeleteEvent(id) {
+            var host = "@Model.URL";
+            var button = $("#Delete_" + id);
+            var table = $("#eventTable").DataTable();
+            bootbox.confirm("@localizer["delete_title"]", function (result) {
+                if (result) {
+                    $.ajax({
+                        url: host + "/api/Events/" + id,
+                        method: "DELETE",
+                        success: function () {
+                            table.row(button.parents("tr")).remove().draw();
+                            ReloadActItems();
+                            toastr.success("@localizer["delete_success"]");
+                        },
+                        error: function (xhr, status, error) {
+                            toastr.error("An error occurred... Status: " + status + " " + error + " " + xhr.status + " " + xhr.statusText);
+                        }
+                    });
+                }
+            });
+
+        }
+
+        function ReloadActItems() {
+            var host = "@Model.URL";
+            var table = $("#actItemsTable").DataTable();
+            table.clear().draw();
+            var col1 = "";
+            var col12 = "";
+            var col2 = "";
+            var col3 = "";
+            var col4 = "";
+            var col5 = "";
+            var col6 = "";
+            var col7 = "";
+            var col8 = "";
+            var col9 = "";
+            var ncol1 = "";
+            var ncol12 = "";
+            var ncol2 = "";
+            var ncol3 = "";
+            var ncol4 = "";
+            var ncol5 = "";
+            var ncol6 = "";
+            var ncol7 = "";
+            var ncol8 = "";
+            var ncol9 = "";
+            
+            $.ajax({
+                url: host + "/api/ActItem/",
+                method: "GET",
+                success: function(data, textStatus, jqXhr) {
+                    //let myRows = new (data.length-1);
+                    for (var i = 0; i < data.length; i++) {
+                        col1 = '<td>' + '<button title="@localizer["title_left"]" type="button" class="btn btn-default btn-sm" aria-label="Left Align" onclick="MoveEventLeft(' + data[i].id + '); " id="BtnEventLeft_' + data[i].id + '"><img src="/images/arrow_left.png" width="12"></button>' +
+                            '<input type="hidden" name="areaid" value="' + data[i].areaId + '" id="areaid_' + data[i].id + '">' +
+                            '<input type="hidden" name="deviceid" value="' + data[i].deviceId + '" id="deviceid_' + data[i].id + '">' +
+                            '<input type="hidden" name="acttype" value="' + data[i].actType + '" id="acttype_' + data[i].id + '">' + '</td>';
+                        col12 = '<td>' + data[i].facility + '</td>';
+                        col2 = '<td>' + data[i].area + '</td>';
+                        col3 = '<td id="device_'+ data[i].id + '">' + data[i].device + '</td>';
+                        col4 = '<td id="tagnumber_' + data[i].id + '">' + data[i].tagNumber + '</td>';
+                        //col5 = '<td id="unit_' + data[i].id + '">' + data[i].unit + '</td>';
+                        col5 = '<td>' + data[i].equipment + '</td>';
+                        col6 = '<td>' + data[i].cause + '</td>';
+                        if (data[i].cause != null && data[i].cause != "" && data[i].cause.length > 10) {
+                            col6 = '<td><span id="cause_' + data[i].id + '" title="' + data[i].cause + '">' + data[i].cause.substring(0, 10) + '</span></td>';
+                        }
+                        col7 = '<td id="startedon_' + data[i].id + '">' + data[i].startedOn + '</td>';
+                        col8 = '<td>' + data[i].closedOn + '</td>';
+                        col9 = '<td id="actnum_' + data[i].id + '"> ' + data[i].actId + '</td>';
+                        //table.row.add([col1, col2, col3, col4, col5, col6, col7, col8, col9, col10]).draw();
+                        //let myArray = new Array(col1,col12,col2,col3,col4,col5,col6,col7,col8,col9);                        
+                        //myRows[i] = myArray
+                        //table.row.add(myArray).draw();
+                        table.row.add($("<tr>" + col1 + col12 + col2 + col3 + col4 + col5 + col6 + col7 + col8 + col9 + "</tr>")).draw();
+                    }
+                    //table.rows.add(myRows).draw();
+                },
+                error: function(xhr, status, error) {
+                    toastr.error("An error occurred... Status: " + error + " " + xhr.status + " " + xhr.responseText);
+                }
+            });
+        }
+
+        function ReloadEvent() {
+            var host = "@Model.URL";
+            var table = $("#eventTable").DataTable();
+            //$("#eventTable tbody tr").remove();
+            table.clear().draw();
+            var reportit = $("#SelectedReportIt").val();
+            var force = "@localizer["force"]";
+            var bypass = "@localizer["bypass"]";
+            var disable = "@localizer["disable"]";
+            var inhibit = "@localizer["inhibit"]";
+            var pleasewait = "@localizer["pleasewait"]";
+
+            var col0 = "";
+            var col1 = "";
+            var col2 = "";
+            var col3 = "";
+            var col4 = "";
+            //var col5 = "";
+            //var col6 = "";
+            var col7 = "";
+            var col8 = "";
+            var col9 = "";
+            var col10 = "";
+            var col11 = "";
+            var col12 = "";
+            var col13 = "";
+            var col14 = "";
+            //var i = $("#eventTable" + " tr").length - 1;
+            var start = $('#EventFrom').val();
+            var end = $('#EventTo').val();
+            var SelectedEventType = $("#SelectedEventType").val();
+            var parameters = { start: start, end: end, reportIt: reportit, eventType: SelectedEventType };
+            // var dialog = bootbox.dialog({
+            //     message: '<p class="text-center">' + pleasewait + '</p>',
+            //     closeButton: false
+            // });
+            $('#pleasewait').modal('show');
+            $.ajax({
+                url: host + "/api/Events/",
+                method: "GET",
+                data: parameters,
+                success: function (data, textStatus, jqXhr) {
+                    let myRows = new Array(data.length-1);
+                    for (var i = 0; i < data.length; i++) {
+                        col0 = data[i].facility;
+                        col1 = data[i].area;
+                        col2 = data[i].device;
+                        col3 = data[i].tagnumber;
+                        if (data[i].eventType == 1) {
+                            col4 = force;
+                        } else if (data[i].eventType == 2) {
+                            col4 = bypass;
+                        } else if (data[i].eventType == 3) {
+                            col4 = disable;
+                        } else if (data[i].eventType == 4) {
+                            col4 = inhibit;
+                        }
+                        //col5 = data[i].unit;
+                        //col6 = data[i].type;
+                        //col7 = data[i].service.substring(0,10);
+                        col7 = data[i].service;
+                        if (data[i].service != null && data[i].service != "" && data[i].service.length > 10 ) {
+                            col7 = '<span title="' + data[i].service + '">' + data[i].service.substring(0, 10) + '</span>';
+                        }
+                        col8 = data[i].setTimeS;
+                        col9 = data[i].clearTimeS;
+                        col10 = "";
+                        col11 = "";
+                        if (data[i].actNum !== 0) {
+                            //col10 = data[i].actNum;
+                            col10 = '<span id="actnume_' + data[i].id + '" value="' + data[i].actNum + '">' + data[i].actNum + '</span>'
+                                + '<span name="actnumberhidden' + i + '" value="' + data[i].actNum + '" hidden></span>';
+                            col11 = data[i].cause;
+                            if (data[i].cause != null && data[i].cause != "" && data[i].cause.length > 10) {
+                                col11 = '<span id="causee_' + data[i].id + '" title="' + data[i].cause + '">' + data[i].cause.substring(0, 10) + '</span>';
+                            }
+                        } else {
+                            col10 = '<span id="actnume_' + data[i].id + '" value>&nbsp;</span>'
+                                + '<span name="actnumberhidden' + i + '" value hidden></span>';
+                            col11 = '<span id="cause_' + data[i].id + '"></span>';
+                        }
+                        col12 = data[i].dataOrigin;
+                        col13 = '<input name="reportit' + i +'" type="checkbox" id="reportit_' + data[i].id + '" class="reportit_chk" onclick="ReportItClick(' + data[i].id + ');"';
+                        if (data[i].reportIt) {
+                            col13 = col13 + ' checked>';
+                        } else {
+
+                            col13 = col13 + '>';
+                        }
+                        if (!data[i].addedManually) {
+                            if (data[i].actNum !== 0){                                
+                                col14 = '<button title="@localizer["title_link"]" type="button" class="btn btn-default btn-sm" aria-label="Left Align" id="LinkBtn_' + data[i].id + '" onclick="LinkEvent(' + data[i].id + ",'" + data[i].tagnumber + "'" + ');" hidden>' +
+                                    '<img src="/images/link.png" width="15" /></button>';
+                                col14 = col14 + '<button title="@localizer["title_unlink"]" type="button" class="btn btn-default btn-sm" aria-label="Left Align" id="UnLinkBtn_' + data[i].id + '" onclick="UnLinkEvent(' + data[i].id + ');">' +
+                                    '<img src="/images/unlink.png" width="15" /></button>';
+                            }                                
+                            else
+                            {
+                                col14 = '<button title="@localizer["title_link"]" type="button" class="btn btn-default btn-sm" aria-label="Left Align" id="LinkBtn_' + data[i].id + '" onclick="LinkEvent(' + data[i].id + ",'" + data[i].tagnumber + "'" + ');" >' +
+                                    '<img src="/images/link.png" width="15" /></button>';
+                                col14 = col14 + '<button title="@localizer["title_unlink"]" type="button" class="btn btn-default btn-sm" aria-label="Left Align" id="UnLinkBtn_' + data[i].id + '" onclick="UnLinkEvent(' + data[i].id + ');" hidden>' +
+                                    '<img src="/images/unlink.png" width="15" /></button>';
+                            }                                
+                        } else {
+                            col14 = '<button type="button" class="btn btn-light btn-sm" aria-label="Left Align" disabled="">' +
+                                '<img src="/images/transparent.png" width="15" /></button>';
+                        }
+                        col14 = col14+
+                            '<button title="@localizer["title_delete"]" type="button" class="btn btn-default btn-sm" aria-label="Left Align" id="Delete_' + data[i].id + '" onclick="DeleteEvent(' + data[i].id +');">' +
+                            '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16"><path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/></svg>';
+                        
+                        //var trAdded = table.row.add([col0, col1, col2, col3, col4, col7, col8, col9, col10, col11, col12, col13,col14]);
+                        //trAdded.draw();
+                        //if (data[i].actNum == 0 && data[i].reportIt)
+                            //$("#reportit_" + data[i].id).closest("tr").addClass('rose_bg');
+                        let myArray = new Array(col0, col1, col2, col3, col4, col7, col8, col9, col10, col11, col12, col13, col14);
+                        myRows[i] = myArray;
+                    }                    
+                    table.rows.add(myRows).draw();
+                    var kk = $("#eventTable tr").length-1;                    
+                    for (c = 0; c < kk; c++) {
+                        var actnum = $("[name='actnumberhidden" + c +"']");
+                        var reportit = $("[name='reportit" + c + "']");
+                        if (actnum.attr('value') == "" && reportit.prop('checked') == true) 
+                            reportit.closest("tr").addClass('rose_bg');
+                        
+                        //console.error(el.attr('value'));
+                        //console.error($('.actnumberhidden' + c).val());
+                        //console.error($('.reportit' + c).prop('checked'));
+
+
+                        // var tr = $('#eventTable tr:eq(' + c + ')');
+                        // console.log(tr.find('#actnumberhidden').attr('value'));
+                        // if (tr.find('#actnumberhidden').attr('value') == "" && tr.find(':checkbox').prop('checked')==true)
+                        //     tr.find('#actnumberhidden').closest("tr").addClass('rose_bg');
+                    }
+                    // dialog.modal('hide');
+                    $('#pleasewait').modal('hide');
+                },
+                error: function(xhr, status, error) {
+                    $('#pleasewait').modal('hide');
+                    toastr.error("An error occurred... Status: " + error + " " + xhr.status + " " + xhr.responseText);
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            //$('#dt_eventTo').datetimepicker('setStartDate', $("#dt_eventFrom").val());
+            //$('#dt_eventFrom').data('DateTimePicker').endDate('@Model.EventTo');
+            var host = "@Model.URL";
+            var lang = "@Model.Lang";
+
+            $("#actItemsTable").DataTable({
+                language: {
+                    url: host + '/lib/datatables/lang/' + lang + '.json'
+                },
+                "paging": false,
+                "searching": false,
+                "bLengthChange": false,
+                "scrollY": "400px",
+                "scrollCollapse": true
+            });
+            $("#eventTable").DataTable({
+                language: {
+                    url: host + '/lib/datatables/lang/' + lang + '.json'
+                },
+                "paging": false,
+                "bLengthChange": false,
+                "scrollY": "350px",
+                "scrollCollapse": false
+                //,"deferRender": true,
+                //"orderClasses": false
+            });
+        });
+
+        //$(function () {
+        //    $('#dt_eventFrom').datetimepicker({
+        //        locale: '@Model.Lang'
+        //    });
+
+        //    $('#dt_eventTo').datetimepicker({
+        //        useCurrent: false, //Important! See issue #1075
+        //        locale: '@Model.Lang'
+        //    });
+
+        //    $("#dt_eventFrom").on("dp.change", function (e) {
+        //        $('#dt_eventTo').data("DateTimePicker").minDate(e.date);
+        //    });
+
+        //    $("#dt_eventTo").on("dp.change", function (e) {
+        //        $('#dt_eventFrom').data("DateTimePicker").maxDate(e.date);
+        //    });
+        //});
+</script>
+}

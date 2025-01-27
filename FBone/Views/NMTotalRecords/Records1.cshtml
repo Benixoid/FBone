@@ -1,0 +1,385 @@
+﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+@inject FBone.Database.DataManager DM
+@using FBone.Service;
+@model FBone.Models.NMode.NMRecordListModel
+@addTagHelper *, FBone
+
+
+<style>
+    select {
+        width: 100px
+    }
+
+    input {
+        width: 200px
+    }
+
+    label {
+        padding-right: 10px
+    }
+
+    .labelwide {
+        width: 150px
+    }
+
+    .glyphicon {
+        display: inline-block;
+        padding: 0 5px;
+    }
+
+    .glyphicon-chevron-right:after {
+        content: "\00BB";
+    }
+
+    .glyphicon-chevron-left:before {
+        content: "\00AB";
+    }
+
+    .shade {
+        background-color: aqua;
+    }
+
+    .align-to-right {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .right-aligned {
+        align-self: flex-end;
+        padding: 0px;
+    }
+    /*   .body-container {
+                                                                                                                                                                                max-width: 100%;
+                                                                                                                                                                            } */
+</style>
+
+<!DOCTYPE html>
+
+@if (Model.NModeRecords.Count > 0)
+{
+    <form>
+        <input type="hidden" name="SelectedDate" value=@Model.SelectedDate.ToString("yyyy-MM-dd") />
+        <input type="hidden" name="Calculated" value=@Model.Calculated.ToString() />
+        <input type="hidden" name="sortOrder" value=@Model.SortViewModel.Current.ToString() />
+        <input type="hidden" name="page" value=@Model.Page.PageNumber />
+
+        <text>&nbsp;</text>
+        <h4>Records</h4>
+
+        <div class="fg-toolbar ui-toolbar ui-widget-header ui-helper-clearfix ui-corner-tl ui-corner-tr">
+            <div class="align-to-right">
+                <div class="left-aligned">
+                    <span>
+                        <text>Page size</text>
+                        <select name="PageSize" asp-items="Model.Page.PageSizeList" onchange="this.form.submit()"></select>
+                    </span>
+                    <text>&nbsp;</text>
+                    @if (Model.Areas != null)
+                    {
+                        <span>
+                            <text>Area</text>
+                            <select name="AreaId" asp-items="Model.Areas" onchange="this.form.submit()"></select>
+                        </span>
+                        <text>&nbsp;</text>
+                        <span>
+                            <text>@Html.DisplayNameFor(model => model.NModeRecords[0].Lcn)</text>
+                            <select name="LcnId" asp-items="Model.LCNs" onchange="this.form.submit()"></select>
+                        </span>
+                    }
+                </div>
+                <div>
+                    <div style="float:right; margin-right:0px; padding-left:10px;">
+                        <page-link page-model="Model.Page" page-controller=@ViewData["Controller"] page-action=@ViewData["Action"] page-size="Model.Page.PageSize"
+                                   page-calculated=@Model.Calculated page-search=@Model.Search selected-date=@Model.SelectedDate validate-tags=@Model.ValidateTags
+                                   result-details=@Model.ResultDetails hide-details=@Model.HideDetails page-area-id="Model.AreaId" page-lcn-id="Model.LcnId"
+                                   Sort-Order="@Model.SortViewModel.Current"></page-link>
+                    </div>
+                    <div class="right-aligned" style="float:right;">
+                        <div class="right-aligned">
+                            <input type="search" id="search" asp-for="Search" name="Search" placeholder="Search for Tagnames" onsearch="onSearchChanged(this, this.form)" />
+                            <input type="submit" value="Search" class="btn btn-primary" />
+
+                            <scope>
+                                <input class="form-check-input" asp-for=@Model.HideDetails name="hideDetails" onchange="this.form.submit()" />
+                                <label for="hideDetails">Hide record's details</label>
+                                <input class="form-check-input" asp-for=@Model.ResultDetails name="resultDetails" onchange="this.form.submit()" />
+                                <label for="ResultDetails">Result details</label>
+                                <input class="form-check-input" asp-for=@Model.ValidateTags name="ValidateTags" onchange="this.form.submit()" />
+                                <label for="ValidateTags">Validate tags</label>
+                            </scope>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </form>
+
+
+    <table class="table table-light table-hover" id="nmoderecords" role="banner" aria-describedby="nmoderecords">
+        <thead>
+            <tr>
+                <th>
+                    <a asp-action=@ViewData["Action"] asp-controller=@ViewData["Controller"]
+                       asp-route-sortOrder="@(Model.SortViewModel.TagnameSort)"
+                       asp-route-Calculated="@(Model.Calculated)"
+                       asp-route-SelectedDate="@(Model.SelectedDate.ToString("yyyy-MM-dd"))"
+                       asp-route-page="@(Model.Page.PageNumber)"
+                       asp-route-PageSize="@(Model.Page.PageSize)"
+                       asp-route-AreaId="@(Model.AreaId)"
+                       asp-route-LcnId="@(Model.LcnId)"
+                       asp-route-Search="@(Model.Search)"
+                       asp-route-ValidateTags="@Model.ValidateTags"
+                       asp-route-HideDetails="@Model.HideDetails"
+                       asp-route-ResultDetails="@Model.ResultDetails">
+                        Tagname
+                    </a>
+                </th>
+                @if (Model.Areas != null)
+                {
+                    <th>
+                        <a asp-action=@ViewData["Action"] asp-controller=@ViewData["Controller"]
+                           asp-route-sortOrder="@(Model.SortViewModel.AreaSort)"
+                           asp-route-Calculated="@(Model.Calculated)"
+                           asp-route-SelectedDate="@(Model.SelectedDate.ToString("yyyy-MM-dd"))"
+                           asp-route-page="@(Model.Page.PageNumber)"
+                           asp-route-PageSize="@(Model.Page.PageSize)"
+                           asp-route-AreaId="@(Model.AreaId)"
+                           asp-route-LcnId="@(Model.LcnId)"
+                           asp-route-Search="@(Model.Search)"
+                           asp-route-ValidateTags="@Model.ValidateTags"
+                           asp-route-HideDetails="@Model.HideDetails"
+                           asp-route-ResultDetails="@Model.ResultDetails">
+                            Area
+                        </a>
+                    </th>
+                    <th>
+                        <a asp-action=@ViewData["Action"] asp-controller=@ViewData["Controller"]
+                           asp-route-sortOrder="@(Model.SortViewModel.LcnSort)"
+                           asp-route-Calculated="@(Model.Calculated)"
+                           asp-route-SelectedDate="@(Model.SelectedDate.ToString("yyyy-MM-dd"))"
+                           asp-route-page="@(Model.Page.PageNumber)"
+                           asp-route-PageSize="@(Model.Page.PageSize)"
+                           asp-route-AreaId="@(Model.AreaId)"
+                           asp-route-LcnId="@(Model.LcnId)"
+                           asp-route-Search="@(Model.Search)"
+                           asp-route-ValidateTags="@Model.ValidateTags"
+                           asp-route-HideDetails="@Model.HideDetails"
+                           asp-route-ResultDetails="@Model.ResultDetails">
+                            @Html.DisplayNameFor(model => model.NModeRecords[0].Lcn)
+                        </a>
+                    </th>
+                }
+                @if (Model.Calculated || Model.ResultsAvailable)
+                {
+                    @if (Model.ResultDetails)
+                    {
+                        <th>@Html.DisplayNameFor(m=>m.NModeRecords[0].DayNormal)</th>
+                        <th>@Html.DisplayNameFor(m=>m.NModeRecords[0].DayManual)</th>
+                        <th>@Html.DisplayNameFor(m=>m.NModeRecords[0].DayOther)</th>
+                        <th>@Html.DisplayNameFor(m=>m.NModeRecords[0].NightNormal)</th>
+                        <th>@Html.DisplayNameFor(m=>m.NModeRecords[0].NightManual)</th>
+                        <th>@Html.DisplayNameFor(m=>m.NModeRecords[0].NightOther)</th>
+                    }
+                    <th>
+                        <a asp-action=@ViewData["Action"] asp-controller=@ViewData["Controller"]
+                           asp-route-sortOrder="@(Model.SortViewModel.NormalTotalSort)"
+                           asp-route-Calculated="@(Model.Calculated)"
+                           asp-route-SelectedDate="@(Model.SelectedDate.ToString("yyyy-MM-dd"))"
+                           asp-route-page="@(Model.Page.PageNumber)"
+                           asp-route-PageSize="@(Model.Page.PageSize)"
+                           asp-route-AreaId="@(Model.AreaId)"
+                           asp-route-LcnId="@(Model.LcnId)"
+                           asp-route-Search="@(Model.Search)"
+                           asp-route-ValidateTags="@Model.ValidateTags"
+                           asp-route-HideDetails="@Model.HideDetails"
+                           asp-route-ResultDetails="@Model.ResultDetails">
+                            NormalTotal
+                        </a>
+                    </th>
+                    <th>@Html.DisplayNameFor(m=>m.NModeRecords[0].TimeStamp )</th>
+                    <th>@Html.DisplayNameFor(m=>m.NModeRecords[0].RecordTime)</th>
+                    <th>@Html.DisplayNameFor(m=>m.NModeRecords[0].User)</th>
+                }
+                @if (!Model.HideDetails)
+                {
+                    <th>@Html.DisplayNameFor(m=>m.NModeRecords[0].Descriptor)</th>
+                    <th>@Html.DisplayNameFor(m=>m.NModeRecords[0].CountIt)</th>
+                    <th>@Html.DisplayNameFor(m=>m.NModeRecords[0].NModeORed)</th>
+                    <th>@Html.DisplayNameFor(m=>m.NModeRecords[0].ConditionORed)</th>
+                    <th>@Html.DisplayNameFor(m=>m.NModeRecords[0].Conditions)</th>
+                }
+                <th>
+                    Links
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.NModeRecords)
+            {
+                <tr style="@((item.TagHealthStatus != FBone.Models.NMode.TagHealthStatus.Good && item.TagHealthStatus != FBone.Models.NMode.TagHealthStatus.Unchecked )?
+             "color:red;":
+            item.Evaluation?
+            "color:green;":
+            item.CountIt?
+            "":
+            "color:rgb(255, 165, 0);")">
+                    <td>@item.Tagname</td>
+                    @if (Model.Areas != null)
+                    {
+                        <td>@item.Area.Name</td>
+                        <td>@item.Lcn.Name</td>
+                    }
+                    @if (Model.Calculated || Model.ResultsAvailable)
+                    {
+                        @if (Model.ResultDetails)
+                        {
+                            <td>@item.DayNormal.ToString("f2")</td>
+                            <td>@item.DayManual.ToString("f2")</td>
+                            <td>@item.DayOther.ToString("f2")</td>
+                            <td>@item.NightNormal.ToString("f2")</td>
+                            <td>@item.NightManual.ToString("f2")</td>
+                            <td>@item.NightOther.ToString("f2")</td>
+                        }
+                        <td>@item.NormalTotal.ToString("f2")</td>
+                        <td>@item.TimeStamp</td>
+                        <td>@item.RecordTime</td>
+                        <td>@item.User</td>
+                    }
+                    @if (!Model.HideDetails)
+                    {
+                        <td>@item.Descriptor</td>
+                        <td>@item.CountIt</td>
+                        <td>@item.NModeORed</td>
+                        <td>@item.ConditionORed</td>
+                        <td>@item.Conditions.Count</td>
+                    }
+                    <td>
+                        <a asp-controller="NModeRecords" asp-action="Details" asp-route-id="@item.Id">Details</a>
+                        @if (DM.IsUserInRole(User, Enums.Roles.IsNModeEditor))
+                        {
+                            <a asp-controller="NModeRecords" asp-action="Edit" asp-route-id="@item.Id">| Edit</a>
+                            <a asp-controller="NModeRecords" asp-action="Delete" asp-route-id="@item.Id">| Delete</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+<form id="form" method="get" asp-action=@ViewData["Action"]>
+    <input type="hidden" name="sortOrder" value=@Model.SortViewModel.Current.ToString() />
+    <input type="hidden" name="page" value=@Model.Page.PageNumber />
+    <input type="hidden" name="Search" value="@Model.Search" />
+    <input type="hidden" name="PageSize" value=@Model.Page.PageSize />
+    <input type="hidden" name="AreaId" value=@Model.AreaId />
+    <input type="hidden" name="LcnId" value=@Model.LcnId />
+
+    @if (Model.NModeRecords.Count > 0)
+    {
+        <div class="fg-toolbar ui-toolbar ui-widget-header ui-helper-clearfix ui-corner-tl ui-corner-tr">
+            <div class="align-to-right">
+                <div class="left-aligned">
+                    Showing @Model.Page.StartRecord to @Model.Page.EndRecord of @Model.Page.RecordCount
+                </div>
+                <div>
+                    <div style="float:right; margin-right:0px; padding-left:10px;">
+                        <page-link page-model="Model.Page" page-controller=@ViewData["Controller"] page-action=@ViewData["Action"] page-size="Model.Page.PageSize"
+                                   page-calculated=@Model.Calculated page-search=@Model.Search selected-date=@Model.SelectedDate validate-tags=@Model.ValidateTags
+                                   result-details=@Model.ResultDetails hide-details=@Model.HideDetails page-area-id="Model.AreaId" page-lcn-id="Model.LcnId"
+                                   Sort-Order="@Model.SortViewModel.Current"></page-link>
+                    </div>
+                    <div class="right-aligned" style="float:right;">
+                        <div class="right-aligned">
+                            <scope>
+                                <input class="form-check-input" asp-for=@Model.HideDetails name="hideDetails" onchange="this.form.submit()" />
+                                <label for="hideDetails">Hide record's details</label>
+                                <input class="form-check-input" asp-for=@Model.ResultDetails name="resultDetails" onchange="this.form.submit()" />
+                                <label for="ResultDetails">Result details</label>
+                                <input class="form-check-input" asp-for=@Model.ValidateTags name="ValidateTags" onchange="this.form.submit()" />
+                                <label for="ValidateTags">Validate tags</label>
+                            </scope>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <span>
+        <b>
+            <div class="align-to-right">
+                <div class="left-aligned">
+                    <input type="date" id="datepicker" asp-for="SelectedDate" name="SelectedDate" />
+                    <input type="submit" value="Load" class="btn btn-primary" />
+                    <input id="CalcChecked" class="form-check-input" asp-for=@Model.Calculated name="Calculated" />
+                    <label>Calculate before load</label>
+                </div>
+                <div>
+                </div>
+            </div>
+        </b>
+    </span>
+</form>
+
+<script>
+
+    document.addEventListener("load", setDateTime("datepicker", new Date("@Model.SelectedDate.ToString("yyyy-MM-dd")")));
+
+    document.getElementById("form").addEventListener("submit", addEventListener("submit", function (e) {
+        e.preventDefault();
+        var checkbox = document.getElementById("CalcChecked");
+       // console.log("checkbox before: " + checkbox.checked);
+        this.form.submit();
+        checkbox.checked = false;
+        //console.log("checkbox after: " + checkbox.checked);
+    }));
+
+    function evaluateClicked() {
+        let chkCalc = document.getElementById("CalcChecked");
+        chkCalc.checked = true;
+        //console.log("chkCalc.checked: " + chkCalc.checked)
+        this.form.submit();
+        // chkCalc.checked = false;
+    };
+
+
+    function dateIsValid(date) {
+        if (date instanceof Date && !isNaN(date)) {
+            if (date.getFullYear() == 1)
+                return false;
+            else
+                return true;
+        }
+        else
+            return true;
+    };
+
+    function setDateTime(element, selectedDate) {
+        let input = document.getElementById(element);
+        let currentDate = new Date();
+        let startDate = currentDate;
+        startDate.setDate(currentDate.getDate() - 31);
+        let endDate = new Date();
+        endDate.setDate(endDate.getDate() - 1);
+        selectedDate = new Date(selectedDate);
+
+        // input.min = startDate.toISOString().slice(0, 10);
+        input.max = endDate.toISOString().slice(0, 10);
+
+        if (dateIsValid(selectedDate)) {
+            input.value = selectedDate.toISOString().slice(0, 10);
+        }
+        else {
+            input.value = endDate.toISOString().slice(0, 10);
+        }
+    };
+
+    function onSearchChanged(input, form) {
+        console.log(input);
+        if (input.value == "") {
+            form.submit();
+        }
+    };
+
+
+</script>

@@ -1,0 +1,20 @@
+﻿@{
+    ViewData["Title"] = "Admin Panel";
+}
+
+<h2>Welcome to Administrator Panel</h2>
+<ul>
+    <li><a asp-area="" asp-controller="Admin" asp-action="Users">Edit users list</a></li>
+    <li><a asp-area="" asp-controller="Admin" asp-action="Positions">Positions</a></li>
+    <li><a asp-area="" asp-controller="Admin" asp-action="Areas">Area list</a></li>
+    <li><a asp-area="" asp-controller="Devices" asp-action="Index">Devices</a></li>
+    <li><a asp-area="" asp-controller="tFacilities" asp-action="Index">Facilities</a></li>
+    <hr>
+    <li><a asp-area="" asp-controller="Encrypt" asp-action="index">Encryption service</a></li>
+    <hr>
+    <li><a asp-area="" asp-controller="Admin" asp-action="ActCauses">Frequent act cause</a></li>
+    <li><a asp-area="" asp-controller="Admin" asp-action="ActImpacts">Frequent act impact</a></li>
+    <li><a asp-area="" asp-controller="Admin" asp-action="ActProtects">Frequent act protect</a></li>
+    <hr>
+    <li><a asp-area="" asp-controller="Admin" asp-action="Enums">Static codes in application</a></li>
+</ul>

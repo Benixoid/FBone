@@ -1,0 +1,75 @@
+﻿@model FBone.Models.NMode.ConditionEditViewModel
+
+@{
+    Layout = "_NModeLayout";
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Edit</title>
+</head>
+<body>
+
+    <h4>@Model.ToString()</h4>
+    <hr />
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Condition.Id" />
+                <input type="hidden" name="PrevPage" value=@ViewData["PreviousPage"] />
+
+                <div class="form-group">
+                    <label asp-for="Condition.NModeRecordId">Record</label>
+                    <select asp-for="Condition.NModeRecordId" class="form-control">
+                        <option value="">-- Select Record --</option>
+                        @foreach (var parent in Model.Records)
+                        {
+                            <option value="@parent.Id">@parent.TagnameNmode</option>
+                        }
+                    </select>
+                    <span asp-validation-for="Condition.NModeRecordId" class="text-danger"></span>
+                </div>
+                <text>&nbsp;</text>
+                <div class="form-group">
+                    <label asp-for="Condition.Tagname" class="control-label"></label>
+                    <input asp-for="Condition.Tagname" class="form-control" />
+                    <span asp-validation-for="Condition.Tagname" class="text-danger"></span>
+                </div>
+                <text>&nbsp;</text>
+                <div class="form-group">
+                    <label asp-for="Condition.Operator" class="control-label"></label>
+                    @*<input asp-for="Operator" class="form-control" />*@
+                    @Html.DropDownListFor(x => Model.Condition.Operator , new SelectList(new string[]{"=","<",">","<>"}), new { style = "width: 60px;" })
+                    <span asp-validation-for="Condition.Operator" class="text-danger"></span>
+                </div>
+                <text>&nbsp;</text>
+                <div class="form-group">
+                    <label asp-for="Condition.Value" class="control-label"></label>
+                    <input asp-for="Condition.Value" class="form-control" />
+                    <span asp-validation-for="Condition.Value" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Comment</label>
+                    <textarea class="form-control" id="comment" name="Comment" rows="2"></textarea>
+                </div>
+                <text>&nbsp;</text>
+                <div class="form-group">
+                    <input type="submit" value="Save" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+    <div>
+        <a asp-action="Index">Back to List</a>
+    </div>
+
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+    }
+</body>
+</html>

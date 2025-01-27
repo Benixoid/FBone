@@ -1,0 +1,210 @@
+﻿@model FBone.Models.NMode.NMTotalRecords
+@inject FBone.Database.DataManager DM
+@using FBone.Service;
+
+@{
+    Layout = "_NModeLayout";
+}
+
+<!DOCTYPE html>
+<style>
+    .flex-container {
+        display: flex;
+        /*background-color: DodgerBlue;*/
+    }
+
+        .flex-container > div {
+            background-color: #f8f9fa;
+            margin: 5px;
+            padding: 10px;
+            font-size: 14px;
+        }
+
+    .body-container {
+        /*remove the container default padding attribute*/
+        /* padding-left: 0px !important;
+                                                                                                                  padding-right: 0px !important;*/
+        /*increase width as per your need*/
+        max-width: 100%;
+    }
+
+    .spinner {
+        display: inline-block;
+        margin-right: 10px;
+    }
+</style>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    @{
+        ViewBag.Title = $"NMTotal list";
+    }
+    <title>Index</title>
+</head>
+
+<body>
+    <p>
+        @if (DM.IsUserInRole(User, Enums.Roles.IsNModeAdministrator))
+        {
+            <a asp-action="Create" class="btn btn-secondary">Create New</a>
+        }
+    </p>
+
+    <form method="post" asp-action="Index">
+        <div class="flex-container">
+            <div class="col-md-7">
+                <h4>NMode Total Records</h4>
+                <div style="height: 40px;"></div>
+                <table class="table table-light table-hover" id="nmtotalrecords" role="banner" aria-describedby="nmtotalrecords">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(m => m[0].Area)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(m => m[0].Lcn)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(m => m[0].Tagname)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(m => m[0].NormalTotalPercentSaved)
+                            </th>
+                            @if (Model.ResultsAvailable)
+                            {
+                                <th>
+                                    @Html.DisplayNameFor(m => m[0].NormalTotalPercent)
+                                </th>
+                            }
+                            <th>
+                                SubTotals Count
+                            </th>
+                            <th>
+                                Record Count
+                            </th>
+                            <th>
+                                Links
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.Count; i++)
+                        {
+                            @Html.HiddenFor(m => m[i].Id)
+                            @Html.HiddenFor(m => m[i].Area.Name)
+                            @Html.HiddenFor(m => m[i].Lcn.Name)
+                            @Html.HiddenFor(m => m[i].Tagname)
+                            @Html.HiddenFor(m => m[i].NormalTotalPercentSaved)
+                            @Html.HiddenFor(m => m[i].SelectedDate)
+                            var item = Model[i];
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(m => m[i].Area.Name, new { htmlAttributes = new { @class = "form-control" } })
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(m => m[i].Lcn.Name, new { htmlAttributes = new { @class = "form-control" } })
+                                </td>
+                                <td>
+                                    <a asp-action="DetailsTR" asp-route-id="@Model[i].Id">
+                                        @Html.DisplayFor(m => m[i].Tagname, new { htmlAttributes = new { @class = "form-control" } })
+                                    </a>
+                                </td>
+                                <td>
+                                    @item.NormalTotalPercentSaved.ToString("f2")
+                                </td>
+                                @if (Model.ResultsAvailable)
+                                {
+                                    <td>
+                                        @item.NormalTotalPercent.ToString("f2")
+                                    </td>
+                                }
+                                <td>
+                                    @item.SubTotals.Count
+                                </td>
+                                <td>
+                                    @item.RecordCountString 
+                                </td>
+                                <td>
+                                    @if (DM.IsUserInRole(User, Enums.Roles.IsNModeEditor))
+                                    {
+                                        <a asp-action="EditTR" asp-route-id="@Model[i].Id">Edit</a>
+                                    }
+                                    @if (DM.IsUserInRole(User, Enums.Roles.IsNModeAdministrator))
+                                    {
+                                        <label>|</label>
+                                        <a asp-action="Delete" asp-route-id="@Model[i].Id">Delete</a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-5" id="average">
+                @await Component.InvokeAsync("NMTotalAverage", new { RecordId = -1 })
+            </div>
+        </div>
+        <input type="date" id="datepicker" asp-for="SelectedDate" name="SelectedDate" />
+        <input type="hidden" name="Calculated" value=@Model.Calculated.ToString() />
+        <input type="submit" value="Load" asp-action="Index" class="btn btn-primary" style="width:150px;" />
+        <input type="submit" value="Load Calculated Results" class="btn btn-secondary" onclick="setCalculate()" />
+        <input type="button" id="exportToExcel" value="Export to Excel" class="btn btn-secondary" />
+        <input id="calcRecords" type="hidden" name="LoadCalculatedResults" value=false />
+
+    </form>
+
+</body>
+</html>
+
+<script>
+    document.addEventListener("load", setDateTime("datepicker", new Date("@Model.SelectedDate.ToString("yyyy-MM-dd")")));
+    document.getElementById('exportToExcel').addEventListener('click', exportToExcel);
+
+    function setCalculate() {
+        var calcRecords = document.getElementById("calcRecords");
+        calcRecords.value = true;
+        //submitRequest();
+    };
+
+    function dateIsValid(date) {
+        if (date instanceof Date && !isNaN(date)) {
+            if (date.getFullYear() == 1)
+                return false;
+            else
+                return true;
+        }
+        else
+            return true;
+    }
+
+    function setDateTime(element, selectedDate) {
+        let input = document.getElementById(element);
+        let currentDate = new Date();
+        let startDate = currentDate;
+        startDate.setDate(currentDate.getDate() - 31);
+        let endDate = new Date();
+        endDate.setDate(endDate.getDate() - 1);
+        selectedDate = new Date(selectedDate);
+
+        // input.min = startDate.toISOString().slice(0, 10);
+        input.max = endDate.toISOString().slice(0, 10);
+
+        if (dateIsValid(selectedDate)) {
+            input.value = selectedDate.toISOString().slice(0, 10);
+        }
+        else {
+            input.value = endDate.toISOString().slice(0, 10);
+        }
+    }
+
+    function exportToExcel() {
+        var dt = new Date("@Model.SelectedDate.ToString("yyyy-MM-dd")");
+        const url = `/NMTotalRecords/ExportToExcel?totalrecordid=-1&areaid=0&lcnid=0&dt=${dt.toISOString()}&hideinactiverecords=true`;
+        // console.log(url);
+
+        window.location.href = url;
+
+    };
+</script>
+

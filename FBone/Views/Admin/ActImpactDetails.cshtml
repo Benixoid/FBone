@@ -1,0 +1,40 @@
+﻿@model FBone.Database.Entities.tActImpact
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h2>Act impact details</h2>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="SaveImpact">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Name_EN" class="control-label"></label>
+                <input asp-for="Name_EN" class="form-control" />
+                <span asp-validation-for="Name_EN" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Name_RU" class="control-label"></label>
+                <input asp-for="Name_RU" class="form-control" />
+                <span asp-validation-for="Name_RU" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Name_KK" class="control-label"></label>
+                <input asp-for="Name_KK" class="form-control" />
+                <span asp-validation-for="Name_KK" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+                <a asp-action="ActImpacts" class="btn btn-default">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

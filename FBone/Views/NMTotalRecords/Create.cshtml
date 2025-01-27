@@ -1,0 +1,112 @@
+﻿@using FBone.Models.NMode;
+@model FBone.Models.NMode.NMTotalRecord
+
+@{
+    Layout = "_NModeLayout";
+}
+<!DOCTYPE html>
+<style>
+    .body-container {
+        /*remove the container default padding attribute*/
+        /* padding-left: 0px !important;
+                                                                                                    padding-right: 0px !important;*/
+        /*increase width as per your need*/
+        max-width: 100%;
+    }
+
+    .flex-container {
+        display: flex;
+        /*background-color: DodgerBlue;*/
+    }
+
+        .flex-container > div {
+            background-color: #f1f1f1;
+            margin: 5px;
+            padding: 10px;
+            font-size: 14px;
+        }
+</style>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    @{
+        ViewBag.Title = $"NMTotal Create";
+    }
+    <title>Edit</title>
+</head>
+<body>
+
+    <h4>Create Total record</h4>
+    <hr />
+    <div class="flex-container">
+        <div class="col-md-2">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                @* <input type="hidden" asp-for="Id" /> *@
+                <p>
+                    <div class="form-group">
+                        <input type="hidden" asp-for="Area" />
+                        <label asp-for="Area" class="control-label"></label>
+                        <select asp-for="AreaId" class="form-control">
+                            @{
+                                var areas = (List<Area>)ViewData["Areas"];
+                                <option value="">-- Select Area --</option>
+                                for (int i = 1; i < areas.Count; i++)
+                                {
+                                    <option value="@areas[i].Id">@areas[i].Name</option>
+                                }
+                            }
+                        </select>
+                        <span asp-validation-for="AreaId" class="text-danger"></span>
+                    </div>
+                </p>
+                <p>
+                    <div class="form-group">
+                        <input type="hidden" asp-for="Lcn" />
+                        <label asp-for="Lcn" class="control-label"></label>
+                        <select asp-for="LcnId" class="form-control">
+                            @{
+                                var lcns = (List<Lcn>)ViewData["Lcns"];
+                                <option value="">-- Select LCN --</option>
+                                for (int i = 1; i < lcns.Count; i++)
+                                {
+                                    <option value="@lcns[i].Id">@lcns[i].Name</option>
+                                }
+                            }
+                        </select>
+                        <span asp-validation-for="LcnId" class="text-danger"></span>
+                    </div>
+                </p>
+
+                <div class="form-group">
+                    <label asp-for="Tagname" class="control-label"></label>
+                    <input asp-for="Tagname" class="form-control" />
+                    <span asp-validation-for="Tagname" class="text-danger"></span>
+                </div>
+                </p>
+                <div class="form-group">
+                    <input type="submit" value="Save" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+        <div class="col-md-2">
+            <ul class="navbar-nav flex-grow-1">
+                <li class="nav-item">
+                    <a asp-controller="NModeAreas" asp-action="Index">Areas</a>
+                </li>
+                <li class="nav-item">
+                    <a asp-controller="NModeLcns" asp-action="Index">LCNs</a>
+                </li>
+        </div>
+    </div>
+    <div>
+        <a asp-action="Index">Back to List</a>
+    </div>
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+    }
+</body>
+</html>

@@ -1,0 +1,86 @@
+﻿@model FBone.Database.Entities.tPosition
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h2>Position details</h2>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="SavePosition">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="IsActive" /> @Html.DisplayNameFor(model => model.IsActive)
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="CanCreateAct" /> @Html.DisplayNameFor(model => model.CanCreateAct)
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="CanTranslateAct" /> @Html.DisplayNameFor(model => model.CanTranslateAct)
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="IsShiftEngineer" /> @Html.DisplayNameFor(model => model.IsShiftEngineer)
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="IsAuditCreator" /> @Html.DisplayNameFor(model => model.IsAuditCreator)
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="IsNModeAdministrator" /> @Html.DisplayNameFor(model => model.IsNModeAdministrator)
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="IsNModeEditor" /> @Html.DisplayNameFor(model => model.IsNModeEditor)
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="IsNModeUser" /> @Html.DisplayNameFor(model => model.IsNModeUser)
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+                <a asp-action="Positions" class="btn btn-default">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

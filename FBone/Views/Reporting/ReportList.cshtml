@@ -1,0 +1,169 @@
+﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+@model FBone.Models.Reporting.ReportListModel
+
+@{
+    ViewData["Title"] = @localizer["welcome"];
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2 class="text-center">@ViewData["Title"]</h2>
+
+<div class="panel panel-default">    
+        <ul class="nav nav-tabs mb-3" id="report" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="tab1" data-bs-toggle="tab" data-bs-target="#daily" type="button" role="tab" aria-selected="true" aria-current="page" aria-controls="daily">@localizer["daily"]</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab2" data-bs-toggle="tab" data-bs-target="#periodic" type="button" role="tab" aria-selected="false" aria-controls="periodic">@localizer["periodic"]</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab3" data-bs-toggle="tab" data-bs-target="#qaqc" type="button" role="tab" aria-selected="false" aria-controls="qaqc">@localizer["qaqc"]</button>
+        </li>
+        </ul>    
+        <div class="tab-content" id="reportContent">
+            <div class="tab-pane fade active show" id="daily" aria-labelledby="tab1" role="tabpanel">
+                <h2 class="">@localizer["dailyforces"]</h2>
+                @foreach (var item in Model.ReportGroups)
+                {
+                    <a asp-action="PrintDailyReport" asp-route-reportgroup="@item" class="btn btn-info"> @item</a>
+                }
+                <h2 class="">@localizer["dailyalarms"]</h2>
+                @foreach (var item in Model.ReportGroups)
+                {
+                    <a asp-action="PrintDailyReportAlarm" asp-route-reportgroup="@item" class="btn btn-info"> @item</a>
+                }
+                <h2 class="">@localizer["summary"]</h2>
+            <a asp-action="PrintSummaryReportAlarm" class="btn btn-info"> @localizer["generate"]</a>
+            </div>
+            <div class="tab-pane fade col-sm-2" id="periodic" aria-labelledby="tab2" role="tabpanel">
+                @localizer["period"]
+                <div class="form-group">
+                    @localizer["from"]
+                    @*<input class="my-form-control" value="@Model.EventFrom.ToString("dd/MM/yyyy")" />*@
+                    <input asp-for="EventFrom" class="form-control" id="dt_eventFrom" />
+                </div>
+                <div class="form-group">
+                    @localizer["till"]
+                    @*<input class="my-form-control" value="@Model.EventTo.ToString("dd/MM/yyyy")" />*@
+                    <input asp-for="EventTo" class="form-control" id="dt_eventTo" />
+                </div>
+                               
+                <b>@localizer["facility"]</b>
+                <div class="input-group col-md-2">
+                    <select class="my-form-control" asp-items="@Model.Facilities" id="facility"></select>
+                </div>
+
+                @localizer["periodtype"]
+                <div>
+                    <div><input type='checkbox' id="chbForceBypass" name="chbForce" checked />&nbsp;<label for="chbForce">@localizer["chbForceBypass"]</label></div>
+                    <div><input type='checkbox' id="chbAlarms" name="chbDisable" />&nbsp;<label for="chbDisable">@localizer["chbAlarms"]</label></div>
+                </div>
+                <button title="@localizer["btnPeriodicTitle"]" type="button" class="btn btn-outline-primary btn-sm" aria-label="Left Align" onclick="GeneratePeriodic();">
+                    <img src="/images/excel.png" width="35" alt="excel" height="35" />@localizer["btnPeriodicCaption"]
+                </button>
+            </div>
+            <div class="tab-pane fade" id="qaqc" aria-labelledby="tab3" role="tabpanel">
+                <form asp-action="GenerateQAQC">
+                    <h2 class="">@localizer["qaqc_long"]</h2>
+
+                    <div class="form-group col-sm-2">
+                        @localizer["from"]
+                        <input asp-for="QAQCFrom" class="form-control" id="QAQCFrom" />
+                        @*<div class="input-group date col-md-2">
+                            <input class="form-control" name="QAQCFrom" value="@Model.QAQCFrom.ToString("dd/MM/yyyy")" />
+                            <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                        </div>*@
+                    </div>
+                    <div class="form-group col-sm-2">
+                        @localizer["till"]
+                        <input asp-for="QAQCTo" class="form-control" id="QAQCTo" />
+                        @*<div class="input-group date col-md-2">
+                            <input class="form-control" name="QAQCTo" value="@Model.QAQCTo.ToString("dd/MM/yyyy")" />
+                            <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                        </div>*@
+                    </div>
+                    @localizer["facility"]
+                    <div class="form-group">
+                        <div class="input-group col-md-2">
+                            <select class="my-form-control" name="reportGroup" asp-items="@Model.ReportGroup" id="facility"></select>
+                        </div>
+                    </div>
+                    <input type="submit" class="btn btn-primary" value="@localizer["btnPrint"]" />
+                </form>                
+            </div>        
+    </div>
+</div>
+
+
+@section scripts
+{
+    <script type="text/javascript">
+        //$(function () {
+        //    $('.input-group.date').datepicker({
+        //        changeMonth: true,
+        //        changeYear: true,
+        //        format: "dd.mm.yyyy",
+        //        weekStart: 1
+        //    });
+        //});
+
+        //$('.input-group.date').on('changeDate',
+        //    function (ev) {
+        //        $(this).datepicker('hide');
+        //});
+
+        function GeneratePeriodic() {
+            var host = "@Model.URL";
+
+            var flag1 = false;
+            var flag2 = false;
+            
+            var facilityId = $('#facility').val();
+
+            if ($('#chbForceBypass').is(':checked')){
+                flag1 = true;
+            }
+            if ($('#chbAlarms').is(':checked')){
+                flag2 = true;
+            }            
+
+            if (!flag1 && !flag2) {
+                bootbox.alert("@localizer["notselected"]");
+            }
+            var start = $('#dt_eventFrom').val();
+            var end = $('#dt_eventTo').val();
+
+            
+            var url1 = host + '/Reporting/GeneratePeriodic?start=' + start + "&end=" + end + "&facilityid=" + facilityId + "&flag1=" + flag1 + "&flag2=" + flag2;
+            window.location.href = url1;
+            //var parameters = { start: start, end: end, facilityid: facilityId, flag1: flag1, flag2: flag2 };
+            //$.ajax({
+            //    url: host + '/Reporting/GeneratePeriodic',
+            //    method: "GET",                
+            //    data: parameters,
+            //    success: function(response) {                    
+            //        return false;
+            //    }
+            //});
+        }
+
+        //$(function () {
+        //    $('#dt_eventFrom').datetimepicker({
+        //        locale: 'ru'
+        //    });
+
+        //    $('#dt_eventTo').datetimepicker({
+        //        useCurrent: false, //Important! See issue #1075
+        //        locale: 'ru'
+        //    });
+
+        //    $("#dt_eventFrom").on("dp.change", function (e) {
+        //        $('#dt_eventTo').data("DateTimePicker").minDate(e.date);
+        //    });
+
+        //    $("#dt_eventTo").on("dp.change", function (e) {
+        //        $('#dt_eventFrom').data("DateTimePicker").maxDate(e.date);
+        //    });
+        //});
+        </script>
+}

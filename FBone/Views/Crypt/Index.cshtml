@@ -1,0 +1,36 @@
+﻿@{
+    Layout = "_LayoutClear";
+    ViewData["Title"] = "Encryption";
+}
+<h2>Service for encrypting string(password) for FBone application</h2>
+<br>
+@using (Html.BeginForm())
+{
+    <div class="row">
+        <div class="col-md-12" style="text-align:left">
+            @Html.Label("String for encryption:")
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <input id="decrypted" name="decrypted" class="form-control" value="@ViewBag.decr_result" />
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-md-12" style="text-align:center">
+            <input type="submit" asp-route-act="encrypt" value="Encrypt1 &darr;" class="btn btn-default" />
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-md-12" style="text-align:left">
+            @Html.Label("Encrypted result string:")
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <input id="encrypted" name="encrypted" class="form-control" value="@ViewBag.encr_result" />
+        </div>
+    </div>
+}

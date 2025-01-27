@@ -1,0 +1,111 @@
+﻿@using FBone.Models.NMode;
+@model FBone.Models.NMode.NMTotalRecord
+
+@{
+    Layout = "_NModeLayout";
+}
+<!DOCTYPE html>
+<style>
+    .body-container {
+        /*remove the container default padding attribute*/
+        /* padding-left: 0px !important;
+                                                        padding-right: 0px !important;*/
+        /*increase width as per your need*/
+        max-width: 100%;
+    }</style>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    @{
+        ViewBag.Title = $"NMTotal Edit: {Model.ToString2()}";
+    }
+    <title>Edit</title>
+</head>
+<body>
+
+    <h4>Total edit</h4>
+    <hr />
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-action="EditTR">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" name="PrevPage" value=@ViewData["PreviousPage"] />
+                <p>
+                    <div class="form-group">
+                        <input type="hidden" asp-for="Area" />
+                        <label asp-for="Area" class="control-label"></label>
+                        <select asp-for="AreaId" class="form-control">
+                            @{
+                                var areas = (List<Area>)ViewData["Areas"];
+                                for (int i = 1; i < areas.Count; i++)
+                                {
+                                    <option value="@areas[i].Id">@areas[i].Name</option>
+                                }
+                            }
+                        </select>
+                        @*      <input asp-for="Area" class="form-control" />*@
+                        <span asp-validation-for="AreaId" class="text-danger"></span>
+                    </div>
+                </p>
+                <p>
+                    <div class="form-group">
+                        <input type="hidden" asp-for="Lcn" />
+                        <label asp-for="Lcn" class="control-label"></label>
+                        <select asp-for="LcnId" class="form-control">
+                            @{
+                                var lcns = (List<Lcn>)ViewData["Lcns"];
+                                for (int i = 1; i < lcns.Count; i++)
+                                {
+                                    <option value="@lcns[i].Id">@lcns[i].Name</option>
+                                }
+                            }
+                        </select>
+                        @*<input asp-for="Lcn" class="form-control" />*@
+                        <span asp-validation-for="LcnId" class="text-danger"></span>
+                    </div>
+                </p>
+                <div class="form-group">
+                    <input type="hidden" asp-for="Parent" />
+                    <label asp-for="Parent" class="control-label"></label>
+                    <select asp-for="ParentId" class="form-control">
+                        @{
+                            var prnts = (List<NMTotalRecord>)ViewData["Parents"];
+                            for (int i = 0; i < prnts.Count; i++)
+                            {
+                                if (@prnts[i] == null)
+                                {
+                                    <option value="0">none</option>
+                                }
+                                else
+                                {
+                                    <option value="@prnts[i].Id">@prnts[i].ToString2()</option>
+                                }
+                            }
+                        }
+                    </select>
+                    <span asp-validation-for="Parent.Id" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Tagname" class="control-label"></label>
+                    <input asp-for="Tagname" class="form-control" />
+                    <span asp-validation-for="Tagname" class="text-danger"></span>
+                </div>
+                </p>
+                <div class="form-group">
+                    <input type="submit" value="Save" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+    <div>
+        <a asp-action="Index">Back to List</a>
+    </div>
+    @* @await Html.PartialAsync("Records", Model) *@
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+    }
+</body>
+</html>

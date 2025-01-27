@@ -1,0 +1,142 @@
+﻿@model FBone.Models.tUserViewModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h2>User details</h2>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="SaveUser">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="User.Id" />
+            <div class="form-group">
+                <label asp-for="User.CAI" class="control-label"></label>
+                <input asp-for="User.CAI" class="my-form-control" />
+                <button title="Get from White page" type="button" class="btn btn-default btn-sm" aria-label="Left Align" onclick="getWPinfo();">
+                    Get WP data
+                </button>
+                <span asp-validation-for="User.CAI" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                
+            </div>            
+            <div class="form-group">
+                <label asp-for="User.Name_EN" class="control-label"></label>
+                <input asp-for="User.Name_EN" class="form-control" />
+                <span asp-validation-for="User.Name_EN" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="User.Name_RU" class="control-label"></label>
+                <input asp-for="User.Name_RU" class="form-control" />
+                <span asp-validation-for="User.Name_RU" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="User.Name_KK" class="control-label"></label>
+                <input asp-for="User.Name_KK" class="form-control" />
+                <span asp-validation-for="User.Name_KK" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="User.Email" class="control-label"></label>
+                <input asp-for="User.Email" class="form-control" />
+                <span asp-validation-for="User.Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.User.PositionId)
+                @Html.DropDownListFor(m => m.User.PositionId, Model.Positions, htmlAttributes: new { @class = "form-select" })
+                @Html.ValidationMessageFor(m => m.User.PositionId)
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.User.Facility)
+                @Html.DropDownListFor(m => m.User.FacilityId, Model.Facilities, htmlAttributes: new { @class = "form-select", onchange = "UpdateAreas()", id = "facility_cmb" })
+                @Html.ValidationMessageFor(m => m.User.FacilityId)
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.User.AreaId)
+                @Html.DropDownListFor(m => m.User.AreaId, Model.Areas, htmlAttributes: new { @class = "form-select", id = "area_cmb" })
+                @Html.ValidationMessageFor(m => m.User.AreaId)
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="User.IsAdmin" /> @Html.DisplayNameFor(model => model.User.IsAdmin)
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="User.IsActive" /> @Html.DisplayNameFor(model => model.User.IsActive)
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="User.isDefaultAreaUsed" /> @Html.DisplayNameFor(model => model.User.isDefaultAreaUsed)
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+                <a asp-action="Users" class="btn btn-default">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        function getWPinfo() {
+            var wpurl = "https://pswsdfc.tengizchevroil.com/api/Psws/GetPersonByNetworkID/";
+            var cai = $("#User_CAI").val().toUpperCase();
+            cai = cai.replace("CT\\", "");
+            if (cai.length == 0) {
+                bootbox.alert("Enter CAI!")
+                return;
+            }
+            $.ajax({
+                url: wpurl + cai,
+                method: "GET",
+                dataType: "json",
+                success: function (data) {
+                    $("#User_Name_EN").val(data.EnglishName);
+                    $("#User_Name_RU").val(data.CyrllicName);
+                    $("#User_Name_KK").val(data.CyrllicName);
+                    $("#User_Email").val(data.SharedEmailAddress);                    
+                },
+                error: function (xhr, status, error) {
+                    toastr.error("An error occurred... Status: " + error + " " + xhr.status + " " + xhr.responseText)
+                }
+            });
+        }
+
+        function UpdateAreas(flagt) {
+            var cmbFacility = $("#facility_cmb");
+            var cmbArea = $("#area_cmb");
+            var host = "@Model.URL";
+            $.ajax({
+                url: host + "/api/Area/" + cmbFacility.val(),
+                method: "GET",
+                success: function(data) {
+                    cmbArea.empty();
+                    $.each(data,
+                        function(i, data) {
+                            cmbArea.append($('<option/>',
+                                {
+                                    value: data.value,
+                                    text: data.text
+                                }));
+                        });
+                },
+                error: function(xhr, status, error) {
+                    toastr.error("An error occurred... Status: " + error + " " + xhr.status + " " + xhr.responseText)
+                }
+            });
+        }
+    </script>
+}

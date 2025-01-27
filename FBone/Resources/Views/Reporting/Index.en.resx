@@ -1,0 +1,270 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="alarmreport" xml:space="preserve">
+    <value>Alarms daily report</value>
+  </data>
+  <data name="buffer" xml:space="preserve">
+    <value>Buffer</value>
+  </data>
+  <data name="bypass" xml:space="preserve">
+    <value>Bypass</value>
+  </data>
+  <data name="cmb_eventtype1" xml:space="preserve">
+    <value>Force/Bypass</value>
+  </data>
+  <data name="cmb_eventtype2" xml:space="preserve">
+    <value>Disable/Inhibit</value>
+  </data>
+  <data name="cmb_eventtype3" xml:space="preserve">
+    <value>All types</value>
+  </data>
+  <data name="cmb_reportit1" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="cmb_reportit2" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="cmb_reportit3" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="col_action" xml:space="preserve">
+    <value>Action</value>
+  </data>
+  <data name="col_actnum" xml:space="preserve">
+    <value>Act #</value>
+  </data>
+  <data name="col_area" xml:space="preserve">
+    <value>Area</value>
+  </data>
+  <data name="col_cause" xml:space="preserve">
+    <value>Cause</value>
+  </data>
+  <data name="col_cleartime" xml:space="preserve">
+    <value>Clear time</value>
+  </data>
+  <data name="col_closed" xml:space="preserve">
+    <value>Closed</value>
+  </data>
+  <data name="col_device" xml:space="preserve">
+    <value>Device</value>
+  </data>
+  <data name="col_equipment" xml:space="preserve">
+    <value>Equipment</value>
+  </data>
+  <data name="col_eventtype" xml:space="preserve">
+    <value>Event type</value>
+  </data>
+  <data name="col_facility" xml:space="preserve">
+    <value>Facility</value>
+  </data>
+  <data name="col_from" xml:space="preserve">
+    <value>Source</value>
+  </data>
+  <data name="col_manually" xml:space="preserve">
+    <value>Manually</value>
+  </data>
+  <data name="col_reportit" xml:space="preserve">
+    <value>Report it</value>
+  </data>
+  <data name="col_service" xml:space="preserve">
+    <value>Service</value>
+  </data>
+  <data name="col_settime" xml:space="preserve">
+    <value>Set time</value>
+  </data>
+  <data name="col_tagnumber" xml:space="preserve">
+    <value>Tag number</value>
+  </data>
+  <data name="delete_success" xml:space="preserve">
+    <value>Событие успешно удалено!</value>
+  </data>
+  <data name="delete_title" xml:space="preserve">
+    <value>Вы уверены что хотите удалить это событие?</value>
+  </data>
+  <data name="disable" xml:space="preserve">
+    <value>Disable</value>
+  </data>
+  <data name="event_add_success" xml:space="preserve">
+    <value>Event has been added</value>
+  </data>
+  <data name="force" xml:space="preserve">
+    <value>Force</value>
+  </data>
+  <data name="forcereport" xml:space="preserve">
+    <value>Суточный отчет по форсажам и байпасам</value>
+  </data>
+  <data name="from" xml:space="preserve">
+    <value>Начало периода</value>
+  </data>
+  <data name="inhibit" xml:space="preserve">
+    <value>Inhibit</value>
+  </data>
+  <data name="link_alert" xml:space="preserve">
+    <value>There is no act in buffer!!</value>
+  </data>
+  <data name="link_all_event" xml:space="preserve">
+    <value>Вы уверены что хотите добавить все несвязанные акты в события?</value>
+  </data>
+  <data name="link_event" xml:space="preserve">
+    <value>Вы уверены что хотите связать событие\n111\nс записью акта\n222</value>
+  </data>
+  <data name="move_event_up" xml:space="preserve">
+    <value>Вы уверены что хотите добавить событие на основе записи акта?</value>
+  </data>
+  <data name="pleasewait" xml:space="preserve">
+    <value>Please wait...</value>
+  </data>
+  <data name="till" xml:space="preserve">
+    <value>Конец периода</value>
+  </data>
+  <data name="title_act" xml:space="preserve">
+    <value>Список неподвязанных актов</value>
+  </data>
+  <data name="title_allup" xml:space="preserve">
+    <value>Добавить все записи в события</value>
+  </data>
+  <data name="title_delete" xml:space="preserve">
+    <value>Удалить запись события</value>
+  </data>
+  <data name="title_left" xml:space="preserve">
+    <value>Send to buffer</value>
+  </data>
+  <data name="title_link" xml:space="preserve">
+    <value>Связать событие с записью акта</value>
+  </data>
+  <data name="title_reload" xml:space="preserve">
+    <value>Refresh data</value>
+  </data>
+  <data name="title_unlink" xml:space="preserve">
+    <value>Отвязать событие от записи акта</value>
+  </data>
+  <data name="title_up" xml:space="preserve">
+    <value>Добавить в события</value>
+  </data>
+  <data name="unlink_event" xml:space="preserve">
+    <value>Вы уверены что хотите отвязать событие от записи акта?</value>
+  </data>
+  <data name="welcome" xml:space="preserve">
+    <value>Список событий за период</value>
+  </data>
+  <data name="writetopi" xml:space="preserve">
+    <value>Write to PI</value>
+  </data>
+</root>

@@ -1,0 +1,20 @@
+﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+
+@using FBone.Service;
+@{
+    ViewData["Title"] = "About page";
+}
+<h2>@localizer["about"]</h2>
+<h3>@localizer["about_long"]</h3>
+
+<address>
+    @localizer["forcontact"]:<br />
+    @Config.SupportContactName,<br />
+    @Config.SupportContactAddr<br />
+    <strong title="@localizer["phone"]">@localizer["ext"]: @Config.SupportContactPhone</strong><br />
+    <strong>Email:</strong> <a href="mailto:@Config.SupportContactEmail">@Config.SupportContactEmail</a><br />
+</address>
+
+<address>
+
+</address>

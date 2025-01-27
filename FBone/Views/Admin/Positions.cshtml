@@ -1,0 +1,97 @@
+﻿@model IEnumerable<FBone.Database.Entities.tPosition>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Positions</h2>
+
+<p>
+    <a asp-controller="Admin" asp-action="Index" class="btn btn-light">Back</a>
+    <a asp-action="CreatePosition" class="btn btn-secondary">Create New</a>
+</p>
+<table class="table table-light table-hover" id="positions" role="banner" aria-describedby="positions">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsActive)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CanCreateAct)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CanTranslateAct)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsShiftEngineer)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsAuditCreator)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsNModeAdministrator)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsNModeEditor)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsNModeUser)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null)
+        {
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IsActive)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CanCreateAct)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CanTranslateAct)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IsShiftEngineer)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IsAuditCreator)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IsNModeAdministrator)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IsNModeEditor)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IsNModeUser)
+                    </td>
+                    <td>
+                        <a asp-action="EditPosition" asp-route-id="@item.Id">Edit</a>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+@section scripts
+    {
+    <script>
+        $(document).ready(function () {
+            $("#positions").DataTable({
+                "lengthMenu": [[50, 100, 200, -1], [50, 100, 200, "All"]]
+            });
+        });
+    </script>
+}

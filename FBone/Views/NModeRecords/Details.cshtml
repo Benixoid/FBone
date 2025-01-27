@@ -1,0 +1,202 @@
+﻿@using FBone.Models.NMode;
+@using FBone.Service;
+@inject FBone.Database.DataManager DM
+@model FBone.Models.NMode.NModeRecord
+
+@{
+    Layout = "_NModeLayout";
+}
+
+<!DOCTYPE html>
+<style>
+    .flex-container {
+        display: flex;
+        /*background-color: DodgerBlue;*/
+    }
+
+        .flex-container > div {
+            background-color: #f8f9fa;
+            margin: 5px;
+            padding: 10px;
+            font-size: 14px;
+        }
+
+    .body-container {
+        /*remove the container default padding attribute*/
+        /* padding-left: 0px !important;
+                                                                                                                                              padding-right: 0px !important;*/
+        /*increase width as per your need*/
+        max-width: 100%;
+    }
+
+    .spinner {
+        display: inline-block;
+        margin-right: 10px;
+    }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+@section Scripts {
+    <script>
+        document.getElementById('btnEvaluate').addEventListener('click', getEvaluatedResults);
+
+        function getArguments() {
+            return {
+                id: @Model.Id,
+                selectedDate: document.getElementById("datepicker").value,
+            };
+        };
+
+        async function getEvaluatedResults() {
+            try {
+                var args = getArguments();
+                $("#evaluateResult").load("/NModeRecords/Evaluate", { id: args.id, selecteddate: args.selectedDate, nmode: args.nmode, operator: args.operator, nmodeor: args.nmodeor, condor: args.condor });
+            }
+            catch (err) {
+                console.log(err.message);
+            }
+        };
+
+        function dateIsValid(date) {
+            if (date instanceof Date && !isNaN(date)) {
+                if (date.getFullYear() == 1)
+                    return false;
+                else
+                    return true;
+            }
+            else
+                return true;
+        }
+
+        document.addEventListener("load", setDateTime("datepicker", new Date("@Model.SelectedDate.ToString("yyyy-MM-dd")")));
+
+        function setDateTime(element, selectedDate) {
+            let input = document.getElementById(element);
+            let currentDate = new Date();
+            let startDate = currentDate;
+            startDate.setDate(currentDate.getDate() - 31);
+            let endDate = new Date();
+            endDate.setDate(endDate.getDate() - 1);
+            selectedDate = new Date(selectedDate);
+
+            // input.min = startDate.toISOString().slice(0, 10);
+            input.max = endDate.toISOString().slice(0, 10);
+            if (dateIsValid(selectedDate))
+                input.value = selectedDate.toISOString().slice(0, 10);
+            else
+                input.value = endDate.toISOString().slice(0, 10);
+        }
+    </script>
+}
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    @{
+        ViewBag.Title = $"NMRecord Details: {Model.TagnameNmode}";
+    }
+    <title>Details</title>
+</head>
+<body>
+    <div class="flex-container">
+        <div class="col-md-5">
+            <div>
+                <h4>@Model.ConditionToString()</h4>
+                <hr />
+                <dl class="row">
+                    <dt class="col-sm-2">
+                        @Html.DisplayNameFor(model => model.Area)
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(model => model.Area.Name)
+                    </dd>
+                    <dt class="col-sm-2">
+                        @Html.DisplayNameFor(model => model.Lcn)
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(model => model.Lcn.Name)
+                    </dd>
+                    <dt class="col-sm-2">
+                        @Html.DisplayNameFor(model => model.Tagname)
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(model => model.Tagname)
+                    </dd>
+                    <dt class="col-sm-2">
+                        @Html.DisplayNameFor(model => model.Descriptor)
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(model => model.Descriptor)
+                    </dd>
+                    <dt class="col-sm-2">
+                        @Html.DisplayNameFor(model => model.Nmode)
+                    </dt>
+                    <dd class="col-sm-10" id="nmode">
+                        @Html.DisplayFor(model => model.Nmode)
+                    </dd>
+                    <dt class="col-sm-2">
+                        @Html.DisplayNameFor(model => model.Operator)
+                    </dt>
+                    <dd class="col-sm-10" id="operator">
+                        @Html.DisplayFor(model => model.Operator)
+                    </dd>
+                    <dt class="col-sm-2">
+                        @Html.DisplayNameFor(model => model.CountIt)
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(model => model.CountIt)
+                    </dd>
+                    <dt class="col-sm-2">
+                        @Html.DisplayNameFor(model => model.NModeORed)
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(model => model.NModeORed)
+                    </dd>
+                    <dt class="col-sm-2">
+                        @Html.DisplayNameFor(model => model.ConditionORed)
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(model => model.ConditionORed)
+                    </dd>
+                    <dt class="col-sm-2">
+                        @Html.DisplayNameFor(model => model.Conditions)
+                    </dt>
+                    <ul class="col-sm-10">
+                        @foreach (NModeCondition cond in Model.Conditions)
+                        {
+                            <li>@cond.ToString()</li>
+                        }
+                    </ul>
+                </dl>
+            </div>
+        </div>
+        <div class="col-md-5">
+            @await Component.InvokeAsync("NMRecordChanges", new { RecordId = Model.Id })
+        </div>
+    </div>
+    <div style="margin-bottom:20px;">
+        @if (Model.ParentId > 0)
+        {
+            <a asp-controller="NMTotalRecords" asp-action="DetailsTR" asp-route-id="@Model?.ParentId">Go to Parent |</a>
+        }
+        @if (DM.IsUserInRole(User, Enums.Roles.IsNModeEditor))
+        {
+            <a asp-action="Edit" asp-route-id="@Model?.Id">Edit |</a>
+        }
+        <a asp-action="Index">Back to List</a>
+    </div>
+
+    <form>
+        @*     <input type="hidden" asp-for="Id" />
+        <input type="hidden" name="FromView" value="Details" /> *@
+        <label for="datepicker">Select a Date:</label>
+        <input type="date" id="datepicker" asp-for="SelectedDate" name="SelectedDate" />
+        <span asp-validation-for="SelectedDate" class="text-danger"></span>
+        <button type="button" id="btnEvaluate" class="btn btn-primary">Evaluate</button>
+        @* <input type="submit" value="Evaluate" class="btn btn-primary" /> *@
+    </form>
+
+    <div id="evaluateResult"></div>
+</body>
+</html>

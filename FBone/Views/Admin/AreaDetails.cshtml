@@ -1,0 +1,389 @@
+﻿@model FBone.Database.Entities.tArea
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h2>Area details</h2>
+
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="SaveArea">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="FacilityId" class="control-label"></label>
+                        <select asp-for="FacilityId" class="form-select" asp-items="ViewBag.Facilities"></select>
+                        <span asp-validation-for="FacilityId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="ShiftEngFacilityId" class="control-label"></label>
+                        <select asp-for="ShiftEngFacilityId" class="form-select" asp-items="ViewBag.Facilities"></select>
+                        <span asp-validation-for="ShiftEngFacilityId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Name_EN" class="control-label"></label>
+                        <input asp-for="Name_EN" class="form-control" />
+                        <span asp-validation-for="Name_EN" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Name_RU" class="control-label"></label>
+                        <input asp-for="Name_RU" class="form-control" />
+                        <span asp-validation-for="Name_RU" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Name_KK" class="control-label"></label>
+                        <input asp-for="Name_KK" class="form-control" />
+                        <span asp-validation-for="Name_KK" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="ReportGroup" class="control-label"></label>
+                        <input asp-for="ReportGroup" class="form-control" />
+                        <span asp-validation-for="ReportGroup" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="ConnectionString" class="control-label"></label>
+                        <input asp-for="ConnectionString" class="form-control" />
+                        <span asp-validation-for="ConnectionString" class="text-danger"></span>
+                    </div>                    
+                    <div class="form-group">
+                        <label asp-for="SQLquery" class="control-label"></label>
+                        <input asp-for="SQLquery" class="form-control" />
+                        <span asp-validation-for="SQLquery" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="MaxId" class="control-label"></label>
+                        <input asp-for="MaxId" class="form-control" />
+                        <span asp-validation-for="MaxId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="SQLqueryAlarm" class="control-label"></label>
+                        <input asp-for="SQLqueryAlarm" class="form-control" />
+                        <span asp-validation-for="SQLqueryAlarm" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="MaxIdAlarm" class="control-label"></label>
+                        <input asp-for="MaxIdAlarm" class="form-control" />
+                        <span asp-validation-for="MaxIdAlarm" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="NotifyOnActCreationEmails" class="control-label"></label>
+                        <input asp-for="NotifyOnActCreationEmails" class="form-control" />
+                        <span asp-validation-for="NotifyOnActCreationEmails" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="NotifyForMocInitiate" class="control-label"></label>
+                        <input asp-for="NotifyForMocInitiate" class="form-control" />
+                        <span asp-validation-for="NotifyForMocInitiate" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label>
+                                <input asp-for="IsEventsFromPSS" /> <label asp-for="IsEventsFromPSS" class="control-label"></label>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    @Html.Raw("Approvers for")
+                    <div class="panel panel-default">
+                        <ul class="nav nav-tabs mb-3" id="report" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="tab1" data-bs-toggle="tab" data-bs-target="#tabc1" type="button" role="tab" aria-selected="true" aria-current="page" aria-controls="tabc1">Partial Force</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="tab2" data-bs-toggle="tab" data-bs-target="#tabc2" type="button" role="tab" aria-selected="false" aria-controls="tabc2">Partial Byp</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="tab3" data-bs-toggle="tab" data-bs-target="#tabc3" type="button" role="tab" aria-selected="false" aria-controls="tabc3">Full Byp/Force</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="tab4" data-bs-toggle="tab" data-bs-target="#tabc4" type="button" role="tab" aria-selected="false" aria-controls="tabc4">Inactive/Disabe</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="tab4" data-bs-toggle="tab" data-bs-target="#tabc5" type="button" role="tab" aria-selected="false" aria-controls="tabc5">Manual</button>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="reportContent">
+                            <div class="tab-pane fade active show" id="tabc1" aria-labelledby="tab1" role="tabpanel">
+                                <div class="form-group">
+                                    <label asp-for="Approver1_1" class="control-label"></label>
+                                    <select asp-for="Approver1_1" class="form-select" asp-items="ViewBag.Positions"></select>
+                                    <span asp-validation-for="Approver1_1" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Approver1_2" class="control-label"></label>
+                                    <select asp-for="Approver1_2" class="form-select" asp-items="ViewBag.Positions"></select>
+                                    <span asp-validation-for="Approver1_2" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Approver1_3" class="control-label"></label>
+                                    <select asp-for="Approver1_3" class="form-select" asp-items="ViewBag.Positions"></select>
+                                    <span asp-validation-for="Approver1_3" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Approver1_4" class="control-label"></label>
+                                    <select asp-for="Approver1_4" class="form-select" asp-items="ViewBag.Positions"></select>
+                                    <span asp-validation-for="Approver1_4" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Approver1_5" class="control-label"></label>
+                                    <select asp-for="Approver1_5" class="form-select" asp-items="ViewBag.Positions"></select>
+                                    <span asp-validation-for="Approver1_5" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Approver1_6" class="control-label"></label>
+                                    <select asp-for="Approver1_6" class="form-select" asp-items="ViewBag.Positions"></select>
+                                    <span asp-validation-for="Approver1_6" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Approver1_7" class="control-label"></label>
+                                    <select asp-for="Approver1_7" class="form-select" asp-items="ViewBag.Positions"></select>
+                                    <span asp-validation-for="Approver1_7" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="NotifyOnForceActApproved" class="control-label"></label>
+                                    <input asp-for="NotifyOnForceActApproved" class="form-control" />
+                                    <span asp-validation-for="NotifyOnForceActApproved" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="tabc2" aria-labelledby="tab2" role="tabpanel">
+                                <div class="form-group">
+                                    <label asp-for="Approver2_1" class="control-label"></label>
+                                    <select asp-for="Approver2_1" class="form-select" asp-items="ViewBag.Positions"></select>
+                                    <span asp-validation-for="Approver2_1" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Approver2_2" class="control-label"></label>
+                                    <select asp-for="Approver2_2" class="form-select" asp-items="ViewBag.Positions"></select>
+                                    <span asp-validation-for="Approver2_2" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Approver2_3" class="control-label"></label>
+                                    <select asp-for="Approver2_3" class="form-select" asp-items="ViewBag.Positions"></select>
+                                    <span asp-validation-for="Approver2_3" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Approver2_4" class="control-label"></label>
+                                    <select asp-for="Approver2_4" class="form-select" asp-items="ViewBag.Positions"></select>
+                                    <span asp-validation-for="Approver2_4" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Approver2_5" class="control-label"></label>
+                                    <select asp-for="Approver2_5" class="form-select" asp-items="ViewBag.Positions"></select>
+                                    <span asp-validation-for="Approver2_5" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Approver2_6" class="control-label"></label>
+                                    <select asp-for="Approver2_6" class="form-select" asp-items="ViewBag.Positions"></select>
+                                    <span asp-validation-for="Approver2_6" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Approver2_7" class="control-label"></label>
+                                    <select asp-for="Approver2_7" class="form-select" asp-items="ViewBag.Positions"></select>
+                                    <span asp-validation-for="Approver2_7" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="NotifyOnBypassActApproved" class="control-label"></label>
+                                    <input asp-for="NotifyOnBypassActApproved" class="form-control" />
+                                    <span asp-validation-for="NotifyOnBypassActApproved" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="tabc3" aria-labelledby="tab3" role="tabpanel">
+                                <div class="form-group">
+                                    <label asp-for="Approver3_1" class="control-label"></label>
+                                    <select asp-for="Approver3_1" class="form-select" asp-items="ViewBag.Positions"></select>
+                                    <span asp-validation-for="Approver3_1" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Approver3_2" class="control-label"></label>
+                                    <select asp-for="Approver3_2" class="form-select" asp-items="ViewBag.Positions"></select>
+                                    <span asp-validation-for="Approver3_2" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Approver3_3" class="control-label"></label>
+                                    <select asp-for="Approver3_3" class="form-select" asp-items="ViewBag.Positions"></select>
+                                    <span asp-validation-for="Approver3_3" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Approver3_4" class="control-label"></label>
+                                    <select asp-for="Approver3_4" class="form-select" asp-items="ViewBag.Positions"></select>
+                                    <span asp-validation-for="Approver3_4" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Approver3_5" class="control-label"></label>
+                                    <select asp-for="Approver3_5" class="form-select" asp-items="ViewBag.Positions"></select>
+                                    <span asp-validation-for="Approver3_5" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Approver3_6" class="control-label"></label>
+                                    <select asp-for="Approver3_6" class="form-select" asp-items="ViewBag.Positions"></select>
+                                    <span asp-validation-for="Approver3_6" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Approver3_7" class="control-label"></label>
+                                    <select asp-for="Approver3_7" class="form-select" asp-items="ViewBag.Positions"></select>
+                                    <span asp-validation-for="Approver3_7" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="NotifyOn2oo3ActApproved" class="control-label"></label>
+                                    <input asp-for="NotifyOn2oo3ActApproved" class="form-control" />
+                                    <span asp-validation-for="NotifyOn2oo3ActApproved" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="tabc4" aria-labelledby="tab4" role="tabpanel">
+                                <div class="form-group">
+                                    <label asp-for="Approver4_1" class="control-label"></label>
+                                    <select asp-for="Approver4_1" class="form-select" asp-items="ViewBag.Positions"></select>
+                                    <span asp-validation-for="Approver4_1" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Approver4_2" class="control-label"></label>
+                                    <select asp-for="Approver4_2" class="form-select" asp-items="ViewBag.Positions"></select>
+                                    <span asp-validation-for="Approver4_2" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Approver4_3" class="control-label"></label>
+                                    <select asp-for="Approver4_3" class="form-select" asp-items="ViewBag.Positions"></select>
+                                    <span asp-validation-for="Approver4_3" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Approver4_4" class="control-label"></label>
+                                    <select asp-for="Approver4_4" class="form-select" asp-items="ViewBag.Positions"></select>
+                                    <span asp-validation-for="Approver4_4" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Approver4_5" class="control-label"></label>
+                                    <select asp-for="Approver4_5" class="form-select" asp-items="ViewBag.Positions"></select>
+                                    <span asp-validation-for="Approver4_5" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Approver4_6" class="control-label"></label>
+                                    <select asp-for="Approver4_6" class="form-select" asp-items="ViewBag.Positions"></select>
+                                    <span asp-validation-for="Approver4_6" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Approver4_7" class="control-label"></label>
+                                    <select asp-for="Approver4_7" class="form-select" asp-items="ViewBag.Positions"></select>
+                                    <span asp-validation-for="Approver4_7" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="NotifyOnInactiveActApproved" class="control-label"></label>
+                                    <input asp-for="NotifyOnInactiveActApproved" class="form-control" />
+                                    <span asp-validation-for="NotifyOnInactiveActApproved" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="tabc5" aria-labelledby="tab5" role="tabpanel">
+                                <div class="form-group">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input asp-for="Approvers5Disabled" /> <label asp-for="Approvers5Disabled" class="control-label"></label>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Approver5_1" class="control-label"></label>
+                                    <select asp-for="Approver5_1" class="form-select" asp-items="ViewBag.Positions"></select>
+                                    <span asp-validation-for="Approver5_1" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Approver5_2" class="control-label"></label>
+                                    <select asp-for="Approver5_2" class="form-select" asp-items="ViewBag.Positions"></select>
+                                    <span asp-validation-for="Approver5_2" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Approver5_3" class="control-label"></label>
+                                    <select asp-for="Approver5_3" class="form-select" asp-items="ViewBag.Positions"></select>
+                                    <span asp-validation-for="Approver5_3" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Approver5_4" class="control-label"></label>
+                                    <select asp-for="Approver5_4" class="form-select" asp-items="ViewBag.Positions"></select>
+                                    <span asp-validation-for="Approver5_4" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Approver5_5" class="control-label"></label>
+                                    <select asp-for="Approver5_5" class="form-select" asp-items="ViewBag.Positions"></select>
+                                    <span asp-validation-for="Approver5_5" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Approver5_6" class="control-label"></label>
+                                    <select asp-for="Approver5_6" class="form-select" asp-items="ViewBag.Positions"></select>
+                                    <span asp-validation-for="Approver5_6" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Approver5_7" class="control-label"></label>
+                                    <select asp-for="Approver5_7" class="form-select" asp-items="ViewBag.Positions"></select>
+                                    <span asp-validation-for="Approver5_7" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="NotifyOnType5ActApproved" class="control-label"></label>
+                                    <input asp-for="NotifyOnType5ActApproved" class="form-control" />
+                                    <span asp-validation-for="NotifyOnType5ActApproved" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="ApproverAdd" class="control-label"></label>
+                        <select asp-for="ApproverAdd" class="form-select" asp-items="ViewBag.Positions"></select>
+                        <span asp-validation-for="ApproverAdd" class="text-danger"></span>
+                    </div>                  
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="TagForcesActive" class="control-label"></label>
+                        <input asp-for="TagForcesActive" class="form-control" />
+                        <span asp-validation-for="TagForcesActive" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="TagForcesDaily" class="control-label"></label>
+                        <input asp-for="TagForcesDaily" class="form-control" />
+                        <span asp-validation-for="TagForcesDaily" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="TagBypasActive" class="control-label"></label>
+                        <input asp-for="TagBypasActive" class="form-control" />
+                        <span asp-validation-for="TagBypasActive" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="TagBypasDaily" class="control-label"></label>
+                        <input asp-for="TagBypasDaily" class="form-control" />
+                        <span asp-validation-for="TagBypasDaily" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="TagAlarmDisabled" class="control-label"></label>
+                        <input asp-for="TagAlarmDisabled" class="form-control" />
+                        <span asp-validation-for="TagAlarmDisabled" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="TagAlarmInhibited" class="control-label"></label>
+                        <input asp-for="TagAlarmInhibited" class="form-control" />
+                        <span asp-validation-for="TagAlarmInhibited" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="TagAlarmDisabledYestd" class="control-label"></label>
+                        <input asp-for="TagAlarmDisabledYestd" class="form-control" />
+                        <span asp-validation-for="TagAlarmDisabledYestd" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="TagAlarmInhibitedYestd" class="control-label"></label>
+                        <input asp-for="TagAlarmInhibitedYestd" class="form-control" />
+                        <span asp-validation-for="TagAlarmInhibitedYestd" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+                <a asp-action="Areas" class="btn btn-light">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

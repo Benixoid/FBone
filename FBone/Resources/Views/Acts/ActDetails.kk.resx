@@ -1,0 +1,345 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="acthdate" xml:space="preserve">
+    <value>Іс-шараның күні/уақыты</value>
+  </data>
+  <data name="acthevent" xml:space="preserve">
+    <value>Іс-шара</value>
+  </data>
+  <data name="acthtitle" xml:space="preserve">
+    <value>Акттің жасалу тарихы</value>
+  </data>
+  <data name="acthUser" xml:space="preserve">
+    <value>Пайдаланушы</value>
+  </data>
+  <data name="actnotes" xml:space="preserve">
+    <value>Түсініктемелер</value>
+  </data>
+  <data name="acttype" xml:space="preserve">
+    <value>Акт түрі</value>
+  </data>
+  <data name="approve" xml:space="preserve">
+    <value>Мақұлдау</value>
+  </data>
+  <data name="approved" xml:space="preserve">
+    <value>Бекітілген:</value>
+  </data>
+  <data name="area" xml:space="preserve">
+    <value>Аймақ</value>
+  </data>
+  <data name="bypasses" xml:space="preserve">
+    <value>Жартылай Байпас</value>
+  </data>
+  <data name="cause" xml:space="preserve">
+    <value>Жұмыстағы келесі ауытқуларға байланысты ақаулар жойылмайынша, біз бұл блоктау дабылды айналып өтуді шештік (себебін сипаттаңыз):</value>
+  </data>
+  <data name="close" xml:space="preserve">
+    <value>Жұмыстарды аяқтау</value>
+  </data>
+  <data name="crew" xml:space="preserve">
+    <value>Бригада</value>
+  </data>
+  <data name="date" xml:space="preserve">
+    <value>Жасалу күні/уақыты</value>
+  </data>
+  <data name="delegate1" xml:space="preserve">
+    <value>Өкілеттик беру</value>
+  </data>
+  <data name="device" xml:space="preserve">
+    <value>Құрылғы</value>
+  </data>
+  <data name="edit" xml:space="preserve">
+    <value>Акт туралы мәліметтер</value>
+  </data>
+  <data name="equipment" xml:space="preserve">
+    <value>Жабдық</value>
+  </data>
+  <data name="forces" xml:space="preserve">
+    <value>Жартылай Форсаж</value>
+  </data>
+  <data name="impact" xml:space="preserve">
+    <value>Талқылау барысында процесті бақылау логикасына (тізіміне) сүйене отырып, айналып өту нәтижесінде персоналға, жабдықтарға және қоршаған ортаға ықтимал теріс салдарлар қарастырылды:</value>
+  </data>
+  <data name="inactive" xml:space="preserve">
+    <value>Дабылды өшіру</value>
+  </data>
+  <data name="location" xml:space="preserve">
+    <value>Орналасқан жері</value>
+  </data>
+  <data name="protect" xml:space="preserve">
+    <value>Айналым режимінде жұмыс істеу кезінде қажет қорғаныс шаралары:</value>
+  </data>
+  <data name="reject" xml:space="preserve">
+    <value>Қабылдамау</value>
+  </data>
+  <data name="s2of3" xml:space="preserve">
+    <value>Толықтай Байпас/Форсаж</value>
+  </data>
+  <data name="startapprove" xml:space="preserve">
+    <value>Сақтағаннан кейін қол қоюды бастау</value>
+  </data>
+  <data name="taglistmessage" xml:space="preserve">
+    <value>Келесі авариялық қорғаныс құрылғысының жұмысы қарастырылды (тізім элементтері):</value>
+  </data>
+  <data name="tagname" xml:space="preserve">
+    <value>Тег нөмірі</value>
+  </data>
+  <data name="unit" xml:space="preserve">
+    <value>Аймақ</value>
+  </data>
+  <data name="comment" xml:space="preserve">
+    <value>Түсініктемелер</value>
+  </data>
+  <data name="inhibited" xml:space="preserve">
+    <value>Дабылды басу</value>
+  </data>
+  <data name="statusactive" xml:space="preserve">
+    <value>Актив (жұмыста)</value>
+  </data>
+  <data name="statusclosed" xml:space="preserve">
+    <value>Жабық</value>
+  </data>
+  <data name="statusdraft" xml:space="preserve">
+    <value>Жоба</value>
+  </data>
+  <data name="statusinapproval" xml:space="preserve">
+    <value>Бекітуде</value>
+  </data>
+  <data name="approvalstarted" xml:space="preserve">
+    <value>Актіні бекіту басталды</value>
+  </data>
+  <data name="approvedby" xml:space="preserve">
+    <value>Пайдаланушы мақұлдады</value>
+  </data>
+  <data name="approvedh" xml:space="preserve">
+    <value>Толық мақұлданды</value>
+  </data>
+  <data name="closed" xml:space="preserve">
+    <value>Акт жабылды</value>
+  </data>
+  <data name="created" xml:space="preserve">
+    <value>Жаңа акт тiркелдi</value>
+  </data>
+  <data name="delegated" xml:space="preserve">
+    <value>Актіге қол қою тапсырылады</value>
+  </data>
+  <data name="rejected" xml:space="preserve">
+    <value>Бекітуші қабылдамады</value>
+  </data>
+  <data name="saved" xml:space="preserve">
+    <value>Акт сақталды, өзгертілді</value>
+  </data>
+  <data name="unknown" xml:space="preserve">
+    <value>белгісіз</value>
+  </data>
+  <data name="translated" xml:space="preserve">
+    <value>Актінің аудармасы орындалды</value>
+  </data>
+  <data name="create" xml:space="preserve">
+    <value>Жаңа акт</value>
+  </data>
+  <data name="copyact" xml:space="preserve">
+    <value>Акт көшіру</value>
+  </data>
+  <data name="copied" xml:space="preserve">
+    <value>Актінің көшірмесі жасалды</value>
+  </data>
+  <data name="statusapproved" xml:space="preserve">
+    <value>Бекітілді</value>
+  </data>
+  <data name="statusinapprovaladd" xml:space="preserve">
+    <value>Қосымша мақұлдауда</value>
+  </data>
+  <data name="approvalstartedadd" xml:space="preserve">
+    <value>Қосымша мақұлдау сұралды</value>
+  </data>
+  <data name="approveradd" xml:space="preserve">
+    <value>Қосымша мақұлдау</value>
+  </data>
+  <data name="startact" xml:space="preserve">
+    <value>Жұмыстарды бастау</value>
+  </data>
+  <data name="started" xml:space="preserve">
+    <value>Жұмыстар басталды</value>
+  </data>
+  <data name="cantclose" xml:space="preserve">
+    <value>Актіні жабу мүмкін емес!&lt;br&gt;Қызылмен белгіленген нүкте нөмірлерінің іске қосылғанына көз жеткізіңіз.&lt;br&gt;Егер олар жақында іске қосылған болса, FB one PCN жүйелерінен мәліметтер жаңарту үшін 20 минут күтіңіз.</value>
+  </data>
+  <data name="close_confirm" xml:space="preserve">
+    <value>Сіз актіні шынымен жапқыңыз келе ме?</value>
+  </data>
+  <data name="backtolist" xml:space="preserve">
+    <value>Актілер тізіміне оралу</value>
+  </data>
+  <data name="printact" xml:space="preserve">
+    <value>Актіні басып шығару</value>
+  </data>
+  <data name="saveact" xml:space="preserve">
+    <value>Актіні сақтау</value>
+  </data>
+  <data name="addfgtags" xml:space="preserve">
+    <value>FG тегтерін қосу</value>
+  </data>
+  <data name="title_fgblock" xml:space="preserve">
+    <value>FG блогын көрсету/жасыру</value>
+  </data>
+  <data name="confirm_delete" xml:space="preserve">
+    <value>Бұл актіні шынымен жойғыңыз келе ме?</value>
+  </data>
+  <data name="confirm_return" xml:space="preserve">
+    <value>Сіз шынымен де бұл актіні ЖОБА кезеңіне қайтарғыңыз келе ме?</value>
+  </data>
+  <data name="delete" xml:space="preserve">
+    <value>Актіні жою</value>
+  </data>
+  <data name="returndraft" xml:space="preserve">
+    <value>"Жобаға" оралу</value>
+  </data>
+  <data name="returntodraft" xml:space="preserve">
+    <value>Қол қоюдан ЖОБА кезеңіне оралу</value>
+  </data>
+  <data name="cancel" xml:space="preserve">
+    <value>Жабу</value>
+  </data>
+  <data name="reject2" xml:space="preserve">
+    <value>Актіні қайтару</value>
+  </data>
+  <data name="rejectm" xml:space="preserve">
+    <value>Сіз актіні қайтару себебін көрсетуіңіз керек (&gt;10 символ)</value>
+  </data>
+  <data name="add_title" xml:space="preserve">
+    <value>Қосымша жазбаны қосу</value>
+  </data>
+  <data name="remove_title" xml:space="preserve">
+    <value>Жазбаны өшіру</value>
+  </data>
+  <data name="delegate2" xml:space="preserve">
+    <value>Қол қою құқықтарын беру</value>
+  </data>
+  <data name="delegatem" xml:space="preserve">
+    <value>Қол қою құқықтарын тасымалдау үшін пайдаланушыны таңдаңыз</value>
+  </data>
+  <data name="nitifyMOC" xml:space="preserve">
+    <value>МОС қажеттілігі туралы хабарлама</value>
+  </data>
+  <data name="manual" xml:space="preserve">
+    <value>Қолда іске қосу айналымы</value>
+  </data>
+</root>

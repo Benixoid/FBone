@@ -1,0 +1,52 @@
+resources:
+  repositories:
+  - repository: pf
+    type: git
+    name: CVX-DevOps/ADOPipeline
+    ref: refs/tags/latest-stable
+
+########################################################
+# WARNING: Removing / Modifying the following Parameters
+# may cause errors with your pipeline!
+########################################################
+parameters:
+  - name: forceUpdate
+    displayName: Update Pipeline
+    type: boolean
+    default: false
+  - name: deployEnvironment
+    displayName: Environment
+    type: string
+    default: dev
+########################################################
+variables:
+  - group: 5060453-cvx-pipeline-common
+  - name: pipeline_version
+    value: "4.8"
+######################################################
+trigger: none
+
+stages:
+- template: pipeline.yml@pf
+  parameters:
+    ${{ insert }}: ${{ parameters }} # DO NOT MODIFY
+    serviceId: 5060453
+    projects:
+#    - name: MyApp
+#      type: dotnet.framework
+#      filePath: /MyApp/RootFolder/MyApp.csproj
+#      playbook: main.yml
+      - name: Fbone
+        type: dotnet.core
+        filePath: /FBone/FBone.csproj
+        isBuildActive: true
+        isDeployActive: false
+        buildConfiguration: 'Release'
+        #buildPlatform: 'Any CPU' #  NOTE: For solution-based builds, add a space (e.g., 'Any CPU').
+        buildPlatform: 'AnyCPU'
+        sonarqube:
+          component: '_dotnet'
+        isSASTScanActive: true
+
+        # sonarqube parameter does NOT need to be specified if there are no exclusions or additional properties.
+        playbook: main.yml

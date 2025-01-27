@@ -1,0 +1,65 @@
+﻿@model FBone.Database.Entities.tFacility
+
+@{
+    if (Model.Id == 0)
+    {
+        ViewData["Title"] = "Create new facility";
+    }
+    else
+    {
+        ViewData["Title"] = "Edit facility";
+    }
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Save">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Force_maxId" class="control-label"></label>
+                <input asp-for="Force_maxId" class="form-control" />
+                <span asp-validation-for="Force_maxId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Alarm_maxId" class="control-label"></label>
+                <input asp-for="Alarm_maxId" class="form-control" />
+                <span asp-validation-for="Alarm_maxId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TranslatorEmail" class="control-label"></label>
+                <input asp-for="TranslatorEmail" class="form-control" />
+                <span asp-validation-for="TranslatorEmail" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TagBypassTotal" class="control-label"></label>
+                <input asp-for="TagBypassTotal" class="form-control" />
+                <span asp-validation-for="TagBypassTotal" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TagForcesTotal" class="control-label"></label>
+                <input asp-for="TagForcesTotal" class="form-control" />
+                <span asp-validation-for="TagForcesTotal" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-default">Back to List</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    
+</div>
+

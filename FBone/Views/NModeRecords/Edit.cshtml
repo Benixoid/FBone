@@ -1,0 +1,248 @@
+﻿@using FBone.Models.NMode;
+@using Microsoft.Data.SqlClient;
+@model FBone.Models.NMode.NModeRecord
+@inject FBone.Database.DataManager DM
+@using FBone.Service;
+@{
+    Layout = "_NModeLayout";
+}
+
+<!DOCTYPE html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+@section Scripts {
+    <script>
+        document.getElementById('countit').addEventListener('change', getRecordString);
+        document.getElementById('nmode').addEventListener('change', getRecordString);
+        document.getElementById('operator').addEventListener('change', getRecordString);
+        document.getElementById('nmodeor').addEventListener('change', getRecordString);
+        document.getElementById('condor').addEventListener('change', getRecordString);
+        document.getElementById('btnEvaluate').addEventListener('click', getEvaluatedResults);
+        document.addEventListener("load", setDateTime("datepicker", new Date("@Model.SelectedDate.ToString("yyyy-MM-dd")")));
+
+        function getArguments() {
+            return {
+                id: @Model.Id,
+                selectedDate: document.getElementById("datepicker").value,
+                nmode: document.getElementById("nmode").value,
+                nmodeor: document.getElementById("nmodeor").checked == true,
+                condor: document.getElementById("condor").checked == true,
+                operator: document.getElementById("operator").value,
+                enabled: document.getElementById("countit").checked == true
+            };
+        };
+
+        //Update Conditional String of the record
+        async function getRecordString() {
+            var args = getArguments();
+            const resp = await fetch(`/NModeRecords/GetRecordString?id=${args.id}&nmode=${args.nmode}&operator=${args.operator}&nmodeor=${args.nmodeor}&condor=${args.condor}&enabled=${args.enabled}`);
+            if (!resp.ok) {
+                console.error('Something went wrong');
+                return;
+            }
+            const json = await resp.json();
+            const { responseCode, responseMessage } = json;
+
+            $('#recordstring').text(responseMessage);
+        };
+
+        async function getEvaluatedResults() {
+            try {
+                var args = getArguments();
+                $("#evaluateResult").load("/NModeRecords/Evaluate", { id: args.id, selecteddate: args.selectedDate, nmode: args.nmode, operator: args.operator, nmodeor: args.nmodeor, condor: args.condor });
+            }
+            catch (err) {
+                console.log(err.message);
+            }
+        };
+
+        function dateIsValid(date) {
+            if (date instanceof Date && !isNaN(date)) {
+                if (date.getFullYear() == 1)
+                    return false;
+                else
+                    return true;
+            }
+            else
+                return true;
+        }
+
+        function setDateTime(element, selectedDate) {
+            let input = document.getElementById(element);
+            let currentDate = new Date();
+            let startDate = currentDate;
+            startDate.setDate(currentDate.getDate() - 31);
+            let endDate = new Date();
+            endDate.setDate(endDate.getDate() - 1);
+            selectedDate = new Date(selectedDate);
+
+            // input.min = startDate.toISOString().slice(0, 10);
+            input.max = endDate.toISOString().slice(0, 10);
+            if (dateIsValid(selectedDate))
+                input.value = selectedDate.toISOString().slice(0, 10);
+            else
+                input.value = endDate.toISOString().slice(0, 10);
+        }
+    </script>
+}
+
+<style>
+    .flex-container {
+        display: flex;
+        /*background-color: DodgerBlue;*/
+    }
+
+        .flex-container > div {
+            background-color: #f8f9fa;
+            margin: 5px;
+            padding: 10px;
+            font-size: 14px;
+        }
+
+    .form-control {
+        margin-bottom: 20px;
+    }
+</style>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    @{
+        ViewBag.Title = $"NMRecord Edit: {Model.TagnameNmode}";
+    }
+    <title>Edit</title>
+</head>
+<body>
+
+    <h4 id="recordstring">@Model.ConditionToString()</h4>
+    <hr />
+    <form asp-action="Edit">
+        <div class="flex-container">
+            <div class="col-md-4">
+
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" name="PrevPage" value=@ViewData["PreviousPage"] />
+
+                <p>
+                    <div class="form-group">
+                        <input type="hidden" asp-for="Area" />
+                        <label asp-for="Area" class="control-label"></label>
+                        <select asp-for="AreaId" class="form-control">
+                            @{
+                                var areas = (List<Area>)ViewData["Areas"];
+                                for (int i = 1; i < areas.Count; i++)
+                                {
+                                    <option value="@areas[i].Id">@areas[i].Name</option>
+                                }
+                            }
+                        </select>
+                        @*      <input asp-for="Area" class="form-control" />*@
+                        <span asp-validation-for="AreaId" class="text-danger"></span>
+                    </div>
+                </p>
+                <p>
+                    <div class="form-group">
+                        <input type="hidden" asp-for="Lcn" />
+                        <label asp-for="Lcn" class="control-label"></label>
+                        <select asp-for="LcnId" class="form-control">
+                            @{
+                                var lcns = (List<Lcn>)ViewData["Lcns"];
+                                for (int i = 1; i < lcns.Count; i++)
+                                {
+                                    <option value="@lcns[i].Id">@lcns[i].Name</option>
+                                }
+                            }
+                        </select>
+                        @*<input asp-for="Lcn" class="form-control" />*@
+                        <span asp-validation-for="LcnId" class="text-danger"></span>
+                    </div>
+                </p>
+            </div>
+            <div class="col-md-4">
+                <p>
+                    <div class="form-group">
+                        <label asp-for="Tagname" class="control-label"></label>
+                        <input asp-for="Tagname" class="form-control" />
+                        <span asp-validation-for="Tagname" class="text-danger"></span>
+                    </div>
+                </p>
+                <p>
+                    <div class="form-group">
+                        <label asp-for="Descriptor" class="control-label"></label>
+                        <input asp-for="Descriptor" class="form-control" />
+                        <span asp-validation-for="Descriptor" class="text-danger"></span>
+                    </div>
+                </p>
+                <p>
+                        @Html.LabelFor(x => Model.Nmode, htmlAttributes: new { @class = "control-label col-md-2" })
+                        @Html.DropDownListFor(x => Model.Nmode, new SelectList(Enum.GetValues(typeof(NModeState))), new { id = "nmode", style = "width: 80px;" })
+                        @Html.ValidationMessageFor(x => x.Nmode, "", new { @class = "text-danger" })
+                </p>
+                <p>
+                        @Html.LabelFor(x => Model.Operator, htmlAttributes: new { @class = "control-label col-md-2" })
+                        @Html.DropDownListFor(x => Model.Operator, new SelectList(new string[] { "=", "<", ">", "<>" }), new { id = "operator", style = "width: 80px;" })
+                        <span asp-validation-for="Operator" class="text-danger"></span>
+                </p>
+            </div>
+            <div class="col-md-4">
+                @await Component.InvokeAsync("NMRecordChanges", new { RecordId = Model.Id })
+            </div>
+        </div>
+        <p>
+            <div class="flex-container">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <input class="form-check-input" asp-for="CountIt" id="countit" /> @Html.DisplayNameFor(model => model.CountIt)
+                    </div>
+                    <div class="form-group">
+                        <input class="form-check-input" asp-for="NModeORed" id="nmodeor" /> @Html.DisplayNameFor(model => model.NModeORed)
+                        <span asp-validation-for="NModeORed" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <input class="form-check-input" asp-for="ConditionORed" id="condor" /> @Html.DisplayNameFor(model => model.ConditionORed)
+                        <span asp-validation-for="ConditionORed" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Conditions</label><br />
+                        @foreach (NModeCondition cond in Model.Conditions)
+                        {
+                            <li>@cond.ToString()</li>
+
+                            <a asp-controller="NModeConditions" asp-action="Edit" asp-route-id="@cond.Id">Edit</a> <label> | </label>
+                            <a asp-controller="NModeConditions" asp-action="Delete" asp-route-id="@cond.Id">Delete</a>
+                        }
+                        <br />
+                        <a asp-controller="NModeConditions" asp-action="Create" asp-route-id="@Model.Id">Create</a>
+                    </div>
+                </div>
+            </div>
+        </p>
+        <div class="form-group">
+            <div class="form-group">
+                <label class="control-label">Comment</label>
+                <textarea class="form-control" id="comment" name="Comment" rows="2"></textarea>
+            </div>
+
+            <input type="submit" value="Save" class="btn btn-primary" />
+        </div>
+    </form>
+    <div>
+        <a asp-action="Index">Back to List</a>
+    </div>
+    </ p>
+    <form asp-action="Evaluate">
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" name="FromView" value="Edit" />
+        <label for="datepicker">Select a Date:</label>
+        <input type="date" id="datepicker" asp-for="SelectedDate" name="SelectedDate" />
+        <span asp-validation-for="SelectedDate" class="text-danger"></span>
+        <button type="button" id="btnEvaluate" class="btn btn-primary">Evaluate</button>
+    </form>
+    <div id="evaluateResult"></div>
+
+</body>
+</html>

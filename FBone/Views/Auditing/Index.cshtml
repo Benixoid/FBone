@@ -1,0 +1,280 @@
+﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+@using FBone.Models.Audits;
+@using FBone.Service
+@model FBone.Models.Audits.AuditListModel
+
+@{
+    ViewData["Title"] = @localizer["title"];
+    var createEnabled = "disabled";
+    //var status = "";
+    if (Model.CanCreateAudit)
+    {
+        createEnabled = "";
+    }
+}
+<div class="row">
+    <div class="col-md-3">
+        <h2>@localizer["actions"]</h2>
+
+        <div class="my-space10">
+            <a asp-controller="Auditing" asp-action="RegisterAudit" class="btn btn-primary @createEnabled">@localizer["createNewBtn"]</a>
+        </div>
+        <div class="my-space10">
+            <a asp-controller="Auditing" asp-action="Index" class="btn btn-primary">@localizer["clearfilter"]</a>
+        </div>
+
+        <form asp-controller="Auditing" asp-action="Index" id="filterForm" method="post" class="form-horizontal" role="form">
+            <input type="hidden" name="PageIndex" value="1">
+            <input type="hidden" name="ItemPerPage" value="@Model.ItemPerPage">
+            <h2>@localizer["filter"]</h2>
+            <div class="col-md-8">
+                <div class="row">
+                    <b>@localizer["createdate"]</b>
+                    <br>@localizer["from"]                    
+                    <div class="form-group">
+                        <input class="form-control" onchange="this.form.submit();" type="date" data-val="true" data-val-required="The DateFrom field is required." id="DateFrom" name="DateFrom" value="@Model.DateFrom.ToString("yyyy-MM-dd")" />
+                    </div>
+                    @localizer["to"]                    
+                    <div class="form-group">
+                        <input class="form-control" onchange="this.form.submit();" type="date" data-val="true" data-val-required="The DateTo field is required." id="DateTo" name="DateTo" value="@Model.DateTo.ToString("yyyy-MM-dd")" />
+                    </div>
+                </div>
+                <div class="row">
+                    <b>@localizer["status"]</b>
+                    <select class="my-form-control" id="SelectedAuditStatus" name="SelectedAuditStatus" onchange="this.form.submit();">
+                        @if (Model.SelectedAuditStatus == 1)
+                        {
+                            <option value="1" selected="selected">...</option>
+                        }
+                        else
+                        {
+                            <option value="1">...</option>
+                        }
+                        @if (Model.SelectedAuditStatus == 2)
+                        {
+                            <option value="2" selected="selected">@localizer["statusnotclosed"]</option>
+                        }
+                        else
+                        {
+                            <option value="2">@localizer["statusnotclosed"]</option>
+                        }
+                        @if (Model.SelectedAuditStatus == 3)
+                        {
+                            <option value="3" selected="selected">@localizer["statusdraft"]</option>
+                        }
+                        else
+                        {
+                            <option value="3">@localizer["statusdraft"]</option>
+                        }
+                        @if (Model.SelectedAuditStatus == 4)
+                        {
+                            <option value="4" selected="selected">@localizer["statusinapproval"]</option>
+                        }
+                        else
+                        {
+                            <option value="4">@localizer["statusinapproval"]</option>
+                        }
+                        @if (Model.SelectedAuditStatus == 5)
+                        {
+                            <option value="5" selected="selected">@localizer["statusactive"]</option>
+                        }
+                        else
+                        {
+                            <option value="5">@localizer["statusactive"]</option>
+                        }
+                    </select>
+                </div>
+                <div class="row">
+                    <b>@localizer["facility"]</b>
+                    @Html.DropDownListFor(m => m.SelectedFacilityId, Model.Facilities, new { @class = "my-form-control", onchange = "facilityChanged();" })                    
+                </div>
+                <div class="row">
+                    <b>@localizer["area"]</b>
+                    @Html.DropDownListFor(m => m.SelectedAreaId, Model.Areas, new { @class = "my-form-control", onchange = "this.form.submit();" })
+                </div>
+                <div class="row">
+                    <b title="@localizer["smartsearch_title"]">@localizer["smartsearch"]</b>
+                    <input title="@localizer["smartsearch_title"]" class="form-control" name="SmartSearch" value="@Model.SmartSearch" onchange="this.form.submit();" />
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-8">
+        <h2>@ViewData["Title"]</h2>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="fg-toolbar ui-toolbar ui-widget-header ui-helper-clearfix ui-corner-bl ui-corner-br">
+                    <form asp-controller="Auditing" asp-action="Index" method="post" class="form-horizontal" role="form">
+                        <input type="hidden" name="PageIndex" value="1">
+                        <input type="hidden" name="DateFrom" value="@Model.DateFromS">
+                        <input type="hidden" name="DateTo" value="@Model.DateToS">
+                        <input type="hidden" name="SelectedAuditStatus" value="@Model.SelectedAuditStatus">
+                        <input type="hidden" name="SelectedFacilityId" value="@Model.SelectedFacilityId">
+                        <input type="hidden" name="SelectedAreaId" value="@Model.SelectedAreaId">                        
+                        <input type="hidden" name="SmartSearch" value="@Model.SmartSearch">
+                        <div class="col-sm-3">
+                            @localizer["show6"] @Html.DropDownListFor(m => m.ItemPerPage, Model.ItemPerPageList as SelectList, new { @class = "my-form-control", onchange = "this.form.submit();" }) @localizer["show4"]
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+        @{
+            var firstDisabled = Model.PageIndex == 1 ? "disabled" : "";
+            var lastDisabled = Model.PageIndex == Model.TotalPages ? "disabled" : "";
+            var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+            var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+            var show1 = Model.TotalEntities == 0 ? 0 : (Model.PageIndex - 1) * Model.ItemPerPage + 1;
+            var show2 = Model.TotalEntities < (Model.PageIndex) * Model.ItemPerPage ? Model.TotalEntities : (Model.PageIndex) * Model.ItemPerPage;
+        }
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table my-table nowrap table-hover" id="acttable" aria-describedby="actlist">
+                    <thead>
+                        <tr>
+                            <th>
+                                @localizer["name"]
+                            </th>
+                            <th>
+                                @localizer["createdate"]
+                            </th>
+                            <th>
+                                @localizer["status"]
+                            </th>
+                            <th>
+                                @localizer["closedate"]
+                            </th>
+                            <th>
+                                @localizer["facility"]
+                            </th>
+                            <th>
+                                @localizer["area"]
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.AuditList)
+                        {
+                            <tr>
+                                <td>
+                                    <a asp-action="AuditDetails" asp-route-Audit.id="@item.Id"
+                                       asp-route-DateFrom="@Model.DateFromS"
+                                       asp-route-DateTo="@Model.DateToS"
+                                       asp-route-SelectedActStatus="@Model.SelectedAuditStatus"
+                                       asp-route-SelectedFacilityId="@Model.SelectedFacilityId"
+                                       asp-route-SelectedAreaId="@Model.SelectedAreaId"                                       
+                                       asp-route-SmartSearch="@Model.SmartSearch"
+                                       asp-route-PageIndex="@Model.PageIndex"
+                                       asp-route-ItemPerPage="@Model.ItemPerPage"> @item.Name</a>
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.CreatedAt)
+                                </td>
+                                @if (item.StatusCode == (int)Enums.AuditStatusCode.Draft)
+                                {
+                                    <td>@localizer["statusdraft"]</td>
+                                }
+                                else if (item.StatusCode == (int)Enums.AuditStatusCode.InProgress)
+                                {
+                                    <td class="bg_red">@localizer["statusinprogress"]</td>
+                                }
+                                else if (item.StatusCode == (int)Enums.AuditStatusCode.OnVerification)
+                                {
+                                    <td class="bg_green">@localizer["statusverification"]</td>
+                                }
+                                else if (item.StatusCode == (int)Enums.AuditStatusCode.OnApproval)
+                                {
+                                    <td class="bg_gray">@localizer["statusinapproval"]</td>
+                                }
+                                else if (item.StatusCode == (int)Enums.AuditStatusCode.Closed)
+                                {
+                                    <td class="bg_yellow">@localizer["statusclosed"]</td>
+                                }                                
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.CloseDate)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Facility.Name)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Area.Name_EN)
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <div class="ui-toolbar ui-widget-header ui-helper-clearfix ui-corner-bl ui-corner-br">
+                    <div class="row">
+                        <div class="col-sm-3" style="padding-top: 6px">
+                            @localizer["show1"] @show1 @localizer["show2"] @show2 @localizer["show3"] @Model.TotalEntities @localizer["show4"]
+                        </div>
+                        <div class="col-sm-9">
+                            @localizer["show5"] @Model.PageIndex @localizer["show7"] @Model.TotalPages
+                            <a asp-action="Index"
+                               asp-route-PageIndex="1"
+                               asp-route-itemPerPage="@Model.ItemPerPage"
+                               asp-route-DateFromS="@Model.DateFromS"
+                               asp-route-DateToS="@Model.DateToS"
+                               asp-route-SelectedFacilityId="@Model.SelectedFacilityId"
+                               asp-route-SelectedAreaId="@Model.SelectedAreaId"
+                               asp-route-SelectedActStatus="@Model.SelectedAuditStatus"
+                               asp-route-SmartSearch="@Model.SmartSearch"
+                               class="btn btn-outline-secondary @firstDisabled">
+                                @localizer["first"]
+                            </a>
+                            <a asp-action="Index"
+                               asp-route-PageIndex="@(Model.PageIndex - 1)"
+                               asp-route-itemPerPage="@Model.ItemPerPage"
+                               asp-route-DateFromS="@Model.DateFromS"
+                               asp-route-DateToS="@Model.DateToS"
+                               asp-route-SelectedFacilityId="@Model.SelectedFacilityId"
+                               asp-route-SelectedAreaId="@Model.SelectedAreaId"
+                               asp-route-SelectedActStatus="@Model.SelectedAuditStatus"
+                               asp-route-SmartSearch="@Model.SmartSearch"
+                               class="btn btn-outline-secondary @prevDisabled">
+                                @localizer["prev"]
+                            </a>
+                            <a asp-action="Index"
+                               asp-route-PageIndex="@(Model.PageIndex + 1)"
+                               asp-route-itemPerPage="@Model.ItemPerPage"
+                               asp-route-DateFromS="@Model.DateFromS"
+                               asp-route-DateToS="@Model.DateToS"
+                               asp-route-SelectedFacilityId="@Model.SelectedFacilityId"
+                               asp-route-SelectedAreaId="@Model.SelectedAreaId"
+                               asp-route-SelectedActStatus="@Model.SelectedAuditStatus"
+                               asp-route-SmartSearch="@Model.SmartSearch"
+                               class="btn btn-outline-secondary @nextDisabled">
+                                @localizer["next"]
+                            </a>
+                            <a asp-action="Index"
+                               asp-route-PageIndex="@(Model.TotalPages)"
+                               asp-route-itemPerPage="@Model.ItemPerPage"
+                               asp-route-DateFromS="@Model.DateFromS"
+                               asp-route-DateToS="@Model.DateToS"
+                               asp-route-SelectedFacilityId="@Model.SelectedFacilityId"
+                               asp-route-SelectedAreaId="@Model.SelectedAreaId"
+                               asp-route-SelectedActStatus="@Model.SelectedAuditStatus"
+                               asp-route-SmartSearch="@Model.SmartSearch"
+                               class="btn btn-outline-secondary @lastDisabled">
+                                @localizer["last"]
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        function facilityChanged() {
+            var area = $('#SelectedAreaId').val("-1");
+            $("#filterForm").submit();
+        }
+    </script>
+}
+
+
+

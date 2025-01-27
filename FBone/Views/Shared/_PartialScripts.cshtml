@@ -1,0 +1,28 @@
+﻿<environment include="Development">
+    <script src="/lib/jquery/dist/jquery.js"></script>
+    @*<script src="/lib/bootstrap/dist/js/bootstrap.js"></script>*@
+    <script src="/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
+    <script src="/js/site.js" asp-append-version="true"></script>
+    <script src="/lib/datatables/datatables.js" asp-append-version="true"></script>
+    <script src="/lib/datatables/dataTables.jqueryui.min.js" asp-append-version="true"></script>
+    <script src="/lib/datatables/dataTables.scroller.min.js" asp-append-version="true"></script>
+    <script src="/lib/bootbox/bootbox.js" asp-append-version="true"></script>
+    <script src="/lib/toastr/toastr.js" asp-append-version="true"></script>
+    @*<script src="/lib/bootstrap.datepicker/Scripts/bootstrap-datepicker.js" asp-append-version="true"></script>*@
+    @*<script src="/lib/bootstrap.datetimepicker/moment-with-locales.min.js" asp-append-version="true"></script>*@
+    @*<script src="/lib/bootstrap.datetimepicker/bootstrap-datetimepicker.min.js" asp-append-version="true"></script>    *@
+</environment>
+<environment exclude="Development">
+    <script src="/lib/jquery/dist/jquery.min.js" asp-fallback-test="window.jQuery" asp-append-version="true"></script>
+    @*<script src="/lib/bootstrap/dist/js/bootstrap.min.js" asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal" asp-append-version="true"></script>*@
+    <script src="/lib/bootstrap/dist/js/bootstrap.bundle.min.js" asp-append-version="true"></script>
+    <script src="/js/site.js" asp-append-version="true"></script>
+    <script src="/lib/datatables/datatables.min.js" asp-append-version="true"></script>
+    <script src="/lib/datatables/dataTables.jqueryui.min.js" asp-append-version="true"></script>
+    <script src="/lib/datatables/dataTables.scroller.min.js" asp-append-version="true"></script>
+    <script src="/lib/bootbox/bootbox.min.js" asp-append-version="true"></script>
+    <script src="/lib/toastr/toastr.min.js" asp-append-version="true"></script>
+    @*<script src="/lib/bootstrap.datepicker/Scripts/bootstrap-datepicker.min.js" asp-append-version="true"></script>*@
+    @*<script src="/lib/bootstrap.datetimepicker/moment-with-locales.min.js" asp-append-version="true"></script>*@
+    @*<script src="/lib/bootstrap.datetimepicker/bootstrap-datetimepicker.min.js" asp-append-version="true"></script>*@
+</environment>

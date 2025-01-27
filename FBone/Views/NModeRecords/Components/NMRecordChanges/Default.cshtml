@@ -1,0 +1,72 @@
+﻿@using FBone.Models.NMode
+@model List<NModeChangeRecord>;
+
+<!DOCTYPE html>
+<style>
+/*     li {
+        list-style-type: none;
+    } */
+
+        .cap {
+            color: #0d6efd; text-decoration: underline
+        }
+</style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+<h4>Change history</h4>
+<ul>
+    @foreach (var item in Model)
+    {
+        <li class="main">
+            <a>
+                <b class="cap">@item.Date, Editor: @item.User</b>
+            </a>
+            <dl class="sub">
+                <dt>Comment:</dt>
+                <dd>@item.Comment</dd>
+                @* <dt>User</dt> *@
+                @* <dd>@item.User</dd> *@
+                <dt>Config:</dt>
+                <dd>@item.ChangeRecordConfig</dd>
+                <dt>Previous config:</dt>
+                <dd>@item.PreviousRecordConfig</dd>
+            </dl>
+        </li>
+    }
+</ul>
+
+<script type="text/javascript">
+    $(function () {
+        var $subitems = $("dl.sub");
+        $subitems.not(':first').hide();
+
+        // //**************************** */
+        // console.log("sub items:");
+        // $subitems.each(function (index, elem) {
+        //     console.log(elem.innerHTML);
+        // });
+        // //***************************** */
+
+        $("li.main a").click(function () {
+            var $targets = $(this).next("dl.sub");
+
+            // //******************************
+            // console.log("targets: ");
+            // $targets.each(function (index, elem) {
+            //     console.log(elem.innerHTML);
+            // });
+            // console.log("this: ");
+            // $(this).each(function (index, elem) {
+            //     $(elem).slideDown("slow");
+            //     console.log(elem.innerHTML);
+            // });
+            // //***************************** */
+
+            $subitems.not($targets).slideUp("fast");
+            $targets.slideDown("slow");
+        });
+    });
+</script>

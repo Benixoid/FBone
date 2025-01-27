@@ -1,0 +1,60 @@
+﻿@{
+    ViewData["Title"] = "Encryption";
+}
+<h2>Service for encrypting & decrypting password</h2>
+<br>
+<div class="row">
+    <div class="col-md-12">
+        <h4>Encryption/decription algorithm using Advanced Encryption Standard (AES) - Rijndael.</h4>
+    </div>
+</div>
+<br>
+<br>
+@using (Html.BeginForm())
+{
+    <div class="row">
+        <div class="col-md-12" style="text-align:left">
+            @Html.Label("Decrypted string:")
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <input id="decrypted" name="decrypted" class="form-control" value="@ViewBag.decr_result" />
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-md-12" style="text-align:center">
+            <input type="submit" asp-route-act="encrypt" value="Encrypt1 &darr;" class="btn btn-default" />
+            &nbsp;&nbsp;&nbsp;
+            <input type="submit" asp-route-act="decrypt" value="Decrypt1 &uarr;" class="btn btn-default" />
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-md-12" style="text-align:left">
+            @Html.Label("Encrypted string:")
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <input id="encrypted" name="encrypted" class="form-control" value="@ViewBag.encr_result" />
+        </div>
+    </div>
+}
+<br>
+<div class="row">
+    <div class="col-md-12">
+        <h4>Encryptor web page <b>always</b> avaliable by this URL: <a asp-area="" asp-controller="Crypt" asp-action="index">@ViewBag.nyURL</a></h4>
+    </div>
+</div>
+<br>
+<div class="row">
+    <div class="col-md-12" style="text-align:center">
+        <a asp-action="Index" asp-controller="Admin" class="btn btn-default">Back &larr;</a>
+    </div>
+</div>
+
+
+
+

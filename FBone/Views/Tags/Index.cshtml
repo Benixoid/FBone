@@ -1,0 +1,138 @@
+﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+@model FBone.Models.Tags.TagsModel
+
+@{
+    ViewData["Title"] = @localizer["title"];
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    <a asp-action="CreateTag" asp-route-SearchString="@Model.SearchString" class="btn btn-secondary">@localizer["new"]</a>
+</p>
+<form asp-action="Index" method="post" id="searchform">
+    Smart Search: <input title="Search by all text fields" class="my-form-control" type="search" name="SearchString" value="@Model.SearchString" />
+    <input type="submit" value="Search" class="btn btn-primary" />
+    <a asp-action="Index" asp-route-page="1" class="btn btn-secondary">Reset</a>
+</form>
+<table class="table table-sm table-hover">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Tags.FirstOrDefault().Tagnumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Tags.FirstOrDefault().TagnumberByp)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Tags.FirstOrDefault().Equipment)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Tags.FirstOrDefault().Type)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Tags.FirstOrDefault().Service)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Tags.FirstOrDefault().Unit)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Tags.FirstOrDefault().Area.Facility)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Tags.FirstOrDefault().Area)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Tags.FirstOrDefault().Device)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Tags.FirstOrDefault().isFG)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Tags.FirstOrDefault().isIPL)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Tags.FirstOrDefault().isForBulkInsert)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Tags)
+{
+        <tr>
+            <td>
+                <a asp-action="EditTag" asp-route-id="@item.Id" asp-route-searchstring="@Model.SearchString">@item.Tagnumber</a>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TagnumberByp)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Equipment)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Type)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Service)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Unit)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Area.Facility.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Area.Name_EN)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Device.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.isFG)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.isIPL)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.isForBulkInsert)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+@{
+    var firstDisabled = Model.Page == 1 ? "disabled" : "";
+    var lastDisabled = Model.Page == Model.TotalPages ? "disabled" : "";
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";    
+    var show1 = Model.TotalEntities == 0 ? 0 : (Model.Page - 1) * 30 + 1;
+    var show2 = Model.TotalEntities < (Model.Page) * 30 ? Model.TotalEntities : (Model.Page) * 30;
+}
+<div class="row">
+    <div class="col-md-3">
+        @localizer["show1"] @show1 @localizer["show2"] @show2 @localizer["show3"] @Model.TotalEntities @localizer["show4"]
+    </div>
+    <div class="col-md-5">
+        @localizer["show5"] @Model.Page @localizer["show7"] @Model.TotalPages
+        <a asp-route-page="1"
+           asp-route-searchString="@Model.SearchString"
+           class="btn btn-light @firstDisabled">
+            @localizer["first"]
+        </a>
+        <a asp-route-page="@(Model.Page - 1)"
+           asp-route-searchString="@Model.SearchString"
+           class="btn btn-light @prevDisabled">
+            @localizer["prev"]
+        </a>
+        <a asp-route-page="@(Model.Page + 1)"
+           asp-route-searchString="@Model.SearchString"
+           class="btn btn-light @nextDisabled">
+            @localizer["next"]
+        </a>
+        <a asp-route-page="@(Model.TotalPages)"
+           asp-route-searchString="@Model.SearchString"
+           class="btn btn-light @lastDisabled">
+            @localizer["last"]
+        </a>
+    </div>
+</div>

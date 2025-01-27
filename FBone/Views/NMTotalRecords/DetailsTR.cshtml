@@ -1,0 +1,321 @@
+﻿@using FBone.Service;
+@using FBone.Models.NMode;
+@inject FBone.Database.DataManager DM
+@model FBone.Models.NMode.NMTotalRecordViewModel
+
+@{
+    Layout = "_NModeLayout";
+}
+
+<!DOCTYPE html>
+<style>
+    .flex-container {
+        display: flex;
+        /*background-color: DodgerBlue;*/
+    }
+
+        .flex-container > div {
+            background-color: #f8f9fa;
+            margin: 5px;
+            padding: 10px;
+            font-size: 14px;
+        }
+
+    .body-container {
+        /*remove the container default padding attribute*/
+        /* padding-left: 0px !important;
+                                                                                                                                  padding-right: 0px !important;*/
+        /*increase width as per your need*/
+        max-width: 100%;
+    }
+
+    .spinner {
+        display: inline-block;
+        margin-right: 10px;
+    }
+</style>
+@section Scripts
+{
+    <script>
+        document.addEventListener("load", setDateTime("dtEvaluate", new Date("@Model.SelectedDate.ToString("yyyy-MM-dd")")));
+        document.getElementById('btnEvaluate').addEventListener('click', getCalculatedString);
+        document.getElementById('btnSaveToPI').addEventListener('click', saveToPI);
+
+        //document.getElementById("TRDetails").addEventListener("submit", submitRequest);
+
+        function submitRequest(form) {
+            var spinner2 = document.getElementById('viewSpinner');
+            if (spinner2 != null)
+                spinner2.style.display = 'inline-block';
+            //form.submit();
+            var f = document.getElementById(form);
+            if (f != null)
+                f.submit();
+        };
+
+        var result = null;
+
+        async function getCalculatedString() {
+            document.getElementById("btnSaveToPI").disabled = true;
+            var spinner = document.getElementById('spinner');
+            spinner.style.display = 'inline-block';
+
+            const resp = await fetch(`/NMTotalRecords/GetCalculatedResult?id=${@Model.TotalRecord.Id}&selecteddate=${document.getElementById("dtEvaluate").value}`);
+            if (!resp.ok) {
+                console.error('Something went wrong');
+                return;
+            }
+            result = await resp.json();
+            $('#savedResult').text(`Saved Normal Total: ${result.normalSaved.toFixed(2)}%`);
+            $('#calculatedResult').text(`Calculated Normal Total: ${result.normal.toFixed(2)}% - [Day Normal: ${result.dayNormal.toFixed(2)}%, Night Normal: ${result.nightNormal.toFixed(2)}%]`);
+            document.getElementById("btnSaveToPI").disabled = !result.allowedToSave;
+            spinner.style.display = 'none';
+        };
+
+        async function getSavedResult() {
+            const resp = await fetch(`/NMTotalRecords/GetSavedResult?id=${@Model.TotalRecord.Id}&selecteddate=${document.getElementById("dtEvaluate").value}`);
+            if (!resp.ok) {
+                console.error('Something went wrong');
+                return;
+            }
+            result = await resp.json();
+            $('#savedResult').text(`Saved Normal Total: ${result.normal.toFixed(2)}%`);
+        };
+
+        async function saveToPI() {
+            console.log(result.normal);
+            const resp = await fetch(`/NMTotalRecords/SaveToPI?id=${@Model.TotalRecord.Id}&value=${result.normal}&selecteddate=${document.getElementById("dtEvaluate").value}`);
+        }
+
+
+        function dateIsValid(date) {
+            if (date instanceof Date && !isNaN(date)) {
+                if (date.getFullYear() == 1)
+                    return false;
+                else
+                    return true;
+            }
+            else
+                return true;
+        }
+
+        function setDateTime(element, selectedDate) {
+            let input = document.getElementById(element);
+            let currentDate = new Date();
+            let startDate = currentDate;
+            startDate.setDate(currentDate.getDate() - 31);
+            let endDate = new Date();
+            // endDate.setDate(endDate.getDate() - 1);
+            selectedDate = new Date(selectedDate);
+
+            // input.min = startDate.toISOString().slice(0, 10);
+            input.max = endDate.toISOString().slice(0, 10);
+            if (dateIsValid(selectedDate))
+                input.value = selectedDate.toISOString().slice(0, 10);
+            else
+                input.value = endDate.toISOString().slice(0, 10);
+        }
+        function submitForm() {
+            this.form.submit();
+        }
+    </script>
+}
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    @{
+        ViewBag.Title = $"NMTotal Details: {Model.TotalRecord.ToString2()}";
+    }
+    <title>Details</title>
+</head>
+<body>
+
+    <h4>
+        Total Record
+        <i id="viewSpinner" class="fa fa-spinner fa-spin" style="font-size:24px; display:none"></i>
+    </h4>
+
+    <div class="flex-container">
+        <div class="col-md-2">
+            <h4>@Model.TotalRecord.Tagname</h4>
+            <hr />
+            <dl class="row">
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.TotalRecord.Area)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.TotalRecord.Area.Name)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.TotalRecord.Lcn)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.TotalRecord.Lcn.Name)
+                </dd>
+                @if (Model.TotalRecord.Parent != null)
+                {
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.TotalRecord.Parent)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.TotalRecord.Parent.ShortName)
+                    </dd>
+                }
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.TotalRecord.Tagname)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.TotalRecord.Tagname)
+                </dd>
+            </dl>
+        </div>
+        @if (Model.TotalRecord.SubTotals.Count > 0)
+        {
+            <div class="col-md-5">
+                <h4>Sub Total records</h4>
+                <div style="height: 40px;"></div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(m => m.TotalRecord.SubTotals[0].Area)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(m => m.TotalRecord.SubTotals[0].Lcn)
+                            </th>
+                            <th>@Html.DisplayNameFor(m => m.TotalRecord.SubTotals[0].Tagname)</th>
+                            @if (Model.Snapshot)
+                            {
+                                <th>NormalTotal % Snapshot</th>
+                            }
+                            else
+                            {
+                                <th>
+                                    @Html.DisplayNameFor(m => m.TotalRecord.SubTotals[0].NormalTotalPercent)
+                                </th>
+                            }
+                            @*   <th>
+                        @Html.DisplayNameFor(m => m.TotalRecord.SubTotals[0].NormalTotalPercent)
+                        </th> *@
+                            @if (Model.Calculated)
+                            {
+                                <th>
+                                    @Html.DisplayNameFor(m => m.TotalRecord.SubTotals[0].DayNormalTotalPercent)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(m => m.TotalRecord.SubTotals[0].NightNormalTotalPercent)
+                                </th>
+                            }
+                            <th>
+                                SubTotals Count
+                            </th>
+                            <th>
+                                Record Count
+                            </th>
+                            <th>
+                                Links
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.TotalRecord.SubTotals.Count; i++)
+                        {
+                            @Html.HiddenFor(m => m.TotalRecord.SubTotals[i].Id)
+                            @Html.HiddenFor(m => m.TotalRecord.SubTotals[i].Area.Name)
+                            @Html.HiddenFor(m => m.TotalRecord.SubTotals[i].Lcn.Name)
+                            @Html.HiddenFor(m => m.TotalRecord.SubTotals[i].Tagname)
+                            @Html.HiddenFor(m => m.TotalRecord.SubTotals[i].NormalTotalPercent)
+                            @Html.HiddenFor(m => m.TotalRecord.SubTotals[i].SelectedDate)
+                            var item = Model.TotalRecord.SubTotals[i];
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(m => m.TotalRecord.SubTotals[i].Area.Name, new { htmlAttributes = new { @class = "form-control" } })
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(m => m.TotalRecord.SubTotals[i].Lcn.Name, new { htmlAttributes = new { @class = "form-control" } })
+                                </td>
+                                <td>
+                                    <a asp-action="DetailsTR" asp-route-id="@Model.TotalRecord.SubTotals[i].Id">
+                                        @Html.DisplayFor(m => m.TotalRecord.SubTotals[i].Tagname, new { htmlAttributes = new { @class = "form-control" } })
+                                    </a>
+                                </td>
+                                <td>
+                                    @item.NormalTotalPercent.ToString("f2")
+                                </td>
+                                @*                                 <td>
+                        @item.NormalTotalPercent.ToString("f2")
+                        </td> *@
+                                @if (Model.Calculated)
+                                {
+                                    <td>
+                                        @item.DayNormalTotalPercent.ToString("f2")
+                                    </td>
+                                    <td>
+                                        @item.NightNormalTotalPercent.ToString("f2")
+                                    </td>
+                                }
+                                <td>
+                                    @item.SubTotals.Count
+                                </td>
+                                <td>
+                                    @item.RecordCountString
+                                </td>
+                                <td>
+                                    @*  <a asp-action="DetailsTR" asp-route-id="@Model.TotalRecord.SubTotals[i].Id">Details |</a> *@
+                                    @if (DM.IsUserInRole(User, Enums.Roles.IsNModeEditor))
+                                    {
+                                        <a asp-action="EditTR" asp-route-id="@Model.TotalRecord.SubTotals[i].Id">Edit</a>
+                                    }
+                                    @if (DM.IsUserInRole(User, Enums.Roles.IsNModeAdministrator))
+                                    {
+                                        <a asp-action="Delete" asp-route-id="@Model.TotalRecord.SubTotals[i].Id">| Delete </a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        <div class="col-md-5" id="average">
+            @await Component.InvokeAsync("NMTotalAverage", new { RecordId = Model.TotalRecord.Id })
+        </div>
+    </div>
+    <div>
+        @if (Model.TotalRecord.Parent != null)
+        {
+            <a asp-action="DetailsTR" asp-route-id="@Model?.TotalRecord.ParentId">Go to Parent |</a>
+        }
+        @if (DM.IsUserInRole(User, Enums.Roles.IsNModeEditor))
+        {
+            <a asp-action="EditTR" asp-route-id="@Model?.TotalRecord.Id">Edit |</a>
+        }
+        <a asp-action="Index">Back to List</a>
+    </div>
+
+    <form method="post" asp-action="DetailsTR">
+        <label for="dtEvaluate">Select a Date:</label>
+        <input type="date" id="dtEvaluate" asp-for="SelectedDate" name="SelectedDate" />
+        <button type="button" id="btnEvaluate" class="btn btn-secondary">
+            <i id="spinner" class="fa fa-spinner fa-spin" style="font-size:24px; display:none"></i>
+            Evaluate
+        </button>
+        <button type="button" id="btnSaveToPI" class="btn btn-secondary" disabled="true">Save to PI</button>
+
+        <h4 id="savedResult">@Model.SavedResult</h4>
+        <h4 id="calculatedResult">@Model.CalculatedResult</h4>
+        <h4 id="snapshotResult">@Model.SnapshotResult</h4>
+    </form>
+
+
+
+</body>
+@{
+    @await Html.PartialAsync("Records", new NMRecordListModel(Model, Model.TotalRecord.AreaId, Model.TotalRecord.LcnId))
+}
+</html>
+
+

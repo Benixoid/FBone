@@ -1,0 +1,186 @@
+﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification\ 
+for details on configuring this project to bundle and minify static web assets. */
+body {
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+/* Wrapping element */
+/* Set some basic padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Carousel */
+.carousel-caption p {
+    font-size: 20px;
+    line-height: 1.4;
+}
+
+/* Make .svg files in the carousel display properly in older browsers */
+.carousel-inner .item img[src$=".svg"] {
+    width: 100%;
+}
+
+/* QR code generator */
+#qrCode {
+    margin: 15px;
+}
+
+/* Hide/rearrange for smaller screens */
+@media screen and (max-width: 767px) {
+    /* Hide captions */
+    .carousel-caption {
+        display: none;
+    }
+}
+
+.badge-num {
+    background-color: brown;    
+}
+
+.badge-sub {
+    background-color: #337ab7;
+}
+
+.my-form-control-space {
+    padding: 6px 12px;
+    height: 34px;    
+}
+.my-form-control {
+    height: 34px;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #555;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid #ccc;
+    vertical-align: middle;
+    border-radius: 4px;
+    -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
+    -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+}
+.editor-field textarea {
+    width: 100%;
+    height: 50px;
+}
+
+.my-text-danger {
+    color: red;
+    font-weight: bold;
+}
+.field-validation-error {
+    color: red;
+}
+
+.input-validation-error {
+    border: 2px solid red;
+}
+.my-small-form-control {
+    padding: 0px 0px !important;
+    height: 19px !important;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #555;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid #ccc;
+    vertical-align: middle;
+    border-radius: 4px;
+    width: 100%;
+    -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
+    -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+}
+.my-table {
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 0px !important;
+}
+
+.my-space10 {
+    margin-bottom: 10px !important;
+}
+
+.my-margin10 {
+    margin-top: 10px !important;
+}
+
+.bg_red {
+    background-color: rgb(230, 184, 183) !important;
+}
+.bg_blue {
+    background-color: rgb(149,179,215) !important;
+}
+.bg_green {
+    background-color: rgb(168,227,168) !important;
+}
+.bg_gray {
+    background-color: rgb(229,226,226) !important;
+}
+.bg_orange {
+    background-color: rgb(252,162,27) !important;
+}
+.bg_yellow {
+    background-color: rgb(254,255,1) !important;
+}
+
+.bg_gray_second {
+    background-color: rgb(229,226,226);
+}
+.no-padding { margin-top: 0px !important; }
+
+table.dataTable tbody th, table.dataTable tbody td {
+    padding: 0px 10px;
+}
+.my-no-padding {
+    padding-top: 0px !important;
+    padding-bottom: 0px !important;
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+}
+.my-padding8 {
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+}
+.my-nounderline-white {
+    color: white !important;
+    text-decoration: none !important;
+}
+.my-nounderline-black {
+    color: black !important;
+    text-decoration: none !important;
+}
+.rose_bg {
+    background-color: rgb(255, 238, 238) !important;
+}
+
+
+
+#eventTable tr.rose_bg:hover {
+    background-color: rgb(210, 210, 210) !important;
+}
+#eventTable tr:hover {
+    background-color: rgb(210, 210, 210) !important;
+}
+#blink2 {
+    -webkit-animation: blink2 1s linear infinite;
+    animation: blink2 1s linear infinite;
+}
+
+@-webkit-keyframes blink2 {
+    100% {
+        color: red;
+    }
+}
+
+@keyframes blink2 {
+    100% {
+        color: white;
+    }
+}

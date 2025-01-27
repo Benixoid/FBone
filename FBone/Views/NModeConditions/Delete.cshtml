@@ -1,0 +1,69 @@
+﻿@model FBone.Models.NMode.NModeCondition
+
+@{
+    Layout = "_NModeLayout";
+}
+
+<!DOCTYPE html>
+<style>
+    .form-control {
+        margin-bottom:20px;
+    }
+
+    .btn btn-danger{
+        padding-top:20px;
+    }
+</style>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Delete</title>
+</head>
+<body>
+
+    <h3>Are you sure you want to delete this?</h3>
+    <div>
+        <h4>Condition to delete</h4>
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Tagname)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Tagname)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Operator)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Operator)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Value)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Value)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.NModeRecord)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.NModeRecord.TagnameNmode)
+            </dd>
+        </dl>
+
+        <form asp-action="Delete">
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" name="PrevPage" value=@ViewData["PreviousPage"] />
+            <div class="form-group">
+                <label class="control-label">Comment</label>
+                <textarea class="form-control" id="comment" name="Comment" rows="2"></textarea>
+            </div>
+            <input type="submit" value="Delete" class="btn btn-danger" /> |
+            <a asp-action="Index">Back to List</a> |
+            <a asp-controller="NModeRecords" asp-action="Details" asp-route-id="@Model.NModeRecordId">Back to record</a>
+
+        </form>
+    </div>
+</body>
+</html>

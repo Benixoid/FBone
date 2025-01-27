@@ -1,0 +1,244 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="03/06/2022 08:01:19" ReportInfo.Modified="06/19/2023 08:36:08" ReportInfo.CreatorVersion="2022.1.0.0">
+  <ScriptText>using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Data;
+using FastReport;
+using FastReport.Data;
+using FastReport.Dialog;
+using FastReport.Barcode;
+using FastReport.Table;
+using FastReport.Utils;
+
+namespace FastReport
+{
+  public class ReportScript
+  {
+    private void ReportTitle1_BeforeLayout(object sender, EventArgs e)
+    {       
+      if (txtActType.Text == &quot;1&quot;)
+        rbType.Top=Units.Centimeters * 3.38f;
+      else if (txtActType.Text == &quot;2&quot;)
+        rbType.Top=Units.Centimeters * 3.88f;
+      else if (txtActType.Text == &quot;3&quot;)
+        rbType.Top=Units.Centimeters * 4.38f;
+      else if (txtActType.Text == &quot;4&quot;)
+        rbType.Top=Units.Centimeters * 4.88f;
+      else if (txtActType.Text == &quot;5&quot;)
+        rbType.Top=Units.Centimeters * 5.38f;          
+      
+      if (Text62.Text==&quot;&quot;)
+      {
+        Text62.Visible = false;        
+      }
+      if (Text61.Text==&quot;&quot;)
+      {
+        Text61.Visible = false;
+      }
+      if (Text60.Text==&quot;&quot;)
+      {           
+        Text60.Visible = false;        
+      }
+    }    
+
+    private void Data2_BeforeLayout(object sender, EventArgs e)
+    {
+//      |Random rand = new Random();
+//      var i = rand.Next(15);
+//      Text89.Text=i.ToString();
+      Signature.Visible = chbApproved.Checked;            
+      //Signature.Left = Signature.Left + Units.Centimeters * i/10;
+    }
+
+    private void GroupFooter2_BeforeLayout(object sender, EventArgs e)
+    {
+      SignatureAdd.Visible = chbAddapp.Checked;
+      if (txtActStatus.Text == &quot;4&quot;)
+      {
+        SignatureOper.Visible = true;
+      }
+    }
+  }
+}
+</ScriptText>
+  <Styles Name="Standard">
+    <Style Name="Title" Font="Arial, 12pt, style=Bold"/>
+    <Style Name="Header" Font="Arial, 10pt, style=Bold"/>
+    <Style Name="Group" Font="Arial, 10pt, style=Bold"/>
+    <Style Name="Data" Font="Arial, 10pt"/>
+    <Style Name="Footer" Font="Arial, 10pt"/>
+    <Style Name="EvenRows" Fill.Color="WhiteSmoke" Font="Arial, 10pt"/>
+  </Styles>
+  <Dictionary>
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqtbDBSzlTxxx25U8ly727rWQt/trZaNz7udjCdg+RIJ9DJSXad8rK2CU5rQDsj2MGrlDxri7QXlGEGgN9mL0HPKF55p/o1BkA0EIzPDWvCIxrHL0jFOnen6G0SSSYz4yk7XkHY86B9H4Izt9BcNGqE4tPH7QGoo8tMLHj63KSFhSSaf8xjKbOGvHcquRHGMphRXrlIY0jas6/+QUwXT9rrl1RvdkXBWEMDBw/gpkKEM8=">
+      <TableDataSource Name="tAct" DataType="System.Int32" Enabled="true" TableName="tAct" SelectCommand="--declare @actid as int = 1044&#13;&#10;&#13;&#10;SELECT T.Id, T.StatusId, T.CreatedOn, T.AreaId, T.Crew, T.Type, T.OriginalLang, T.CauseRU, T.CauseKK, T.CauseEN, T.ImpactRU, T.ImpactKK, T.ImpactEN, T.ProtectRU, T.ProtectKK, T.ProtectEN, T.ActNotes, T.ClosedOn, T.ClosedByUserId, T.CreatedByUserId, T.ApprovedByAddOn, T.StartedOn, T.isAddApproved, T.Flag72h, t1.Id, t1.Name_RU, t1.Name_EN, t1.Name_KK, t1.FacilityId, t1.ApproverAdd, t1.IsEventsFromPSS, p1.Name as Pos1, p2.Name as Pos2, p3.Name as Pos3, p4.Name as Pos4, p5.Name as Pos5, p6.Name as Pos6, p7.Name as Pos7, padd.Name as Appadd, u.Name_EN as closedByEn, u.Name_RU as closedByRu, uadd.Name_EN as approveraddEN, uadd.Name_RU as approveraddRU, T.ActNotes&#13;&#10;FROM (&quot;tAct&quot; T INNER JOIN &quot;tArea&quot; t1 ON T.AreaId = t1.Id &#13;&#10;) left JOIN &quot;tPosition&quot; p1 ON T.ApproverPos1 = p1.Id &#13;&#10;left JOIN &quot;tPosition&quot; p2 ON T.ApproverPos2 = p2.Id&#13;&#10;left JOIN &quot;tPosition&quot; p3 ON T.ApproverPos3 = p3.Id&#13;&#10;left JOIN &quot;tPosition&quot; p4 ON T.ApproverPos4 = p4.Id&#13;&#10;left JOIN &quot;tPosition&quot; p5 ON T.ApproverPos5 = p5.Id&#13;&#10;left JOIN &quot;tPosition&quot; p6 ON T.ApproverPos6 = p6.Id&#13;&#10;left JOIN &quot;tPosition&quot; p7 ON T.ApproverPos7 = p7.Id&#13;&#10;left JOIN &quot;tArea&quot; a ON T.AreaId = a.Id&#13;&#10;left JOIN &quot;tPosition&quot; padd ON a.ApproverAdd = padd.Id&#13;&#10;left JOIN &quot;tUser&quot; u ON T.ClosedByUserId = u.Id&#13;&#10;left JOIN &quot;tUser&quot; uadd ON T.ApproverAdd = uadd.Id&#13;&#10; where T.id=@actid">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="StatusId" DataType="System.Int32"/>
+        <Column Name="CreatedOn" DataType="System.DateTime"/>
+        <Column Name="AreaId" DataType="System.Int32"/>
+        <Column Name="Crew" DataType="System.Byte"/>
+        <Column Name="Type" DataType="System.Byte"/>
+        <Column Name="OriginalLang" DataType="System.String"/>
+        <Column Name="CauseRU" DataType="System.String"/>
+        <Column Name="CauseKK" DataType="System.String"/>
+        <Column Name="CauseEN" DataType="System.String"/>
+        <Column Name="ImpactRU" DataType="System.String"/>
+        <Column Name="ImpactKK" DataType="System.String"/>
+        <Column Name="ImpactEN" DataType="System.String"/>
+        <Column Name="ProtectRU" DataType="System.String"/>
+        <Column Name="ProtectKK" DataType="System.String"/>
+        <Column Name="ProtectEN" DataType="System.String"/>
+        <Column Name="ActNotes" DataType="System.String"/>
+        <Column Name="ClosedOn" DataType="System.DateTime"/>
+        <Column Name="ClosedByUserId" DataType="System.Int32"/>
+        <Column Name="CreatedByUserId" DataType="System.Int32"/>
+        <Column Name="StartedOn" DataType="System.DateTime"/>
+        <Column Name="Id1" DataType="System.Int32"/>
+        <Column Name="Name_RU" DataType="System.String"/>
+        <Column Name="Name_EN" DataType="System.String"/>
+        <Column Name="Name_KK" DataType="System.String"/>
+        <Column Name="FacilityId" DataType="System.Int32"/>
+        <Column Name="IsEventsFromPSS" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="Pos1" DataType="System.String"/>
+        <Column Name="Pos2" DataType="System.String"/>
+        <Column Name="Pos3" DataType="System.String"/>
+        <Column Name="Pos4" DataType="System.String"/>
+        <Column Name="Pos5" DataType="System.String"/>
+        <Column Name="Pos6" DataType="System.String"/>
+        <Column Name="Pos7" DataType="System.String"/>
+        <Column Name="closedByEn" DataType="System.String"/>
+        <Column Name="closedByRu" DataType="System.String"/>
+        <Column Name="Appadd" DataType="System.String"/>
+        <Column Name="approveraddEN" DataType="System.String"/>
+        <Column Name="approveraddRU" DataType="System.String"/>
+        <Column Name="ApprovedByAddOn" DataType="System.DateTime"/>
+        <Column Name="isAddApproved" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="Flag72h" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="ApproverAdd" DataType="System.Int32"/>
+        <Column Name="ActNotes1" DataType="System.String"/>
+        <CommandParameter Name="@actid" DataType="22" Expression="[actid]"/>
+      </TableDataSource>
+      <TableDataSource Name="tActItems" DataType="System.Int32" Enabled="true" TableName="tActItems" SelectCommand="SELECT T.TagName, T.Unit, T.Equipment, D.Name&#13;&#10;FROM &quot;tActItems&quot; T LEFT JOIN &quot;Device&quot; D ON T.DeviceId = D.Id &#13;&#10;where T.actid=@actid&#13;&#10;&#13;&#10;">
+        <Column Name="TagName" DataType="System.String"/>
+        <Column Name="Unit" DataType="System.String"/>
+        <Column Name="Equipment" DataType="System.String"/>
+        <Column Name="Name" DataType="System.String"/>
+        <CommandParameter Name="@actid" DataType="8" Expression="[actid]" DefaultValue="0"/>
+      </TableDataSource>
+      <TableDataSource Name="Approvers" DataType="System.Int32" PropName="Table1" Enabled="true" SelectCommand="--declare @actid as int = 84&#13;&#10;select a.num, actid, a.posid, a.appid, a.appdate, a.isApproved, pos.Name, usr.Name_EN, usr.Name_RU from (&#13;&#10;select id as actid, 1 as num, ApproverPos1 as posid, Approver1 as appid, ApprovedBy1On as appdate, is1Approved as isApproved from tAct where id=@actid and ApproverPos1!=0&#13;&#10;union all&#13;&#10;select id as actid, 2 as num, ApproverPos2 as posid, Approver2 as appid, ApprovedBy2On as appdate, is2Approved as isApproved from tAct where id=@actid and ApproverPos2!=0&#13;&#10;union all&#13;&#10;select id as actid, 3 as num, ApproverPos3 as posid, Approver3 as appid, ApprovedBy3On as appdate, is3Approved as isApproved from tAct where id=@actid and ApproverPos3!=0&#13;&#10;union all&#13;&#10;select id as actid, 4 as num, ApproverPos4 as posid, Approver4 as appid, ApprovedBy4On as appdate, is4Approved as isApproved from tAct where id=@actid and ApproverPos4!=0&#13;&#10;union all&#13;&#10;select id as actid, 5 as num, ApproverPos5 as posid, Approver5 as appid, ApprovedBy5On as appdate, is5Approved as isApproved from tAct where id=@actid and ApproverPos5!=0&#13;&#10;union all&#13;&#10;select id as actid, 6 as num, ApproverPos6 as posid, Approver6 as appid, ApprovedBy6On as appdate, is6Approved as isApproved from tAct where id=@actid and ApproverPos6!=0&#13;&#10;union all&#13;&#10;select id as actid, 7 as num, ApproverPos7 as posid, Approver7 as appid, ApprovedBy7On as appdate, is7Approved as isApproved from tAct where id=@actid and ApproverPos7!=0&#13;&#10;) as a&#13;&#10;left JOIN &quot;tPosition&quot; pos ON a.posid = pos.Id &#13;&#10;left JOIN &quot;tUser&quot; usr ON a.appid = usr.Id &#13;&#10;order by a.num">
+        <Column Name="num" DataType="System.Int32"/>
+        <Column Name="actid" DataType="System.Int32"/>
+        <Column Name="posid" DataType="System.Int32"/>
+        <Column Name="appid" DataType="System.Int32"/>
+        <Column Name="appdate" DataType="System.DateTime"/>
+        <Column Name="isApproved" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="Name" DataType="System.String"/>
+        <Column Name="Name_EN" DataType="System.String"/>
+        <Column Name="Name_RU" DataType="System.String"/>
+        <CommandParameter Name="@actid" DataType="8" Expression="[actid]"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Parameter Name="actid" DataType="System.Int32"/>
+  </Dictionary>
+  <ReportPage Name="Page1" Watermark.Font="Arial, 60pt">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="292.95" CanGrow="true" CanShrink="true" CanBreak="true" BeforeLayoutEvent="ReportTitle1_BeforeLayout">
+      <TextObject Name="Text34" Left="614.25" Top="9.45" Width="94.5" Height="18.9" CanGrow="true" Text="ФОРМА ТШО 153-1&#13;&#10;TCO FORM 153-1" Font="Arial, 6pt"/>
+      <TextObject Name="Text35" Left="113.4" Top="9.45" Width="481.95" Height="56.7" Text="ТЕНГИЗШЕВРОЙЛ/TENGIZCHEVROIL&#13;&#10;АКТ БАЙПАСИРОВАНИЯ УСТРОЙСТВ АВАРИЙНОЙ ЗАЩИТЫ&#13;&#10;BYPASSING CRITICAL PROTECTIONS AKT" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text36" Left="302.4" Top="66.15" Width="56.7" Height="18.9" Text="Акт №" HorzAlign="Right" Font="Arial, 10pt"/>
+      <TextObject Name="Text38" Left="37.8" Top="94.5" Width="132.3" Height="18.9" Text="Участок/Facility:" Font="Arial, 10pt"/>
+      <TextObject Name="Text39" Left="37.8" Top="113.4" Width="132.3" Height="18.9" Text="Дата/Date:" Font="Arial, 10pt"/>
+      <TextObject Name="Text40" Left="37.8" Top="132.3" Width="132.3" Height="18.9" Text="Бригада/Crew №:" Font="Arial, 10pt"/>
+      <TextObject Name="Text56" Left="37.8" Top="160.65" Width="378" Height="18.9" Text="[IIf(Length([tAct.Pos1])&gt;0,&quot;1) &quot;+ [tAct.Pos1],&quot;&quot;)]" HorzAlign="Justify" Font="Arial, 10pt"/>
+      <TextObject Name="Text57" Left="37.8" Top="179.55" Width="378" Height="18.9" Text="[IIf(Length([tAct.Pos2])&gt;0,&quot;2) &quot; + [tAct.Pos2],&quot;&quot;)]" HorzAlign="Justify" Font="Arial, 10pt"/>
+      <TextObject Name="Text58" Left="37.8" Top="198.45" Width="378" Height="18.9" Text="[IIf(Length([tAct.Pos3])&gt;0,&quot;3) &quot; + [tAct.Pos3],&quot;&quot;)]" HorzAlign="Justify" Font="Arial, 10pt"/>
+      <TextObject Name="Text59" Left="37.8" Top="217.35" Width="378" Height="18.9" Text="[IIf(Length([tAct.Pos4])&gt;0,&quot;4) &quot; + [tAct.Pos4],&quot;&quot;)]" HideZeros="true" HorzAlign="Justify" Font="Arial, 10pt"/>
+      <TextObject Name="Text60" Left="37.8" Top="236.25" Width="378" Height="18.9" Text="[IIf(Length([tAct.Pos5])&gt;0,&quot;5) &quot; + [tAct.Pos5],&quot;&quot;)]" HideZeros="true" HorzAlign="Justify" Font="Arial, 10pt"/>
+      <TextObject Name="Text61" Left="37.8" Top="255.15" Width="378" Height="18.9" Text="[IIf(Length([tAct.Pos6])&gt;0,&quot;6) &quot; + [tAct.Pos6],&quot;&quot;)]" HideZeros="true" HorzAlign="Justify" Font="Arial, 10pt"/>
+      <TextObject Name="Text62" Left="37.8" Top="274.05" Width="378" Height="18.9" Text="[IIf(Length([tAct.Pos7])&gt;0,&quot;7) &quot; + [tAct.Pos7],&quot;&quot;)]" HideZeros="true" HorzAlign="Justify" Font="Arial, 10pt"/>
+      <ShapeObject Name="Shape1" Left="472.5" Top="113.4" Width="236.25" Height="113.4"/>
+      <TextObject Name="Text63" Left="481.95" Top="94.5" Width="151.2" Height="18.9" Text="Тип Акта / AKT type:" HorzAlign="Justify" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text64" Left="519.75" Top="122.85" Width="132.3" Height="18.9" Text="Форсажи/Forces" HorzAlign="Justify" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text65" Left="519.75" Top="141.75" Width="132.3" Height="18.9" Text="Байпасы/Bypasses" HorzAlign="Justify" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text66" Left="519.75" Top="160.65" Width="132.3" Height="18.9" Text="2oo3" HorzAlign="Justify" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="txtActType" Printable="false" Left="18.9" Top="9.45" Width="18.9" Height="18.9" Visible="false" Text="[tAct.Type]" HorzAlign="Justify" Font="Arial, 10pt"/>
+      <TextObject Name="Text67" Left="519.75" Top="179.55" Width="160.65" Height="18.9" Text="Отключение/Disable" HorzAlign="Justify" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text68" Left="519.75" Top="198.45" Width="160.65" Height="18.9" Text="Подавление/Inhibit" HorzAlign="Justify" Font="Arial, 10pt, style=Bold"/>
+      <ShapeObject Name="Shape6" Left="491.4" Top="141.75" Width="18.9" Height="18.9" Shape="Ellipse"/>
+      <ShapeObject Name="Shape7" Left="491.4" Top="122.85" Width="18.9" Height="18.9" Shape="Ellipse"/>
+      <ShapeObject Name="Shape8" Left="491.4" Top="160.65" Width="18.9" Height="18.9" Shape="Ellipse"/>
+      <ShapeObject Name="Shape9" Left="491.4" Top="179.55" Width="18.9" Height="18.9" Shape="Ellipse"/>
+      <ShapeObject Name="Shape10" Left="491.4" Top="198.45" Width="18.9" Height="18.9" Shape="Ellipse"/>
+      <ShapeObject Name="rbType" Left="496.4" Top="203.36" Width="9.45" Height="9.45" Fill.Color="Black" Shape="Ellipse"/>
+      <TextObject Name="Text98" Left="368.55" Top="66.15" Width="94.5" Height="18.9" Text="[tAct.Id]" Font="Arial, 10pt, style=Bold, Underline"/>
+      <TextObject Name="Text99" Left="170.1" Top="132.3" Width="94.5" Height="18.9" Text="[tAct.Crew]" Font="Arial, 10pt, style=Underline"/>
+      <TextObject Name="Text100" Left="170.1" Top="113.4" Width="207.9" Height="18.9" Text="[FormatDateTime([tAct.CreatedOn],&quot;dd-MM-yyyy HH:mm:ss&quot;)]" Font="Arial, 10pt, style=Underline"/>
+      <TextObject Name="Text101" Left="170.1" Top="94.5" Width="207.9" Height="18.9" Text="[tAct.Name_RU]/[tAct.Name_EN]" Font="Arial, 10pt, style=Underline"/>
+    </ReportTitleBand>
+    <GroupHeaderBand Name="GroupHeader1" Top="296.95" Width="718.2" Height="56.7" Condition="[tAct.Id]">
+      <TextObject Name="Text4" Left="66.15" Top="37.8" Width="141.75" Height="18.9" Text="Позиция/Position" Font="Arial, 10pt, style=Bold" Style="Header"/>
+      <TextObject Name="Text6" Left="207.9" Top="37.8" Width="113.4" Height="18.9" Text="Установка/Unit" Font="Arial, 10pt, style=Bold" Style="Header"/>
+      <TextObject Name="Text44" Left="330.75" Top="37.8" Width="189" Height="18.9" Text="Оборудование/Equipment" Font="Arial, 10pt, style=Bold" Style="Header"/>
+      <TextObject Name="Text45" Left="529.2" Top="37.8" Width="94.5" Height="18.9" Text="Тип/Type" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text43" Width="708.75" Height="37.8" CanGrow="true" Text="Рассмотрели работу следующего устройства аварийной защиты (перечислить позиции)/Evaluated the work of the following critical protection (list the protections):" Font="Arial, 10pt"/>
+      <DataBand Name="Data1" Top="357.65" Width="718.2" Height="18.9" DataSource="tActItems">
+        <TextObject Name="Text5" Left="66.15" Width="633.15" Height="18.9" Text="[tActItems.TagName]" Font="Arial, 10pt" Style="Data"/>
+        <TextObject Name="Text7" Left="207.9" Width="113.4" Height="18.9" Text="[tActItems.Unit]" Font="Arial, 10pt" Style="Data"/>
+        <TextObject Name="Text46" Left="330.75" Width="189" Height="18.9" Text="[tActItems.Equipment]" Font="Arial, 10pt" Style="Data"/>
+        <TextObject Name="Text47" Left="529.2" Width="189" Height="18.9" Text="[tActItems.Name]" Font="Arial, 10pt" Style="Data"/>
+      </DataBand>
+      <GroupFooterBand Name="GroupFooter1" Top="380.55" Width="718.2" Height="292.95" CanGrow="true" CanShrink="true" BeforePrintEvent="GroupFooter1_BeforePrint" CanBreak="true" Guides="217.35" BeforeLayoutEvent="GroupFooter1_BeforeLayout" AfterLayoutEvent="GroupFooter1_AfterLayout">
+        <TextObject Name="Text48" Width="718.2" Height="47.25" Dock="Top" CanGrow="true" CanShrink="true" Text="И приняли решение о байпасировании данной блокировочной сигнализации до устранения неисправностей в связи со следующими отклонениями в работе (описать причину)/ And made the decision to bypass this critical protection until the deficiencies are resolved due to the following reasons (describe a reason):" HorzAlign="Justify" Font="Arial, 10pt"/>
+        <TextObject Name="Text49" Top="47.25" Width="718.2" Height="18.9" Dock="Top" CanGrow="true" CanShrink="true" Text="[tAct.CauseRU] / [tAct.CauseEN] / [tAct.CauseKK]" Padding="0, 0, 0, 0" HorzAlign="Justify" Font="Arial, 9pt, style=Bold, Italic"/>
+        <TextObject Name="Text50" Top="66.15" Width="718.2" Height="66.15" Dock="Top" CanGrow="true" CanShrink="true" Text="При обсуждении были рассмотрены возможные негативные последствия для персонала, оборудования и экологии в результате байпасирования, исходя из логики управления технологического процесса (перечислить)/ During the discussion the following potential negative consequences for personnel, equipment and environment were evaluated as a result of bypassing due to the process logics (list the consequences):" HorzAlign="Justify" Font="Arial, 10pt"/>
+        <TextObject Name="Text51" Top="132.3" Width="718.2" Height="18.9" Dock="Top" CanGrow="true" CanShrink="true" Text="[tAct.ImpactRU] / [tAct.ImpactEN] / [tAct.ImpactKK]" HorzAlign="Justify" Font="Arial, 9pt, style=Bold, Italic"/>
+        <TextObject Name="Text52" Top="151.2" Width="718.2" Height="28.35" Dock="Top" CanGrow="true" CanShrink="true" Text="Меры защиты необходимые на время работы в режиме байпассирования/ Control measures when bypassing is applied:" HorzAlign="Justify" Font="Arial, 10pt"/>
+        <TextObject Name="Text53" Top="179.55" Width="718.2" Height="18.9" Dock="Top" CanGrow="true" CanShrink="true" Text="[tAct.ProtectRU] / [tAct.ProtectEN] / [tAct.ProtectKK]" HorzAlign="Justify" Font="Arial, 9pt, style=Bold, Italic"/>
+        <TextObject Name="Text96" Top="198.45" Width="718.2" Height="18.9" CanShrink="true" CanBreak="false" Text="[IIf(Length([tAct.ActNotes])&gt;0,&quot;Примечание/Comment:&quot;,&quot;&quot;)]" HideZeros="true" HorzAlign="Justify" Font="Arial, 10pt, style=Bold"/>
+        <TextObject Name="Text97" Top="217.35" Width="718.2" Height="18.9" CanGrow="true" CanShrink="true" CanBreak="false" Text="[IIf(Length([tAct.ActNotes])&gt;0,[tAct.ActNotes],&quot;&quot;)]" HideZeros="true" HorzAlign="Justify" Font="Arial, 10pt"/>
+      </GroupFooterBand>
+    </GroupHeaderBand>
+    <GroupHeaderBand Name="GroupHeader2" Top="677.5" Width="718.2" Height="37.8" Condition="[Approvers.actid]">
+      <TextObject Name="Text55" Left="-37.8" Top="18.9" Width="718.2" Height="18.9" Text="Подписи/ Signs:" HorzAlign="Center" VertAlign="Bottom" Font="Arial, 11pt, style=Bold, Underline"/>
+      <DataBand Name="Data2" Top="719.3" Width="718.2" Height="37.8" BeforeLayoutEvent="Data2_BeforeLayout" DataSource="Approvers">
+        <TextObject Name="Text82" Left="9.45" Width="387.45" Height="18.9" Text="[Approvers.Name]" VertAlign="Bottom" Font="Arial, 10pt, style=Italic"/>
+        <ContainerObject Name="Signature" Left="453.6" Top="2" Width="226.8" Height="33.35" Border.Lines="All" Border.Color="MediumBlue" Border.Style="Double" AfterLayoutEvent="Container1_AfterLayout">
+          <TextObject Name="Text87" Left="75.6" Top="4.45" Width="75.6" Height="28.35" Text="FB One" Padding="0, -5, 2, 0" VertAlign="Bottom" Angle="15" Font="Brush Script MT, 16pt, style=Bold, Italic" TextFill.Color="Gainsboro"/>
+          <TextObject Name="Text85" Left="20.8" Top="13.9" Width="179.55" Height="9.45" Text="[Approvers.Name_RU] / [Approvers.Name_EN]" VertAlign="Bottom" Font="Segoe Print, 5pt, style=Italic" TextFill.Color="MediumBlue"/>
+          <TextObject Name="Text86" Left="18.9" Top="23.9" Width="132.3" Height="9.45" Text="[FormatDateTime([Approvers.appdate],&quot;dd-MM-yyyy HH:mm:ss&quot;)]&#13;&#10;" VertAlign="Bottom" Font="Segoe Print, 5pt, style=Italic" TextFill.Color="MediumBlue"/>
+          <TextObject Name="Text84" Left="2.45" Top="2.45" Width="221.45" Height="9.45" Text="Подписано электронно / Signed electronically" HorzAlign="Center" VertAlign="Bottom" Font="Arial, 6pt, style=Bold" TextFill.Color="MediumBlue"/>
+        </ContainerObject>
+        <CheckBoxObject Name="chbApproved" Left="415.8" Width="18.9" Height="18.9" Visible="false" DataColumn="Approvers.isApproved"/>
+      </DataBand>
+      <GroupFooterBand Name="GroupFooter2" Top="761.1" Width="718.2" Height="113.4" BeforeLayoutEvent="GroupFooter2_BeforeLayout">
+        <TextObject Name="Text79" Width="718.2" Height="18.9" Text="Сверх одной смены" Font="Arial, 10pt, style=Bold, Underline"/>
+        <TextObject Name="Text81" Left="9.45" Top="18.9" Width="387.45" Height="28.35" Text="[tAct.Appadd]" Font="Arial, 10pt, style=Italic"/>
+        <TextObject Name="Text80" Top="47.25" Width="718.2" Height="18.9" Text="Введение в действие блокировочного сигнала" Font="Arial, 10pt, style=Bold, Underline"/>
+        <TextObject Name="Text83" Left="9.45" Top="66.15" Width="387.45" Height="18.9" Text="Оператор пульта управления/Console Operator" Font="Arial, 10pt, style=Italic"/>
+        <ContainerObject Name="SignatureAdd" Left="434.7" Top="5.45" Width="226.8" Height="33.35" Border.Lines="All" Border.Color="MediumBlue" Border.Style="Double" AfterLayoutEvent="Container1_AfterLayout">
+          <TextObject Name="Text88" Left="75.6" Top="4.45" Width="75.6" Height="28.35" Text="FB One" Padding="0, -5, 2, 0" VertAlign="Bottom" Angle="15" Font="Brush Script MT, 16pt, style=Bold, Italic" TextFill.Color="Gainsboro"/>
+          <TextObject Name="Text89" Left="20.8" Top="13.9" Width="179.55" Height="9.45" Text="[tAct.approveraddEN] / [tAct.approveraddRU]" VertAlign="Bottom" Font="Segoe Print, 5pt, style=Italic" TextFill.Color="MediumBlue"/>
+          <TextObject Name="Text90" Left="18.9" Top="23.9" Width="132.3" Height="9.45" Text="[FormatDateTime([tAct.ApprovedByAddOn],&quot;dd-MM-yyyy HH:mm:ss&quot;)]&#13;&#10;" VertAlign="Bottom" Font="Segoe Print, 5pt, style=Italic" TextFill.Color="MediumBlue"/>
+          <TextObject Name="Text91" Left="2.45" Top="2.45" Width="221.45" Height="9.45" Text="Подписано электронно / Signed electronically" HorzAlign="Center" VertAlign="Bottom" Font="Arial, 6pt, style=Bold" TextFill.Color="MediumBlue"/>
+        </ContainerObject>
+        <ContainerObject Name="SignatureOper" Left="434.7" Top="47.25" Width="226.8" Height="33.35" Visible="false" Border.Lines="All" Border.Color="MediumBlue" Border.Style="Double" AfterLayoutEvent="Container1_AfterLayout">
+          <TextObject Name="Text92" Left="75.6" Top="4.45" Width="75.6" Height="28.35" Text="FB One" Padding="0, -5, 2, 0" VertAlign="Bottom" Angle="15" Font="Brush Script MT, 16pt, style=Bold, Italic" TextFill.Color="Gainsboro"/>
+          <TextObject Name="Text93" Left="20.8" Top="13.9" Width="179.55" Height="9.45" Text="[tAct.closedByEn] / [tAct.closedByRu]" VertAlign="Bottom" Font="Segoe Print, 5pt, style=Italic" TextFill.Color="MediumBlue"/>
+          <TextObject Name="Text94" Left="18.9" Top="23.9" Width="132.3" Height="9.45" Text="[FormatDateTime([tAct.ClosedOn],&quot;dd-MM-yyyy HH:mm:ss&quot;)]&#13;&#10;" VertAlign="Bottom" Font="Segoe Print, 5pt, style=Italic" TextFill.Color="MediumBlue"/>
+          <TextObject Name="Text95" Left="2.45" Top="2.45" Width="221.45" Height="9.45" Text="Подписано электронно / Signed electronically" HorzAlign="Center" VertAlign="Bottom" Font="Arial, 6pt, style=Bold" TextFill.Color="MediumBlue"/>
+        </ContainerObject>
+        <CheckBoxObject Name="chbAddapp" Left="415.8" Top="18.9" Width="18.9" Height="18.9" Visible="false" DataColumn="tAct.isAddApproved"/>
+        <TextObject Name="txtActStatus" Left="330.75" Top="75.6" Width="94.5" Height="18.9" Visible="false" Text="[tAct.StatusId]" Font="Arial, 10pt"/>
+      </GroupFooterBand>
+    </GroupHeaderBand>
+    <PageFooterBand Name="PageFooter1" Top="878.5" Width="718.2" Height="28.35">
+      <TextObject Name="Text31" Left="661.5" Width="56.7" Height="28.35" Dock="Right" CanGrow="true" CanShrink="true" Text="[PageN]" HorzAlign="Right" Font="Arial, 10pt" Style="Footer"/>
+      <TextObject Name="Text69" Width="217.35" Height="28.35" Text="Отдел поддержки систем автоматизации&#13;&#10;Automation Support Group" Font="Arial, 8pt"/>
+      <TextObject Name="Text70" Left="226.8" Width="160.65" Height="28.35" Text="Вступает в силу: январь 2011&#13;&#10;Effective: January, 2011" Font="Arial, 8pt"/>
+      <TextObject Name="Text71" Left="415.8" Width="236.25" Height="28.35" Text="Административные изменения: апрель 2012&#13;&#10;Administrative changes: April, 2012" Font="Arial, 8pt"/>
+    </PageFooterBand>
+  </ReportPage>
+</Report>

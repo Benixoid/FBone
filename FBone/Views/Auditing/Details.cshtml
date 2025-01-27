@@ -1,0 +1,455 @@
+﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+@using FBone.Models.Audits;
+@using FBone.Service
+@model FBone.Models.Audits.AuditDetailsModel
+
+@{    
+    var disabled = "";
+    if (Model.Audit.Id == 0)
+    {
+        ViewData["Title"] = @localizer["create"];
+    }
+    else
+    {
+        //ViewData["Title"] = @localizer["edit"];
+        ViewData["Title"] = localizer["edit"].Value + " № " + @Model.Audit.Id;
+
+        //ViewData["Title"] = @localizer["edit"] + " № " + @Model.act.Id;
+    }
+}
+<div class="row">
+    <div class="col-md-12">
+        <h1 style="text-align:center">
+            @ViewData["Title"] -
+            @if (Model.Audit.StatusCode == (int)Enums.AuditStatusCode.Draft)
+            {
+                @localizer["statusdraft"]
+            }
+            else if (Model.Audit.StatusCode == (int)Enums.AuditStatusCode.OnApproval)
+            {
+                @localizer["statusonapproval"]                
+            }
+            else if (Model.Audit.StatusCode == (int)Enums.AuditStatusCode.InProgress)
+            {
+                @localizer["statusinprogress"]
+            }
+            else if (Model.Audit.StatusCode == (int)Enums.AuditStatusCode.OnVerification)
+            {
+                @localizer["statusonverifiation"]
+            }
+            else if (Model.Audit.StatusCode == (int)Enums.AuditStatusCode.Closed)
+            {
+                @localizer["statusclosed"]
+            }            
+        </h1>
+    </div>
+</div>
+<form asp-action="SaveAudit" onsubmit="return validateForm()">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    
+    <input type="hidden" asp-for="@Model.Audit.Id" />
+    <input type="hidden" asp-for="@Model.Audit.StatusCode" />
+    <input type="hidden" asp-for="@Model.Audit.CreatedByUserID" />
+    <input type="hidden" asp-for="@Model.Audit.Tags" id="audittags" />    
+    <input type="hidden" asp-for="@Model.startApproval" id="startApproval" />
+
+    <div class="row">
+        <div class="col-sm-5">
+            <div class="form-group">
+                <label asp-for="@Model.Audit.Name" class="control-label">@localizer["name"]</label>
+                <input asp-for="@Model.Audit.Name" class="form-control" />
+                <span asp-validation-for="@Model.Audit.Name" class="text-danger"></span>
+            </div>
+        </div>
+    </div>    
+    <div class="row">
+        <div class="col-sm-2">
+            <label asp-for="@Model.Audit.CreatedAt" class="control-label">@localizer["createdat"]</label>
+            <input asp-for="@Model.Audit.CreatedAt" class="form-control" disabled />            
+        </div>
+        <div class="col-sm-3">
+            <label asp-for="@Model.Audit.CreatedByUser.Name_EN" class="control-label">@localizer["createdby"]</label>
+            <input asp-for="@Model.Audit.CreatedByUser.Name_EN" class="form-control" disabled />
+        </div>
+        @if (Model.Audit.StatusCode == (int)Enums.AuditStatusCode.Closed){
+            <div class="col-sm-2">
+                <label asp-for="@Model.Audit.CloseDate" class="control-label">@localizer["closedat"]</label>
+                <input asp-for="@Model.Audit.CloseDate" class="form-control" disabled />
+            </div>
+        }        
+    </div>
+    <div class="row">
+        <div class="col-sm-2">
+            <label for="facilityid">@localizer["facility"]:</label>
+            <select asp-for="@Model.Audit.FacilityId" class="form-select" asp-items="@Model.Facilities" id="facilityid" disabled="@(disabled != "" ? "disabled" : null)" onchange="facilityChanged()"></select>
+        </div>
+        <div class="col-sm-2">
+            <label for="areaid">@localizer["area"]:</label>
+            <select asp-for="@Model.Audit.AreaId" class="form-select" asp-items="@Model.Areas" id="areaid" disabled="@(disabled != "" ? "disabled" : null)" onchange="areaChanged()"></select>
+        </div>
+        <div class="col-sm-2">
+            <label for="shiftdate">@localizer["shiftdate"]</label>
+            <input asp-for="@Model.Audit.ShiftDate" id="shiftdate" class="form-control" readonly="@(disabled == "" ? null: "readonly" )" onchange="dateChanged()"/>
+            <span asp-validation-for="@Model.Audit.ShiftDate" class="text-danger"></span>
+        </div>
+        <div class="col-sm-2">
+            <label for="actid">@localizer["act"]:</label>
+            <select asp-for="@Model.Audit.ActId" class="form-select" asp-items="@Model.Acts" id="actid" disabled="@(disabled != "" ? "disabled" : null)"></select>
+        </div>
+    </div>
+    <div class="row" style="padding: 10px;">
+        <div class="col-md-4" style="text-align: center">
+            @if (Model.FileId != 0)
+            {
+                <div id="attachmentContainer">
+                    <label>Attached file</label>
+                    <a asp-action="GetAttachment" asp-route-auditId="@Model.Audit.Id" asp-route-fileId="@Model.FileId" id="getAttachment">
+                        @Model.FileName
+                    </a>
+                    @if (Model.CanEdit)
+                    {
+                        <input id="rmAttachment" type="button" class="btn btn-sm btn-secondary" value="@localizer["remove"]" onclick="removeAttachment(@Model.Audit.Id);" />
+                    }
+                </div>
+            }
+            @if (Model.CanEdit && Model.FileId == 0)
+            {
+                <div>
+                    <label>@localizer["attach"]</label>
+                    <br />
+                    <input type="hidden" asp-for="FileId" />
+                    <input type="file" name="Attachment" accept=".pdf,.xls,.xlsx,.doc,.docx" onchange="fileChange(event);" />
+                    <br /><span asp-validation-for="@Model.FileId" class="text-danger"></span>
+                </div>
+            }
+            <div id="newAttachmentContainer" hidden>
+                <label>@localizer["attach"]</label>
+                <br />
+                <input type="hidden" asp-for="FileId" />
+                <input type="file" name="Attachment" accept=".pdf,.xls,.xlsx,.doc,.docx" onchange="fileChange(event);" />
+                <br /><span asp-validation-for="@Model.FileId" class="text-danger"></span>
+            </div>
+        </div>
+    </div>    
+    <div class="row">
+        <div class="col-md-5"></div>
+        <div class="col-md-2">
+            <div style="text-align: center">
+                <b>@localizer["taglistmessage"]</b>
+            </div>
+            <div style="text-align: center">
+                <label>@localizer["add_tag"]:</label>
+                <select class="my-form-control" asp-items="@Model.Tags" id="acttags" disabled="@(disabled != "" ? "disabled" : null)"></select>
+                <button title="@localizer["add_title"]" type="button" class="btn btn-outline-secondary btn-sm" aria-label="Left Align" onclick="AddNewLi();" @disabled>
+                    <svg width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+                    </svg>
+                </button>
+            </div>
+            @if (!string.IsNullOrEmpty(Model.Audit.Tags))
+            {
+                <ul id="ultaglist">
+                    @foreach (var item in Model.Audit.Tags.Split("/-/"))
+                    {
+                        <li id="@item">@item
+                            <button title="@localizer["remove_title"]" type="button" class="btn btn-outline-secondary btn-sm" aria-label="Left Align" onclick="RemoveLi('@item');" @disabled>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dash" viewBox="0 0 16 16">
+                                    <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z" />
+                                </svg>
+                            </button>
+                        </li>                        
+                    }
+                </ul>
+            }            
+        </div>
+        <div class="col-md-1"></div>
+    </div>
+    <div class="row">
+        <div class="col-sm-3">
+            <label for="resposibleid">@localizer["responsible"]</label>
+            <select asp-for="@Model.Audit.ActionOwnerPositionId" class="form-select" onchange="positionChanged()" asp-items="@Model.Positions" id="actionowner" disabled="@(disabled != "" ? "disabled" : null)"></select>
+        </div>
+        <div class="col-sm-7">
+            <label>@localizer["personsinposition"]:</label>
+            <textarea asp-for="@Model.UsersInPosition" class="form-control" rows="4" id="personsinposition" readonly></textarea>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-10">
+            <label for="requiredaction">@localizer["requiredaction"]</label>
+            <textarea asp-for="@Model.Audit.RequiredActionNote" class="form-control" rows="4" id="requiredaction" disabled="@(disabled != "" ? "disabled" : null)"></textarea>
+            <span asp-validation-for="@Model.Audit.RequiredActionNote" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div style="text-align: center">
+            @if (Model.CanEdit && Model.Audit.StatusCode == (int)Enums.AuditStatusCode.Draft)
+            {
+                <div class="form-group">
+                    <div class="checkbox">
+                        <input type="checkbox" class="startApprove"> @localizer["startapprove"]
+                    </div>
+                </div>
+            }
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-3">
+                        <a asp-action="Index"
+                            asp-route-PageIndex="@Model.PageIndex"
+                            asp-route-itemperpage="@Model.ItemPerPage"
+                            asp-route-SelectedFacilityId="@Model.SelectedFacilityId"
+                            asp-route-SelectedAreaId="@Model.SelectedAreaId"
+                            asp-route-SelectedActStatus="@Model.SelectedAuditStatus"
+                            asp-route-SmartSearch="@Model.SmartSearch"
+                            asp-route-DateFromS="@Model.DateFrom"
+                            asp-route-DateToS="@Model.DateTo"
+                            class="btn btn-secondary">@localizer["backtolist"]</a>
+                        @if (Model.CanEdit)
+                        {
+                            <input type="submit" value="@localizer["saveaudit"]" class="btn btn-primary" />
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>    
+</form>
+    
+
+@section scripts
+{
+    @{await Html.RenderPartialAsync($"_ValidationScriptsPartial");}
+    <script>
+        function positionChanged(){
+            var actionowner = $("#actionowner");
+            var personsinposition = $("#personsinposition");
+            var host = "@Model.URL";
+            personsinposition.val('');
+
+            $.ajax({
+                url: host + "/api/Users/GetUsersByPosition?positionId=" + actionowner.val(),
+                method: "GET",
+                success: function(data) {
+                    personsinposition.val(data);                    
+                },
+            error: function(xhr, status, error) {
+                toastr.error("An error occurred... Status: " + error + " " + xhr.status + " " + xhr.responseText)
+            }
+            });
+
+        }
+        function clearAllLi(){
+            var ultaglist = $("#ultaglist");
+            ultaglist.empty();
+            var audittags = $("#audittags");
+            audittags.val('');
+        }
+
+        function AddNewLi(){
+            
+            var audittags = $("#audittags");
+            var tagList = [];
+            if (audittags.val().length>0)
+                tagList = audittags.val().split("/-/");
+            console.log(tagList);
+            var cmbActTags = $("#acttags");
+            var itemToAdd = cmbActTags.val();            
+            var index = tagList.indexOf('' + itemToAdd);
+            if (index === -1){
+                tagList.push(itemToAdd);
+                console.log(tagList.length);
+                if (tagList.length>1)
+                    audittags.val(tagList.join('/-/'));
+                else
+                    audittags.val(itemToAdd);
+                var ultaglist = $("#ultaglist");
+                ultaglist.append(getLi(itemToAdd));
+            }
+        }
+
+        function getLi(tagName) {
+            var title="@localizer["remove_title"]"
+            var li = '<li id="' + tagName +'">' + tagName;
+            li += '<button title="' + title + '" type="button" class="btn btn-outline-secondary btn-sm" aria-label="Left Align" onclick=\'RemoveLi("'+tagName+'");\'>';
+            li += '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dash" viewBox="0 0 16 16"><path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z"></path></svg></button></li>';
+            
+            return li;
+        }
+
+        function RemoveLi(tag) {
+            $("#" + tag).remove();
+            var audittags = $("#audittags");
+            var tagList = audittags.val().split("/-/");
+            var index = tagList.indexOf('' + tag);
+            tagList.splice(index,1);
+            audittags.val(tagList.join('/-/'));
+        }
+
+        function validateForm() {
+            return true;
+        }
+
+        function removeAttachment(auditId){
+            var host = "@Model.URL";
+            $.ajax({
+                url: host + `/Auditing/DeleteAttachment`,
+                contentType: "application/json; charset=utf-8",
+                data: {
+                    auditId: auditId
+                },
+                dataType: "json",
+                success: function (result, status, xhr) {
+                    alert('Attachment deleted');
+                    const attachment = document.getElementById('attachmentContainer');
+                    attachment.remove();
+
+                    const newAttachmentContainer = document.getElementById('newAttachmentContainer');
+                    newAttachmentContainer.hidden = false;
+
+                },
+                error: function (xhr, status, error) {
+                    alert(`Error when deleting attachment: ${error}`);
+                }
+            });
+        }
+
+        function fileChange(event){
+            var host = "@Model.URL";
+            const files = event.target.files;            
+
+            for(let i = 0; i < files.length; i++){
+                if (files[i].size > 10485760) {
+                    alert("The file size exceeds maximum limit of 1mb. File wasn't uploaded.");
+                    event.target.value = "";
+                    return;
+                }
+            }
+
+            let formData = new FormData();
+
+            for(let i = 0; i < files.length; i++){
+                formData.append("files", files[i]);
+            }
+
+            $.ajax({
+                url: host + `/Auditing/UploadAttachment`,
+                contentType: false,
+                processData: false,
+                data: formData,
+                type: "POST",
+                success: function (result, status, xhr) {
+                    document.getElementById('FileId').value = result.fileId;                    
+                },
+                error: function (xhr, status, error) {
+                    alert(`Error when uploading attachment: ${error}`);
+                }
+            });
+        }
+
+        function loadActs()
+        {
+            var host = "@Model.URL";
+            var cmbArea = $("#areaid");
+            var edtShifDate = $("#shiftdate");
+            var cmbActs = $("#actid");
+            var cmbActTags = $("#acttags");
+            cmbActs.empty();
+            cmbActTags.empty();
+            clearAllLi();
+            $.ajax({
+                url: host + "/api/ActCombo/GetActIdsByShiftDateAndArea?areaid=" + cmbArea.val() + "&shiftDate="+edtShifDate.val(),
+                method: "GET",
+                success: function(data) {
+                    $.each(data,
+                        function(i, data) {
+                            cmbActs.append($('<option/>',
+                                {
+                                    value: data,
+                                    text: data
+                                }));
+                        });
+                    loadTags();
+                },
+            error: function(xhr, status, error) {
+                toastr.error("An error occurred... Status: " + error + " " + xhr.status + " " + xhr.responseText)
+            }
+            });            
+        }
+
+        function loadTags()
+        {
+            var host = "@Model.URL";            
+            var cmbActs = $("#actid");
+            var cmbActTags = $("#acttags");                        
+            cmbActTags.empty();
+            clearAllLi();
+            if (cmbActs.val())
+            {
+                $.ajax({
+                    url: host + "/api/ActCombo/GetActTags?actid=" + cmbActs.val(),
+                    method: "GET",
+                    success: function(data) {
+                        $.each(data,
+                            function(i, data) {
+                                cmbActTags.append($('<option/>',
+                                    {
+                                        value: data,
+                                        text: data
+                                    }));
+                            });
+
+                    },
+                    error: function(xhr, status, error) {
+                        toastr.error("An error occurred... Status: " + error + " " + xhr.status + " " + xhr.responseText)
+                    }
+                });
+            }
+            
+        }
+
+        function dateChanged()
+        {
+            loadActs();
+        }
+
+        function areaChanged(){
+            loadActs();
+        }
+
+        function facilityChanged() {
+            var host = "@Model.URL";
+            var cmbFacility = $("#facilityid");
+            var cmbArea = $("#areaid");
+            cmbArea.empty();
+            $.ajax({
+                url: host + "/api/Area/" + cmbFacility.val(),
+                method: "GET",
+                success: function(data) {                    
+                    $.each(data,
+                        function(i, data) {
+                            cmbArea.append($('<option/>',
+                                {
+                                    value: data.value,
+                                    text: data.text
+                                }));
+                        });
+                    loadActs();
+                },
+                error: function(xhr, status, error) {
+                    toastr.error("An error occurred... Status: " + error + " " + xhr.status + " " + xhr.responseText)
+                }
+            });
+
+        }
+
+        $(".startApprove").change(function() {
+
+            if ($(this).is(':checked')) {
+                $("#startApproval").val(true);
+            } else {
+                $("#startApproval").val(false);
+            }
+
+        });
+    </script>
+}

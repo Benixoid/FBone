@@ -1,0 +1,20 @@
+﻿@model FBone.Models.NMode.Totals
+
+@{
+    Layout = "_NModeLayout";
+}
+<form asp-controller="NMTotalRecords" asp-action="Totals" method="post">
+    <!-- Here you can loop through your ObjectList and generate input fields -->
+    @for (int i = 0; i < Model.Records.Count; i++)
+    {
+        @Html.HiddenFor(m => m.Records[i].Id)
+        @Html.HiddenFor(m => m.Records[i].NormalTotalPercent)
+        @Html.DisplayNameFor(m=>m.Records[0].NormalTotalPercent)
+        <input type="text" name="Records[@i].DayNormalTotalPercent" value="@Model.Records[i].DayNormalTotalPercent" />
+        @*<input type="text" name="Records[@i].NightNormalTotalPercent" value="@Model.Records[i].NightNormalTotalPercent" />*@
+        <!-- Add more properties as needed -->
+    }
+    <input type="hidden" name="NormalTotals" value=@Model.NormalTotals />
+
+    <button type="submit">Submit1</button>
+</form>

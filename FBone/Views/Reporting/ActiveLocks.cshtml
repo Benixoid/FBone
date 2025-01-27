@@ -1,0 +1,172 @@
+﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+@model FBone.Models.Reporting.ActiveLocksModel
+
+@{
+    ViewData["Title"] = @localizer["welcome"];
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { name = "MainForm", id = "MainForm" }))
+{
+<div class="col-md-12">
+    @localizer["facility"]
+    @Html.DropDownListFor(m => m.FacilityId, Model.Facilities, new { @class = "my-form-control", onchange = "this.form.submit();" })
+    @localizer["type"]
+    @Html.DropDownListFor(m => m.TypeId, Model.Types, new { @class = "my-form-control", onchange = "this.form.submit();" })    
+    <a asp-area="" asp-controller="Reporting" asp-action="ActiveLocksExcel" asp-route-facilityid="@Model.FacilityId" asp-route-typeid="@Model.TypeId" class="btn btn-default"><img alt="" src="/images/excel.png" width="45" />@localizer["exportExcel"]</a>
+</div>
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <table class="my-table nowrap hover" width="100%" id="eventTable" role="banner" aria-describedby="activelocks">
+            <thead>
+                <tr>
+                    <th>
+                        @localizer["facility"]
+                    </th>
+                    <th>
+                        @localizer["col_area"]
+                    </th>
+                    <th>
+                        @localizer["col_device"]
+                    </th>
+                    <th>
+                        @localizer["col_tagnumber"]
+                    </th>
+                    <th>
+                        @localizer["col_eventtype"]
+                    </th>
+                    <th>
+                        @localizer["col_service"]
+                    </th>
+                    <th>
+                        @localizer["col_settime"]
+                    </th>
+                    <th>
+                        @localizer["col_actnum"]
+                    </th>
+                    <th>
+                        @localizer["col_cause"]
+                    </th>
+                    <th>
+                        @localizer["col_from"]
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.ActiveEventList)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Facility)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Area)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Device)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Tagnumber)
+                        </td>
+                        <td>
+                            @if (item.EventType == 1)
+                            {
+                                @localizer["force"]
+                            }
+                            else if (item.EventType == 2)
+                            {
+                                @localizer["bypass"]
+                            }
+                            else if (item.EventType == 3)
+                            {
+                                @localizer["disable"]
+                            }
+                            else if (item.EventType == 4)
+                            {
+                                @localizer["inhibit"]
+                            }
+                        </td>
+                        <td>
+                            @{
+                                string service = "";
+                                if (!string.IsNullOrEmpty(item.Service))
+                                {
+                                    if (item.Service.Length < 10 && item.Service.Length > 0)
+                                    {
+                                        service = item.Service;
+                                    }
+                                    else if (item.Service.Length > 9)
+                                    {
+                                        service = item.Service.Substring(0, 10);
+                                    }
+                                }
+                            }
+                            <span title="@item.Service">@service</span>
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.SetTime)
+                        </td>
+                        <td>
+                            @if (item.ActNum != 0)
+                            {
+                                <span id="actnume_@item.Id">@item.ActNum</span>
+                            }
+                            else
+                            {
+                                <span id="actnume_@item.Id"></span>
+                            }
+                        </td>
+                        <td>
+                            @{
+                                string cause = "";
+                                if (!string.IsNullOrEmpty(item.Cause))
+                                {
+                                    if (item.Cause.Length < 15 && item.Cause.Length > 0)
+                                    {
+                                        cause = item.Cause;
+                                    }
+                                    else if (item.Cause.Length > 14)
+                                    {
+                                        cause = item.Cause.Substring(0, 15);
+                                    }
+                                }
+                            }
+                            <span id="causee_@item.Id" title="@item.Cause">@cause</span>
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DataOrigin)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section scripts
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var host = "@Model.Host";
+            var lang = "@Model.Lang";
+            $("#eventTable").DataTable({
+                language: {
+                    url: host + '/lib/datatables/lang/' + lang + '.json'
+                },
+                "paging": false,
+                "bLengthChange": false
+            });
+        });
+
+         function GeneratePeriodic() {
+             var host = "@Model.Host";
+             var lang = "@Model.Lang";
+             var facilityId = $('#facility').val();
+             var url1 = host + '/Reporting/GeneratePeriodic?start=' + start + "&end=" + end + "&facilityid=" + facilityId + "&flag1=" + flag1 + "&flag2=" + flag2;
+            window.location.href = url1;
+        }
+
+    </script>
+}

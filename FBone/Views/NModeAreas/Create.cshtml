@@ -1,0 +1,53 @@
+﻿@model FBone.Models.NMode.Area
+@{
+    Layout = "_NModeLayout";
+}
+
+@{
+    ViewBag.Title = $"NMArea Create";
+}
+
+
+<h1>Create</h1>
+
+<h4>Area</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StartingHour" class="control-label"></label>
+                <input asp-for="StartingHour" class="form-control" />
+                <span asp-validation-for="StartingHour" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="InterpolatedValuesCount" class="control-label"></label>
+                <input asp-for="InterpolatedValuesCount" class="form-control" />
+                <span asp-validation-for="InterpolatedValuesCount" class="text-danger"></span>
+            </div>
+            <label class="form-check-label" style="padding-top:20px;padding-bottom:20px;">
+                @Html.DisplayNameFor(model => model.SplitToShift)
+                <input class="form-check-input" asp-for="SplitToShift" checked />
+            </label>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

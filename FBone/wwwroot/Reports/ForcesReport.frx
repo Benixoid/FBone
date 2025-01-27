@@ -1,0 +1,338 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="03/17/2022 08:08:44" ReportInfo.Modified="03/08/2023 10:05:00" ReportInfo.CreatorVersion="2022.1.0.0">
+  <Styles Name="Standard">
+    <Style Name="Title" Font="Arial, 12pt, style=Bold"/>
+    <Style Name="Header" Font="Arial, 10pt, style=Bold"/>
+    <Style Name="Group" Font="Arial, 10pt, style=Bold"/>
+    <Style Name="Data" Font="Arial, 10pt"/>
+    <Style Name="Footer" Font="Arial, 10pt"/>
+    <Style Name="EvenRows" Fill.Color="WhiteSmoke" Font="Arial, 10pt"/>
+  </Styles>
+  <Dictionary>
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqtbDBSzlTxxx25U8ly727rfaFqrdFv4TZu87uuOA305V971atLB3gugc7kMSuLMbJ4qVrHU8Y4PTpJ0S577pxVCF7458nC5dMvhjji3PYrpWtMvlFUT54BTFZm4IPYht1LCbrr250vrQm1lekNMB2NRyZE5ZT/qdmFNmatUjlBIAm250P8aNLXDfMxQ8+nQ82iUtq6QO77hZlmyycKyD638UeFb3mcgJTLeMCpgzNtKw=">
+      <TableDataSource Name="Event" Alias="Daily" DataType="System.Int32" PropName="Tag" Enabled="true" TableName="Event" SelectCommand="--declare @ReportGroup as nvarchar(100) = 'KTL'&#13;&#10;--declare @ReportDate as datetime&#13;&#10;--set @ReportDate = CONVERT(varchar(10), year(GETDATE())) + '-' + CONVERT(varchar(10), month(GETDATE())) + '-' + CONVERT(varchar(10), day(GETDATE())) + CAST('06:00:00' AS DATETIME)&#13;&#10;declare @ReportDate as datetime = cast(CONVERT(varchar(10), year(GETDATE())) + '-' + CONVERT(varchar(10), month(GETDATE())) + '-' + CONVERT(varchar(10), day(GETDATE())) + ' 06:00:00' as datetime2)&#13;&#10;declare @ReportDate_prev as datetime= DATEADD(day,-1,@ReportDate)&#13;&#10;&#13;&#10;&#13;&#10;&#13;&#10;SELECT a.Name_EN as areaName, T.Tagnumber, ai.Unit, d.Name as device, T.Service, E.EventDateTimeSet as start, E.EventDateTimeClear as closed, E.Action, E.TypeId, ac.CauseEN,ac.CauseKK,ac.CauseRU,ai.ActId, iif(E.TypeId=1,'Forces','Bypasses') as type&#13;&#10;FROM &quot;Event&quot; E &#13;&#10;INNER JOIN &quot;Tag&quot; T ON E.TagId = T.Id &#13;&#10;INNER JOIN &quot;tArea&quot; a ON t.AreaId = a.Id &#13;&#10;left JOIN &quot;tActItems&quot; ai ON e.ActItemId = ai.Id&#13;&#10;left JOIN &quot;tAct&quot; ac ON ai.ActId = ac.Id&#13;&#10;left join Device d on t.DeviceId = d.Id&#13;&#10;&#13;&#10;where e.ReportIt=1 &#13;&#10;and e.EventDateTimeClear is not null&#13;&#10;and e.EventDateTimeSet&gt;@ReportDate_prev&#13;&#10;and e.EventDateTimeClear&lt;@ReportDate&#13;&#10;and e.TypeId in (1,2)&#13;&#10;and a.id in (select id from tArea where ReportGroup = @ReportGroup)&#13;&#10;&#13;&#10;order by a.Name_EN, typeid, EventDateTimeSet">
+        <Column Name="ActId" DataType="System.Int32"/>
+        <Column Name="Action" DataType="System.String"/>
+        <Column Name="areaName" DataType="System.String"/>
+        <Column Name="CauseEN" DataType="System.String"/>
+        <Column Name="CauseKK" DataType="System.String"/>
+        <Column Name="CauseRU" DataType="System.String"/>
+        <Column Name="closed" DataType="System.DateTime"/>
+        <Column Name="Device" DataType="System.String"/>
+        <Column Name="Service" DataType="System.String"/>
+        <Column Name="start" DataType="System.DateTime"/>
+        <Column Name="Tagnumber" DataType="System.String"/>
+        <Column Name="Type" DataType="System.String"/>
+        <Column Name="TypeId" DataType="System.Int32"/>
+        <Column Name="Unit" DataType="System.String"/>
+        <CommandParameter Name="@ReportGroup" DataType="22" Expression="[ReportGroup]"/>
+      </TableDataSource>
+      <TableDataSource Name="Table" Alias="Event_current" DataType="System.Int32" Enabled="true" SelectCommand="--declare @ReportGroup as nvarchar(100) = 'KTL'&#13;&#10;--declare @ReportDate as datetime&#13;&#10;--set @ReportDate = CONVERT(varchar(10), year(GETDATE())) + '-' + CONVERT(varchar(10), month(GETDATE())) + '-' + CONVERT(varchar(10), day(GETDATE())) + CAST('06:00:00' AS DATETIME)&#13;&#10;declare @ReportDate as datetime  = cast(CONVERT(varchar(10), year(GETDATE())) + '-' + CONVERT(varchar(10), month(GETDATE())) + '-' + CONVERT(varchar(10), day(GETDATE())) + ' 06:00:00' as datetime2)&#13;&#10;&#13;&#10;SELECT a.Name_EN as areaName, T.Tagnumber, ai.Unit, d.Name as device, T.Service, E.EventDateTimeSet, E.Action, E.TypeId, ac.CauseEN,ac.CauseRU,ac.CauseKK, ai.ActId, iif(E.TypeId=1,'Forces','Bypasses') as type, ac.ActNotes&#13;&#10;FROM &quot;Event&quot; E &#13;&#10;INNER JOIN &quot;Tag&quot; T ON E.TagId = T.Id &#13;&#10;INNER JOIN &quot;tArea&quot; a ON t.AreaId = a.Id &#13;&#10;left JOIN &quot;tActItems&quot; ai ON e.ActItemId = ai.Id&#13;&#10;left JOIN &quot;tAct&quot; ac ON ai.ActId = ac.Id&#13;&#10;left join Device d on t.DeviceId = d.Id&#13;&#10;where e.ReportIt=1 &#13;&#10;and e.EventDateTimeSet&lt;@ReportDate&#13;&#10;and (e.EventDateTimeClear is null &#13;&#10;or (e.EventDateTimeClear&gt;@ReportDate and e.EventDateTimeSet&lt;@ReportDate))&#13;&#10;and e.TypeId in (1,2)&#13;&#10;and a.id in (select id from tArea where ReportGroup = @ReportGroup)&#13;&#10;order by a.Name_EN, type, EventDateTimeSet&#13;&#10;">
+        <Column Name="ActId" DataType="System.Int32"/>
+        <Column Name="Action" DataType="System.String"/>
+        <Column Name="areaName" DataType="System.String"/>
+        <Column Name="CauseEN" DataType="System.String"/>
+        <Column Name="Device" DataType="System.String"/>
+        <Column Name="EventDateTimeSet" DataType="System.DateTime"/>
+        <Column Name="Service" DataType="System.String"/>
+        <Column Name="Tagnumber" DataType="System.String"/>
+        <Column Name="type" DataType="System.String"/>
+        <Column Name="TypeId" DataType="System.Int32"/>
+        <Column Name="CauseRU" DataType="System.String"/>
+        <Column Name="CauseKK" DataType="System.String"/>
+        <Column Name="Unit" DataType="System.String"/>
+        <Column Name="ActNotes" DataType="System.String"/>
+        <CommandParameter Name="@ReportGroup" DataType="22" Expression="[ReportGroup]"/>
+      </TableDataSource>
+      <TableDataSource Name="Table1" Alias="TotalDaily" DataType="System.Int32" Enabled="true" SelectCommand="--Active total&#13;&#10;--declare @ReportGroup as nvarchar(100) = 'SGP'&#13;&#10;--declare @ReportDate as datetime&#13;&#10;--set @ReportDate = CONVERT(varchar(10), year(GETDATE())) + '-' + CONVERT(varchar(10), month(GETDATE())) + '-' + CONVERT(varchar(10), day(GETDATE())) + CAST('06:00:00' AS DATETIME)&#13;&#10;declare @ReportDate as datetime  = cast(CONVERT(varchar(10), year(GETDATE())) + '-' + CONVERT(varchar(10), month(GETDATE())) + '-' + CONVERT(varchar(10), day(GETDATE())) + ' 06:00:00' as datetime2)&#13;&#10;declare @ReportDate_prev as datetime = DATEADD(day,-1,@ReportDate)&#13;&#10;&#13;&#10;&#13;&#10;select areaName,iif(device is null,'',device) as device,Shift,sum(Force) as Force,sum(Bypass) as Bypass, sum(ActiveForce) as ActiveForce, sum(ActiveBypass) as ActiveBypass from&#13;&#10;(&#13;&#10;SELECT a.Name_EN as areaName, d.Name as device, iif(E.shifttype=2,'Day','Night') as Shift, 0 as Force, 0 as Bypass, 0 as ActiveForce, count(*) as ActiveBypass &#13;&#10;FROM &quot;Event&quot; E &#13;&#10;INNER JOIN &quot;Tag&quot; T ON E.TagId = T.Id &#13;&#10;INNER JOIN &quot;tArea&quot; a ON t.AreaId = a.Id &#13;&#10;left join Device d on t.DeviceId = d.Id&#13;&#10;where e.ReportIt=1 &#13;&#10;and e.EventDateTimeSet&lt;@ReportDate&#13;&#10;and (e.EventDateTimeClear is null &#13;&#10;or (e.EventDateTimeClear&gt;@ReportDate and e.EventDateTimeSet&lt;@ReportDate))&#13;&#10;and e.TypeId =2&#13;&#10;and a.id in (select id from tArea where ReportGroup = @ReportGroup)&#13;&#10;group by E.shifttype, a.Name_EN, d.Name&#13;&#10;union all&#13;&#10;SELECT a.Name_EN as areaName, d.Name as device, iif(E.shifttype=2,'Day','Night') as Shift,0 as Force, 0 as Bypass, count(*) as ActiveForce, 0 as ActiveBypass&#13;&#10;FROM &quot;Event&quot; E &#13;&#10;INNER JOIN &quot;Tag&quot; T ON E.TagId = T.Id &#13;&#10;INNER JOIN &quot;tArea&quot; a ON t.AreaId = a.Id &#13;&#10;left join Device d on t.DeviceId = d.Id&#13;&#10;where e.ReportIt=1 &#13;&#10;and e.EventDateTimeSet&lt;@ReportDate&#13;&#10;and (e.EventDateTimeClear is null &#13;&#10;or (e.EventDateTimeClear&gt;@ReportDate and e.EventDateTimeSet&lt;@ReportDate))&#13;&#10;and e.TypeId =1&#13;&#10;and a.id in (select id from tArea where ReportGroup = @ReportGroup)&#13;&#10;group by E.shifttype, a.Name_EN, d.Name&#13;&#10;union all&#13;&#10;SELECT a.Name_EN as areaName, d.Name as device, iif(E.shifttype=2,'Day','Night') as Shift, 0 as Force, count(*) as Bypass,  0 as ActiveForce, 0 as ActiveBypass&#13;&#10;FROM &quot;Event&quot; E &#13;&#10;INNER JOIN &quot;Tag&quot; T ON E.TagId = T.Id &#13;&#10;INNER JOIN &quot;tArea&quot; a ON t.AreaId = a.Id &#13;&#10;left join Device d on t.DeviceId = d.Id&#13;&#10;where e.ReportIt=1 &#13;&#10;and e.EventDateTimeSet&lt;@ReportDate&#13;&#10;and e.EventDateTimeSet&gt;@ReportDate_prev&#13;&#10;and e.EventDateTimeClear&lt;@ReportDate&#13;&#10;and e.TypeId=2&#13;&#10;and a.id in (select id from tArea where ReportGroup = @ReportGroup)&#13;&#10;group by E.shifttype, a.Name_EN, d.Name&#13;&#10;union all&#13;&#10;SELECT a.Name_EN as areaName, d.Name as device, iif(E.shifttype=2,'Day','Night') as Shift, count(*) as Force, 0 as Bypass, 0 as ActiveForce, 0 as ActiveBypass&#13;&#10;FROM &quot;Event&quot; E &#13;&#10;INNER JOIN &quot;Tag&quot; T ON E.TagId = T.Id &#13;&#10;INNER JOIN &quot;tArea&quot; a ON t.AreaId = a.Id &#13;&#10;left join Device d on t.DeviceId = d.Id&#13;&#10;where e.ReportIt=1 &#13;&#10;and e.EventDateTimeSet&lt;@ReportDate&#13;&#10;and e.EventDateTimeSet&gt;@ReportDate_prev&#13;&#10;and e.EventDateTimeClear&lt;@ReportDate&#13;&#10;and e.TypeId=1&#13;&#10;and a.id in (select id from tArea where ReportGroup = @ReportGroup)&#13;&#10;group by E.shifttype, a.Name_EN, d.Name) a&#13;&#10;group by areaName,device,Shift&#13;&#10;order by areaName,shift,device&#13;&#10;">
+        <Column Name="areaName" DataType="System.String"/>
+        <Column Name="device" DataType="System.String"/>
+        <Column Name="Shift" DataType="System.String"/>
+        <Column Name="Force" DataType="System.Int32"/>
+        <Column Name="Bypass" DataType="System.Int32"/>
+        <Column Name="ActiveForce" DataType="System.Int32"/>
+        <Column Name="ActiveBypass" DataType="System.Int32"/>
+        <CommandParameter Name="@ReportGroup" DataType="22" Expression="[ReportGroup]"/>
+      </TableDataSource>
+      <TableDataSource Name="Table2" Alias="CumulativeWeeklyT10" DataType="System.Int32" Enabled="true" SelectCommand="--Cumulative weekly TOP10&#13;&#10;&#13;&#10;--declare @ReportGroup as nvarchar(100) = 'KTL'&#13;&#10;--declare @ReportDate as datetime&#13;&#10;--declare @ReportDate_prev as datetime&#13;&#10;--set @ReportDate = CONVERT(varchar(10), year(GETDATE())) + '-' + CONVERT(varchar(10), month(GETDATE())) + '-' + CONVERT(varchar(10), day(GETDATE())) + CAST('06:00:00' AS DATETIME)&#13;&#10;declare @ReportDate as datetime  = cast(CONVERT(varchar(10), year(GETDATE())) + '-' + CONVERT(varchar(10), month(GETDATE())) + '-' + CONVERT(varchar(10), day(GETDATE())) + ' 06:00:00' as datetime2)&#13;&#10;declare @ReportDate_prev as datetime = DATEADD(day,-7,@ReportDate)&#13;&#10;&#13;&#10;SELECT top(10) a.Name_EN as areaName, T.Tagnumber, d.Name as device, T.Service, sum(datediff(ss, E.EventDateTimeSet, E.EventDateTimeClear)) as duration, sum(datediff(ss, E.EventDateTimeSet, E.EventDateTimeClear)) % 60 as sec, sum(datediff(ss, E.EventDateTimeSet, E.EventDateTimeClear))/60 % 60 as min, sum(datediff(ss, E.EventDateTimeSet, E.EventDateTimeClear))/3600 % 24 as hours,sum(datediff(ss, E.EventDateTimeSet, E.EventDateTimeClear))/86400 % 30 as days, count(*) as number&#13;&#10;FROM &quot;Event&quot; E &#13;&#10;INNER JOIN &quot;Tag&quot; T ON E.TagId = T.Id &#13;&#10;INNER JOIN &quot;tArea&quot; a ON t.AreaId = a.Id &#13;&#10;left join Device d on t.DeviceId = d.Id&#13;&#10;&#13;&#10;where e.ReportIt=1 &#13;&#10;and e.EventDateTimeSet&lt;@ReportDate&#13;&#10;and e.EventDateTimeSet&gt;@ReportDate_prev&#13;&#10;and e.EventDateTimeClear&lt;@ReportDate&#13;&#10;and e.TypeId in (1,2)&#13;&#10;and a.id in (select id from tArea where ReportGroup = @ReportGroup)&#13;&#10;group by a.Name_EN, T.Tagnumber, d.Name, T.Service&#13;&#10;order by duration desc, a.Name_EN, T.Tagnumber&#13;&#10;&#13;&#10;">
+        <Column Name="areaName" DataType="System.String"/>
+        <Column Name="Tagnumber" DataType="System.String"/>
+        <Column Name="device" DataType="System.String"/>
+        <Column Name="Service" DataType="System.String"/>
+        <Column Name="duration" DataType="System.Int32"/>
+        <Column Name="sec" DataType="System.Int32"/>
+        <Column Name="min" DataType="System.Int32"/>
+        <Column Name="hours" DataType="System.Int32"/>
+        <Column Name="days" DataType="System.Int32"/>
+        <Column Name="number" DataType="System.Int32"/>
+        <CommandParameter Name="@ReportGroup " DataType="22" Expression="[ReportGroup]"/>
+      </TableDataSource>
+      <TableDataSource Name="Table3" Alias="CumulativeQurterlyT10" DataType="System.Int32" Enabled="true" SelectCommand="--Cumulative TOP10&#13;&#10;&#13;&#10;--declare @ReportGroup as nvarchar(100) = 'KTL'&#13;&#10;--declare @ReportDate as datetime&#13;&#10;--declare @ReportDate_prev as datetime&#13;&#10;--set @ReportDate = CONVERT(varchar(10), year(GETDATE())) + '-' + CONVERT(varchar(10), month(GETDATE())) + '-' + CONVERT(varchar(10), day(GETDATE())) + CAST('06:00:00' AS DATETIME)&#13;&#10;declare @ReportDate as datetime  = cast(CONVERT(varchar(10), year(GETDATE())) + '-' + CONVERT(varchar(10), month(GETDATE())) + '-' + CONVERT(varchar(10), day(GETDATE())) + ' 06:00:00' as datetime2)&#13;&#10;declare @ReportDate_prev as datetime = DATEADD(month,-3,@ReportDate)&#13;&#10;&#13;&#10;SELECT top(10) a.Name_EN as areaName, T.Tagnumber, d.Name as device, T.Service, sum(datediff(ss, E.EventDateTimeSet, E.EventDateTimeClear)) as duration, sum(datediff(ss, E.EventDateTimeSet, E.EventDateTimeClear)) % 60 as sec, sum(datediff(ss, E.EventDateTimeSet, E.EventDateTimeClear))/60 % 60 as min, sum(datediff(ss, E.EventDateTimeSet, E.EventDateTimeClear))/3600 % 24 as hours,sum(datediff(ss, E.EventDateTimeSet, E.EventDateTimeClear))/86400 % 30 as days, count(*) as number&#13;&#10;FROM &quot;Event&quot; E &#13;&#10;INNER JOIN &quot;Tag&quot; T ON E.TagId = T.Id &#13;&#10;INNER JOIN &quot;tArea&quot; a ON t.AreaId = a.Id &#13;&#10;left join Device d on t.DeviceId = d.Id&#13;&#10;&#13;&#10;where e.ReportIt=1 &#13;&#10;and e.EventDateTimeSet&gt;@ReportDate_prev&#13;&#10;and e.EventDateTimeClear&lt;@ReportDate&#13;&#10;and e.TypeId in (1,2)&#13;&#10;and a.id in (select id from tArea where ReportGroup = @ReportGroup)&#13;&#10;group by a.Name_EN, T.Tagnumber, d.Name, T.Service&#13;&#10;order by duration desc, a.Name_EN, T.Tagnumber&#13;&#10;&#13;&#10;">
+        <Column Name="areaName" DataType="System.String"/>
+        <Column Name="Tagnumber" DataType="System.String"/>
+        <Column Name="device" DataType="System.String"/>
+        <Column Name="Service" DataType="System.String"/>
+        <Column Name="duration" DataType="System.Int32"/>
+        <Column Name="sec" DataType="System.Int32"/>
+        <Column Name="min" DataType="System.Int32"/>
+        <Column Name="hours" DataType="System.Int32"/>
+        <Column Name="days" DataType="System.Int32"/>
+        <Column Name="number" DataType="System.Int32"/>
+        <CommandParameter Name="@ReportGroup" DataType="22" Expression="[ReportGroup]"/>
+      </TableDataSource>
+      <TableDataSource Name="Table4" Alias="LastMonthMore12H" DataType="System.Int32" Enabled="true" SelectCommand="--declare @ReportGroup as nvarchar(100) = 'KTL'&#13;&#10;--declare @ReportDate as datetime&#13;&#10;--declare @ReportDate_prev as datetime&#13;&#10;--set @ReportDate = CONVERT(varchar(10), year(GETDATE())) + '-' + CONVERT(varchar(10), month(GETDATE())) + '-' + CONVERT(varchar(10), day(GETDATE())) + CAST('06:00:00' AS DATETIME)&#13;&#10;declare @ReportDate as datetime  = cast(CONVERT(varchar(10), year(GETDATE())) + '-' + CONVERT(varchar(10), month(GETDATE())) + '-' + CONVERT(varchar(10), day(GETDATE())) + ' 06:00:00' as datetime2)&#13;&#10;declare @ReportDate_prev as datetime = DATEADD(month,-1,@ReportDate)&#13;&#10;&#13;&#10;select areaname,count(*) as tagcnt, sum(duration) % 60 as sec, sum(duration)/60 % 60 as min, sum(duration)/3600 % 24 as hours,sum(duration)/86400 % 30 as days, sum(duration)/2592000 % 30 as month from (&#13;&#10;SELECT a.Name_EN as areaName, T.Tagnumber as tag, sum(datediff(ss, E.EventDateTimeSet, E.EventDateTimeClear)) as duration&#13;&#10;FROM &quot;Event&quot; E &#13;&#10;INNER JOIN &quot;Tag&quot; T ON E.TagId = T.Id &#13;&#10;INNER JOIN &quot;tArea&quot; a ON t.AreaId = a.Id &#13;&#10;left join Device d on t.DeviceId = d.Id&#13;&#10;&#13;&#10;where e.ReportIt=1 &#13;&#10;and e.EventDateTimeSet&gt;@ReportDate_prev&#13;&#10;and e.EventDateTimeClear&lt;@ReportDate&#13;&#10;and e.TypeId in (1,2)&#13;&#10;and a.id in (select id from tArea where ReportGroup = @ReportGroup)&#13;&#10;group by a.Name_EN, t.tagnumber&#13;&#10;having sum(datediff(ss, E.EventDateTimeSet, E.EventDateTimeClear))&gt;43200&#13;&#10;) a &#13;&#10;group by areaName">
+        <Column Name="areaname" DataType="System.String"/>
+        <Column Name="tagcnt" DataType="System.Int32"/>
+        <Column Name="sec" DataType="System.Int32"/>
+        <Column Name="min" DataType="System.Int32"/>
+        <Column Name="hours" DataType="System.Int32"/>
+        <Column Name="days" DataType="System.Int32"/>
+        <Column Name="month" DataType="System.Int32"/>
+        <CommandParameter Name="@ReportGroup" DataType="22" Expression="[ReportGroup]"/>
+      </TableDataSource>
+      <TableDataSource Name="Table5" Alias="LastMonthMore12H_Details" DataType="System.Int32" Enabled="true" SelectCommand="--declare @ReportGroup as nvarchar(100) = 'KTL'&#13;&#10;--declare @ReportDate as datetime&#13;&#10;--declare @ReportDate_prev as datetime&#13;&#10;--set @ReportDate = CONVERT(varchar(10), year(GETDATE())) + '-' + CONVERT(varchar(10), month(GETDATE())) + '-' + CONVERT(varchar(10), day(GETDATE())) + CAST('06:00:00' AS DATETIME)&#13;&#10;declare @ReportDate as datetime  = cast(CONVERT(varchar(10), year(GETDATE())) + '-' + CONVERT(varchar(10), month(GETDATE())) + '-' + CONVERT(varchar(10), day(GETDATE())) + ' 06:00:00' as datetime2)&#13;&#10;declare @ReportDate_prev as datetime = DATEADD(month,-1,@ReportDate)&#13;&#10;&#13;&#10;SELECT a.Name_EN as areaName, T.Tagnumber as tag, sum(datediff(ss, E.EventDateTimeSet, E.EventDateTimeClear)) as duration, count(*) as cnt, iif(t.isFG = 1, 'FG', 'Non-FG') as FG,sum(datediff(ss, E.EventDateTimeSet, E.EventDateTimeClear)) % 60 as sec, sum(datediff(ss, E.EventDateTimeSet, E.EventDateTimeClear))/60 % 60 as min, sum(datediff(ss, E.EventDateTimeSet, E.EventDateTimeClear))/3600 % 24 as hours,sum(datediff(ss, E.EventDateTimeSet, E.EventDateTimeClear))/86400 % 30 as days&#13;&#10;FROM &quot;Event&quot; E &#13;&#10;INNER JOIN &quot;Tag&quot; T ON E.TagId = T.Id &#13;&#10;INNER JOIN &quot;tArea&quot; a ON t.AreaId = a.Id &#13;&#10;left join Device d on t.DeviceId = d.Id&#13;&#10;&#13;&#10;where e.ReportIt=1 &#13;&#10;and e.EventDateTimeSet&gt;@ReportDate_prev&#13;&#10;and e.EventDateTimeClear&lt;@ReportDate&#13;&#10;and e.TypeId in (1,2)&#13;&#10;and a.id in (select id from tArea where ReportGroup = @ReportGroup)&#13;&#10;group by a.Name_EN, t.tagnumber,isFG&#13;&#10;having sum(datediff(ss, E.EventDateTimeSet, E.EventDateTimeClear))&gt;43200&#13;&#10;order by a.Name_EN,3 desc">
+        <Column Name="areaName" DataType="System.String"/>
+        <Column Name="tag" DataType="System.String"/>
+        <Column Name="duration" DataType="System.Int32"/>
+        <Column Name="cnt" DataType="System.Int32"/>
+        <Column Name="FG" DataType="System.String"/>
+        <Column Name="sec" DataType="System.Int32"/>
+        <Column Name="min" DataType="System.Int32"/>
+        <Column Name="hours" DataType="System.Int32"/>
+        <Column Name="days" DataType="System.Int32"/>
+        <CommandParameter Name="@ReportGroup" DataType="22" Expression="[ReportGroup]"/>
+      </TableDataSource>
+      <TableDataSource Name="Table6" Alias="Summary" DataType="System.Int32" Enabled="true" SelectCommand="--Summary report&#13;&#10;--declare @ReportGroup as nvarchar(100) = 'KTL'&#13;&#10;--declare @ReportDate as datetime&#13;&#10;--set @ReportDate = CONVERT(varchar(10), year(GETDATE())) + '-' + CONVERT(varchar(10), month(GETDATE())) + '-' + CONVERT(varchar(10), day(GETDATE())) + CAST('06:00:00' AS DATETIME)&#13;&#10;declare @ReportDate as datetime  = cast(CONVERT(varchar(10), year(GETDATE())) + '-' + CONVERT(varchar(10), month(GETDATE())) + '-' + CONVERT(varchar(10), day(GETDATE())) + ' 06:00:00' as datetime2)&#13;&#10;declare @ReportDate_prev as datetime = DATEADD(day,-1,@ReportDate)&#13;&#10;&#13;&#10;&#13;&#10;select areaName,iif(fg=0 ,'NonFG','FG') as fg,sum(Force) as Force,sum(Bypass) as Bypass, sum(ActiveForce) as ActiveForce, sum(ActiveBypass) as ActiveBypass, sum(newForce) as newForce, sum(newByp) as newByp, sum(si153) as si153 from&#13;&#10;(&#13;&#10;SELECT a.Name_EN as areaName, t.isFG as fg, 0 as Force, 0 as Bypass, 0 as ActiveForce, count(*) as ActiveBypass, 0 as newForce, 0 as newByp, 0 as si153 &#13;&#10;FROM &quot;Event&quot; E &#13;&#10;INNER JOIN &quot;Tag&quot; T ON E.TagId = T.Id &#13;&#10;INNER JOIN &quot;tArea&quot; a ON t.AreaId = a.Id &#13;&#10;left join Device d on t.DeviceId = d.Id&#13;&#10;where e.ReportIt=1 &#13;&#10;and e.EventDateTimeSet&lt;@ReportDate&#13;&#10;and (e.EventDateTimeClear is null &#13;&#10;or (e.EventDateTimeClear&gt;@ReportDate and e.EventDateTimeSet&lt;@ReportDate))&#13;&#10;and e.TypeId =2&#13;&#10;and a.id in (select id from tArea where ReportGroup = @ReportGroup)&#13;&#10;group by a.Name_EN, t.isFG&#13;&#10;union all&#13;&#10;SELECT a.Name_EN as areaName, t.isFG as fg, 0 as Force, 0 as Bypass, count(*) as ActiveForce, 0 as ActiveBypass, 0 as newForce, 0 as newByp, 0 as si153&#13;&#10;FROM &quot;Event&quot; E &#13;&#10;INNER JOIN &quot;Tag&quot; T ON E.TagId = T.Id &#13;&#10;INNER JOIN &quot;tArea&quot; a ON t.AreaId = a.Id &#13;&#10;left join Device d on t.DeviceId = d.Id&#13;&#10;where e.ReportIt=1 &#13;&#10;and e.EventDateTimeSet&lt;@ReportDate&#13;&#10;and (e.EventDateTimeClear is null &#13;&#10;or (e.EventDateTimeClear&gt;@ReportDate and e.EventDateTimeSet&lt;@ReportDate))&#13;&#10;and e.TypeId =1&#13;&#10;and a.id in (select id from tArea where ReportGroup = @ReportGroup)&#13;&#10;group by a.Name_EN, t.isFG&#13;&#10;union all&#13;&#10;SELECT a.Name_EN as areaName, t.isFG as fg, 0 as Force, count(*) as Bypass,  0 as ActiveForce, 0 as ActiveBypass, 0 as newForce, 0 as newByp, 0 as si153&#13;&#10;FROM &quot;Event&quot; E &#13;&#10;INNER JOIN &quot;Tag&quot; T ON E.TagId = T.Id &#13;&#10;INNER JOIN &quot;tArea&quot; a ON t.AreaId = a.Id &#13;&#10;left join Device d on t.DeviceId = d.Id&#13;&#10;where e.ReportIt=1 &#13;&#10;and e.EventDateTimeSet&lt;@ReportDate&#13;&#10;and e.EventDateTimeSet&gt;@ReportDate_prev&#13;&#10;and e.EventDateTimeClear&lt;@ReportDate&#13;&#10;and e.TypeId=2&#13;&#10;and a.id in (select id from tArea where ReportGroup = @ReportGroup)&#13;&#10;group by a.Name_EN, t.isFG&#13;&#10;union all&#13;&#10;SELECT a.Name_EN as areaName, t.isFG as fg, count(*) as Force, 0 as Bypass, 0 as ActiveForce, 0 as ActiveBypass, 0 as newForce, 0 as newByp, 0 as si153&#13;&#10;FROM &quot;Event&quot; E &#13;&#10;INNER JOIN &quot;Tag&quot; T ON E.TagId = T.Id &#13;&#10;INNER JOIN &quot;tArea&quot; a ON t.AreaId = a.Id &#13;&#10;left join Device d on t.DeviceId = d.Id&#13;&#10;where e.ReportIt=1 &#13;&#10;and e.EventDateTimeSet&lt;@ReportDate&#13;&#10;and e.EventDateTimeSet&gt;@ReportDate_prev&#13;&#10;and e.EventDateTimeClear&lt;@ReportDate&#13;&#10;and e.TypeId=1&#13;&#10;and a.id in (select id from tArea where ReportGroup = @ReportGroup)&#13;&#10;group by a.Name_EN, t.isFG&#13;&#10;union all&#13;&#10;SELECT a.Name_EN as areaName, t.isFG as fg, 0 as Force, 0 as Bypass, 0 as ActiveForce, 0 as ActiveBypass, count(*) as newForce, 0 as newByp, 0 as si153&#13;&#10;FROM &quot;Event&quot; E &#13;&#10;INNER JOIN &quot;Tag&quot; T ON E.TagId = T.Id &#13;&#10;INNER JOIN &quot;tArea&quot; a ON t.AreaId = a.Id &#13;&#10;left join Device d on t.DeviceId = d.Id&#13;&#10;where e.ReportIt=1 &#13;&#10;and e.EventDateTimeSet&gt;@ReportDate_prev&#13;&#10;and e.EventDateTimeSet&lt;@ReportDate&#13;&#10;and (e.EventDateTimeClear is null &#13;&#10;or e.EventDateTimeClear&gt;@ReportDate)&#13;&#10;and e.TypeId = 1&#13;&#10;and a.id in (select id from tArea where ReportGroup = @ReportGroup)&#13;&#10;group by a.Name_EN, t.isFG&#13;&#10;union all&#13;&#10;SELECT a.Name_EN as areaName, t.isFG as fg, 0 as Force, 0 as Bypass, 0 as ActiveForce, 0 as ActiveBypass, 0 as newForce, count(*) as newByp, 0 as si153&#13;&#10;FROM &quot;Event&quot; E &#13;&#10;INNER JOIN &quot;Tag&quot; T ON E.TagId = T.Id &#13;&#10;INNER JOIN &quot;tArea&quot; a ON t.AreaId = a.Id &#13;&#10;left join Device d on t.DeviceId = d.Id&#13;&#10;where e.ReportIt=1 &#13;&#10;and e.EventDateTimeSet&gt;@ReportDate_prev&#13;&#10;and e.EventDateTimeSet&lt;@ReportDate&#13;&#10;and (e.EventDateTimeClear is null &#13;&#10;or e.EventDateTimeClear&gt;@ReportDate)&#13;&#10;and e.TypeId = 2&#13;&#10;and a.id in (select id from tArea where ReportGroup = @ReportGroup)&#13;&#10;group by a.Name_EN, t.isFG&#13;&#10;union all&#13;&#10;SELECT a.Name_EN as areaName, t.isFG as fg, 0 as Force, 0 as Bypass, 0 as ActiveForce, 0 as ActiveBypass, 0 as newForce, 0 as newByp, count(*) as si153&#13;&#10;FROM &quot;Event&quot; E &#13;&#10;INNER JOIN &quot;Tag&quot; T ON E.TagId = T.Id &#13;&#10;INNER JOIN &quot;tArea&quot; a ON t.AreaId = a.Id &#13;&#10;left join Device d on t.DeviceId = d.Id&#13;&#10;left join tActItems ai on e.ActItemId = ai.Id&#13;&#10;left join tAct ac on ai.ActId = ac.Id&#13;&#10;left JOIN ActHistory ah ON ac.Id = ah.ActId&#13;&#10;where e.ReportIt=1&#13;&#10;and ah.ActionCode = 7&#13;&#10;and e.AddedManually=0&#13;&#10;and e.EventDateTimeSet&gt;@ReportDate_prev&#13;&#10;and e.EventDateTimeSet&lt;@ReportDate&#13;&#10;and (e.EventDateTimeSet&lt;ac.CreatedOn or e.EventDateTimeSet&lt;ah.date)&#13;&#10;and a.id in (select id from tArea where ReportGroup = @ReportGroup)&#13;&#10;group by a.Name_EN, t.isFG&#13;&#10;) a&#13;&#10;group by areaName,fg&#13;&#10;order by areaName,fg&#13;&#10;">
+        <Column Name="areaName" DataType="System.String"/>
+        <Column Name="fg" DataType="System.String"/>
+        <Column Name="Force" DataType="System.Int32"/>
+        <Column Name="Bypass" DataType="System.Int32"/>
+        <Column Name="ActiveForce" DataType="System.Int32"/>
+        <Column Name="ActiveBypass" DataType="System.Int32"/>
+        <Column Name="newForce" DataType="System.Int32"/>
+        <Column Name="newByp" DataType="System.Int32"/>
+        <Column Name="si153" DataType="System.Int32"/>
+        <CommandParameter Name="@ReportGroup" DataType="22" Expression="[ReportGroup]"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Parameter Name="ReportGroup" DataType="System.String"/>
+    <Total Name="Total_area" TotalType="Count" Evaluator="Data1" PrintOn="GroupFooter3"/>
+    <Total Name="Total_type" TotalType="Count" Evaluator="Data1" PrintOn="GroupFooter2"/>
+    <Total Name="Total_daily_area" TotalType="Count" Evaluator="Data2" PrintOn="GroupFooter1"/>
+    <Total Name="Total_daily_type" TotalType="Count" Evaluator="Data2" PrintOn="GroupFooter4"/>
+  </Dictionary>
+  <ReportPage Name="Page1" Landscape="true" PaperWidth="297" PaperHeight="210" RawPaperSize="9" FirstPageSource="15" OtherPagesSource="15" LastPageSource="15" Watermark.Font="Arial, 60pt">
+    <ReportTitleBand Name="ReportTitle1" Width="1047.06" Height="47.25">
+      <TextObject Name="Text1" Top="9.45" Width="1047.06" Height="28.35" Text="[ReportGroup] Forces and Bypasses Status Report for [FormatDateTime(AddDays([Date],-1),&quot;dd-MMM-yyyy&quot;)]" HorzAlign="Center" Font="Arial, 16pt, style=Bold"/>
+      <LineObject Name="Line5" Top="37.8" Width="1046.5" Border.Style="DashDotDot" Diagonal="true"/>
+    </ReportTitleBand>
+    <DataBand Name="Data14" Top="51.25" Width="1047.06" Height="66.15">
+      <TextObject Name="Text146" Left="141.75" Width="481.95" Height="28.35" Text="Summary" Font="Arial, 14pt, style=Bold"/>
+      <TextObject Name="Text147" Top="47.25" Width="18.9" Height="18.9" Text="#" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text148" Left="75.6" Top="47.25" Width="141.75" Height="18.9" Text="FG/NonFG" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text150" Left="18.9" Top="47.25" Width="56.7" Height="18.9" Text="Area" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text151" Left="217.35" Top="47.25" Width="94.5" Height="18.9" Text="Total Forces" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text152" Left="311.85" Top="47.25" Width="94.5" Height="18.9" Text="Still Active" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text153" Left="510.3" Top="47.25" Width="113.4" Height="18.9" Text="Total Bypasses" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text154" Left="623.7" Top="47.25" Width="94.5" Height="18.9" Text="Still Active" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text163" Left="406.35" Top="47.25" Width="113.4" Height="18.9" Text="New forces" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text165" Left="718.2" Top="47.25" Width="141.75" Height="18.9" Text="New Bypasses" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text167" Left="859.95" Top="47.25" Width="141.75" Height="18.9" Text="Not align with SI153" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <DataBand Name="Data15" Top="121.4" Width="1047.06" Height="18.9" DataSource="Table6">
+        <TextObject Name="Text156" Left="23.35" Width="56.7" Height="18.9" Border.Lines="All" Text="[Summary.areaName]" VertAlign="Center" Font="Arial, 10pt"/>
+        <TextObject Name="Text157" Left="80.6" Width="132.3" Height="18.9" Border.Lines="All" Text="[Summary.fg]" VertAlign="Center" Font="Arial, 10pt"/>
+        <TextObject Name="Text158" Left="212.9" Width="99.85" Height="18.9" Border.Lines="All" Text="[IIf([Summary.Force] != 0,[Summary.Force],&quot;&quot;)]&#13;&#10;" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+        <TextObject Name="Text159" Left="312.85" Width="94.5" Height="18.9" Border.Lines="All" Text="[IIf([Summary.ActiveForce] != 0,[Summary.ActiveForce],&quot;&quot;)]" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+        <TextObject Name="Text160" Left="520.75" Width="94.5" Height="18.9" Border.Lines="All" Text="[IIf([Summary.Bypass] != 0,[Summary.Bypass],&quot;&quot;)]" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+        <TextObject Name="Text161" Left="615.25" Width="103.95" Height="18.9" Border.Lines="All" Text="[IIf([Summary.ActiveBypass] != 0,[Summary.ActiveBypass],&quot;&quot;)]" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+        <TextObject Name="Text162" Width="23.9" Height="18.9" Border.Lines="All" GrowToBottom="true" Text="[Row#]" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+        <TextObject Name="Text164" Left="406.35" Width="113.4" Height="18.9" Border.Lines="All" Text="[IIf([Summary.newForce] != 0,[Summary.newForce],&quot;&quot;)]" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+        <TextObject Name="Text166" Left="718.2" Width="141.75" Height="18.9" Border.Lines="All" Text="[IIf([Summary.newByp] != 0,[Summary.NewByp],&quot;&quot;)]" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+        <TextObject Name="Text168" Left="859.95" Width="141.75" Height="18.9" Border.Lines="All" Text="[IIf([Summary.si153] != 0,[Summary.si153],&quot;&quot;)]" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+      </DataBand>
+    </DataBand>
+    <DataBand Name="Data16" Top="144.3" Width="1047.06" Height="37.8">
+      <TextObject Name="Text27" Left="9.45" Top="9.45" Width="746.55" Height="18.9" Text="Up to Date Active Forces and Bypasses [FormatDateTime([Date],&quot;dd-MMM-yyyy&quot;)] 06:00:00" Font="Arial, 12pt, style=Bold"/>
+      <LineObject Name="Line1" Top="9.45" Width="1046.5" Border.Style="DashDotDot" Diagonal="true"/>
+    </DataBand>
+    <GroupHeaderBand Name="GroupHeader1" Top="209" Width="1047.06" Height="24.35" KeepWithData="true" Condition="[Event_current.areaName]">
+      <TextObject Name="Text24" Top="5.45" Width="498.96" Height="18.9" Text="[Event_current.areaName] Area - Forces and Bypasses" Font="Arial, 10pt, style=Bold" Style="Group"/>
+      <DataHeaderBand Name="DataHeader2" Top="186.1" Width="1047.06" Height="18.9" Border.Lines="Bottom" Border.Width="2" RepeatOnEveryPage="true">
+        <TextObject Name="Text31" Left="-2.55" Width="18.9" Height="18.9" Text="#" Font="Arial, 10pt, style=Bold"/>
+        <TextObject Name="Text36" Left="378" Width="94.5" Height="18.9" Text="Forced" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+        <TextObject Name="Text32" Left="18.9" Width="85.05" Height="18.9" Text="Device" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+        <TextObject Name="Text33" Left="103.95" Width="151.2" Height="18.9" Text="Tagname" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+        <TextObject Name="Text34" Left="255.15" Width="122.85" Height="18.9" Text="Unit" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+        <TextObject Name="Text38" Left="472.5" Width="75.6" Height="18.9" Text="ACT #" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+        <TextObject Name="Text40" Left="548.1" Width="359.1" Height="18.9" Text="Cause" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+        <TextObject Name="Text42" Left="907.2" Width="139.75" Height="18.9" Text="Comment" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      </DataHeaderBand>
+      <GroupHeaderBand Name="GroupHeader2" Top="237.35" Width="1047.06" Height="18.9" KeepWithData="true" Condition="[Event_current.type]">
+        <TextObject Name="Text25" Left="47.25" Width="291.06" Height="18.9" Text="[Event_current.type]" Font="Arial, 10pt"/>
+        <DataBand Name="Data1" Top="260.25" Width="1047.06" Height="18.9" Border.Lines="All" CanGrow="true" EvenStyle="EvenRows" DataSource="Table">
+          <TextObject Name="Text28" Left="103.95" Width="151.2" Height="18.9" Border.Lines="All" GrowToBottom="true" Text="[Event_current.Tagnumber]" VertAlign="Center" Font="Arial, 10pt"/>
+          <TextObject Name="Text29" Left="23.9" Width="80.05" Height="18.9" Border.Lines="All" GrowToBottom="true" Text="[Event_current.Device]" VertAlign="Center" Font="Arial, 10pt"/>
+          <TextObject Name="Text35" Left="255.15" Width="122.85" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Event_current.Unit]" VertAlign="Center" Font="Arial, 10pt"/>
+          <TextObject Name="Text37" Left="378" Width="94.5" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[FormatDateTime([Event_current.EventDateTimeSet],&quot;dd-MMM-yyyy HH:mm:ss&quot;)]" VertAlign="Center" Font="Arial, 10pt"/>
+          <TextObject Name="Text39" Left="472.5" Width="75.6" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[IIf([Event_current.ActId] != 0,[Event_current.ActId],&quot;&quot;)]" VertAlign="Center" Font="Arial, 10pt"/>
+          <TextObject Name="Text41" Left="548.1" Width="359.1" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[IIf(Length([Event_current.CauseKK])&gt;0,[Event_current.CauseKK],&quot;&quot;)][IIf(Length([Event_current.CauseKK])&gt;0 &amp;&amp; (Length([Event_current.CauseRU])&gt;0 || Length([Event_current.CauseEN])&gt;0),&quot; / &quot;,&quot;&quot;)][IIf(Length([Event_current.CauseRU])&gt;0,[Event_current.CauseRU],&quot;&quot;)][IIf((Length([Event_current.CauseKK])&gt;0 || Length([Event_current.CauseRU])&gt;0) &amp;&amp; Length([Event_current.CauseEN])&gt;0,&quot; / &quot;,&quot;&quot;)][IIf(Length([Event_current.CauseEN])&gt;0,[Event_current.CauseEN],&quot;&quot;)]" VertAlign="Center" Font="Arial, 10pt"/>
+          <TextObject Name="Text43" Left="907.2" Width="138.75" Height="18.9" Border.Lines="Left, Top, Bottom" CanGrow="true" GrowToBottom="true" Text="[Event_current.ActNotes]" VertAlign="Center" Font="Arial, 10pt"/>
+          <TextObject Name="Text45" Width="23.9" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Row#]" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+          <Sort>
+            <Sort Expression="[Event_current.EventDateTimeSet]"/>
+          </Sort>
+        </DataBand>
+        <GroupFooterBand Name="GroupFooter2" Top="283.15" Width="1047.06" Height="18.9" KeepWithData="true">
+          <TextObject Name="Text48" Left="47.25" Width="291.06" Height="18.9" Text="Total [Event_current.type]: [Total_type]" Font="Arial, 10pt"/>
+        </GroupFooterBand>
+      </GroupHeaderBand>
+      <GroupFooterBand Name="GroupFooter3" Top="306.05" Width="1047.06" Height="37.8" KeepWithData="true">
+        <TextObject Name="Text46" Width="396.9" Height="18.9" Text="Total Forces and Bypasses: [Total_area]" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      </GroupFooterBand>
+    </GroupHeaderBand>
+    <DataBand Name="Data3" Top="347.85" Width="1047.06" Height="37.8" Border.Lines="Top" Border.Style="DashDotDot" StartNewPage="true">
+      <TextObject Name="Text50" Left="9.45" Top="18.9" Width="330.75" Height="18.9" Text="Daily Force and Bypass Set Events" Font="Arial, 12pt, style=Bold"/>
+    </DataBand>
+    <GroupHeaderBand Name="GroupHeader3" Top="431.45" Width="1047.06" Height="20.35" KeepWithData="true" Condition="[Daily.areaName]">
+      <TextObject Name="Text51" Top="1.45" Width="481.95" Height="18.9" Text="[Daily.areaName] Area - Forces and Bypasses" Font="Arial, 10pt, style=Bold"/>
+      <DataHeaderBand Name="DataHeader1" Top="389.65" Width="1047.06" Height="37.8" Border.Lines="Bottom" Border.Width="2" KeepWithData="true" RepeatOnEveryPage="true">
+        <TextObject Name="Text54" Top="18.9" Width="18.9" Height="18.9" Text="#" Font="Arial, 10pt, style=Bold"/>
+        <TextObject Name="Text55" Left="20.45" Top="18.9" Width="94.5" Height="18.9" Text="Device" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+        <TextObject Name="Text56" Left="119.95" Top="18.9" Width="151.2" Height="18.9" Text="Tagname" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+        <TextObject Name="Text57" Left="271.15" Top="18.9" Width="151.2" Height="18.9" Text="Unit" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+        <TextObject Name="Text58" Left="421.8" Top="18.9" Width="74.6" Height="18.9" Text="Forced" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+        <TextObject Name="Text59" Left="569.55" Top="18.9" Width="75.6" Height="18.9" Text="ACT #" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+        <TextObject Name="Text60" Left="645.15" Top="18.9" Width="396.9" Height="18.9" Text="Cause" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+        <TextObject Name="Text65" Left="497.85" Top="18.9" Width="71.15" Height="18.9" Text="Cleared" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      </DataHeaderBand>
+      <GroupHeaderBand Name="GroupHeader4" Top="455.8" Width="1047.06" Height="18.9" Condition="[Daily.Type]">
+        <TextObject Name="Text52" Left="47.25" Width="245.7" Height="18.9" Text="[Daily.Type]" Font="Arial, 10pt"/>
+        <DataBand Name="Data2" Top="478.7" Width="1047.06" Height="18.9" Border.Lines="All" CanGrow="true" DataSource="Event">
+          <TextObject Name="Text61" Width="23.9" Height="18.9" Border.Lines="All" GrowToBottom="true" Text="[Row#]" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+          <TextObject Name="Text62" Left="24.35" Width="94.5" Height="18.9" Border.Lines="All" GrowToBottom="true" Text="[Daily.Device]" VertAlign="Center" Font="Arial, 10pt"/>
+          <TextObject Name="Text63" Left="118.85" Width="155.65" Height="18.9" Border.Lines="All" GrowToBottom="true" Text="[Daily.Tagnumber]" VertAlign="Center" Font="Arial, 10pt"/>
+          <TextObject Name="Text64" Left="274.05" Width="147.65" Height="18.9" Border.Lines="All" GrowToBottom="true" Text="[Daily.Unit]" VertAlign="Center" Font="Arial, 10pt"/>
+          <TextObject Name="Text66" Left="421.8" Width="74.47" Height="18.9" Border.Lines="All" GrowToBottom="true" Text="[FormatDateTime([Daily.start],&quot;HH:mm:ss&quot;)]&#13;&#10;&#13;&#10;" VertAlign="Center" Font="Arial, 10pt"/>
+          <TextObject Name="Text67" Left="495.95" Width="74.4" Height="18.9" Border.Lines="All" GrowToBottom="true" Text="[FormatDateTime([Daily.closed],&quot;HH:mm:ss&quot;)]&#13;&#10;&#13;&#10;" VertAlign="Center" Font="Arial, 10pt"/>
+          <TextObject Name="Text68" Left="570.45" Width="81.5" Height="18.9" Border.Lines="All" GrowToBottom="true" Text="[IIf([Daily.ActId] != 0,[Daily.ActId],&quot;&quot;)]" VertAlign="Center" Font="Arial, 10pt"/>
+          <TextObject Name="Text69" Left="652.05" Width="395.35" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[IIf(Length([Daily.CauseKK])&gt;0,[Daily.CauseKK],&quot;&quot;)][IIf(Length([Daily.CauseKK])&gt;0 &amp;&amp; (Length([Daily.CauseRU])&gt;0 || Length([Daily.CauseEN])&gt;0),&quot; / &quot;,&quot;&quot;)][IIf(Length([Daily.CauseRU])&gt;0,[Daily.CauseRU],&quot;&quot;)][IIf((Length([Daily.CauseKK])&gt;0 || Length([Daily.CauseRU])&gt;0) &amp;&amp; Length([Daily.CauseEN])&gt;0,&quot; / &quot;,&quot;&quot;)][IIf(Length([Daily.CauseEN])&gt;0,[Daily.CauseEN],&quot;&quot;)]" VertAlign="Center" Font="Arial, 10pt"/>
+          <Sort>
+            <Sort Expression="[Daily.start]"/>
+          </Sort>
+        </DataBand>
+        <GroupFooterBand Name="GroupFooter4" Top="501.6" Width="1047.06" Height="18.9" KeepWithData="true">
+          <TextObject Name="Text71" Left="47.25" Width="349.65" Height="18.9" Text="Total [Daily.Type]: [Total_daily_type]" Font="Arial, 10pt"/>
+        </GroupFooterBand>
+      </GroupHeaderBand>
+      <GroupFooterBand Name="GroupFooter1" Top="524.5" Width="1047.06" Height="37.8" KeepWithData="true">
+        <TextObject Name="Text70" Width="396.9" Height="18.9" Text="Total Forces and Bypasses: [Total_daily_area]" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      </GroupFooterBand>
+    </GroupHeaderBand>
+    <DataBand Name="Data5" Top="566.3" Width="1047.06" Height="75.6" Border.Lines="Top" Border.Style="DashDotDot" StartNewPage="true" KeepTogether="true" KeepDetail="true">
+      <TextObject Name="Text80" Left="9.45" Top="18.9" Width="481.95" Height="18.9" Text="Daily Force and Bypass Set totals" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text82" Top="56.7" Width="18.9" Height="18.9" Text="#" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text83" Left="132.3" Top="56.7" Width="141.75" Height="18.9" Text="Device" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text84" Left="18.9" Top="56.7" Width="56.7" Height="18.9" Text="Shift" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text85" Left="75.6" Top="56.7" Width="56.7" Height="18.9" Text="Area" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text86" Left="274.05" Top="56.7" Width="94.5" Height="18.9" Text="Total Forces" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text87" Left="368.55" Top="56.7" Width="94.5" Height="18.9" Text="Still Active" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text88" Left="453.6" Top="56.7" Width="113.4" Height="18.9" Text="Total Bypasses" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text89" Left="567" Top="56.7" Width="94.5" Height="18.9" Text="Still Active" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <DataBand Name="Data6" Top="645.9" Width="1047.06" Height="18.9" DataSource="Table1">
+        <TextObject Name="Text73" Left="23.35" Width="56.7" Height="18.9" Border.Lines="All" Text="[TotalDaily.Shift]" VertAlign="Center" Font="Arial, 10pt"/>
+        <TextObject Name="Text74" Left="80.05" Width="56.7" Height="18.9" Border.Lines="All" Text="[TotalDaily.areaName]" VertAlign="Center" Font="Arial, 10pt"/>
+        <TextObject Name="Text75" Left="137.3" Width="132.3" Height="18.9" Border.Lines="All" Text="[TotalDaily.device]" VertAlign="Center" Font="Arial, 10pt"/>
+        <TextObject Name="Text76" Left="269.6" Width="99.85" Height="18.9" Border.Lines="All" Text="[IIf([TotalDaily.Force] != 0,[TotalDaily.Force],&quot;&quot;)]&#13;&#10;" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+        <TextObject Name="Text77" Left="369.55" Width="94.5" Height="18.9" Border.Lines="All" Text="[IIf([TotalDaily.ActiveForce] != 0,[TotalDaily.ActiveForce],&quot;&quot;)]" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+        <TextObject Name="Text78" Left="464.05" Width="94.5" Height="18.9" Border.Lines="All" Text="[IIf([TotalDaily.Bypass] != 0,[TotalDaily.Bypass],&quot;&quot;)]" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+        <TextObject Name="Text79" Left="558.55" Width="94.5" Height="18.9" Border.Lines="All" Text="[IIf([TotalDaily.ActiveBypass] != 0,[TotalDaily.ActiveBypass],&quot;&quot;)]" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+        <TextObject Name="Text81" Width="23.9" Height="18.9" Border.Lines="All" GrowToBottom="true" Text="[Row#]" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+      </DataBand>
+    </DataBand>
+    <DataBand Name="Data4" Top="668.8" Width="1047.06" Height="103.95" Border.Lines="Bottom" StartNewPage="true" KeepTogether="true" KeepDetail="true">
+      <TextObject Name="Text90" Left="9.45" Top="28.35" Width="481.95" Height="18.9" Text="Cumulative Force/Bypass Duration Weekly - Top 10 " Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text91" Top="85.05" Width="18.9" Height="18.9" Text="#" Font="Arial, 10pt"/>
+      <TextObject Name="Text93" Left="18.9" Top="85.05" Width="56.7" Height="18.9" Text="Area" HorzAlign="Center" Font="Arial, 10pt"/>
+      <TextObject Name="Text95" Left="75.6" Top="85.05" Width="141.75" Height="18.9" Text="Device" HorzAlign="Center" Font="Arial, 10pt"/>
+      <TextObject Name="Text97" Left="217.35" Top="85.05" Width="151.2" Height="18.9" Text="Tagname" HorzAlign="Center" Font="Arial, 10pt"/>
+      <TextObject Name="Text99" Left="368.55" Top="85.05" Width="151.2" Height="18.9" Text="Service" HorzAlign="Center" Font="Arial, 10pt"/>
+      <LineObject Name="Line2" Top="18.9" Width="1046.5" Border.Style="DashDotDot" Diagonal="true"/>
+      <TextObject Name="Text101" Left="519.75" Top="85.05" Width="151.2" Height="18.9" Text="Duration" HorzAlign="Center" Font="Arial, 10pt"/>
+      <TextObject Name="Text103" Left="9.45" Top="56.7" Width="481.95" Height="18.9" Text="From [FormatDateTime(AddDays([Date],-7),&quot;dd-MMM-yyyy&quot;)] to [FormatDateTime([Date],&quot;dd-MMM-yyyy&quot;)]" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text112" Left="670.95" Top="85.05" Width="151.2" Height="18.9" Text="Count of event" HorzAlign="Center" Font="Arial, 10pt"/>
+      <DataBand Name="Data7" Top="776.75" Width="1047.06" Height="18.9" DataSource="Table2">
+        <TextObject Name="Text92" Width="23.9" Height="18.9" Border.Lines="All" GrowToBottom="true" Text="[Row#]" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+        <TextObject Name="Text94" Left="23.35" Width="56.7" Height="18.9" Border.Lines="All" Text="[CumulativeWeeklyT10.areaName]" VertAlign="Center" Font="Arial, 10pt"/>
+        <TextObject Name="Text96" Left="80.05" Width="132.3" Height="18.9" Border.Lines="All" Text="[CumulativeWeeklyT10.device]" VertAlign="Center" Font="Arial, 10pt"/>
+        <TextObject Name="Text98" Left="212.35" Width="155.65" Height="18.9" Border.Lines="All" GrowToBottom="true" Text="[CumulativeWeeklyT10.Tagnumber]" VertAlign="Center" Font="Arial, 10pt"/>
+        <TextObject Name="Text100" Left="367.55" Width="157.1" Height="18.9" Border.Lines="All" GrowToBottom="true" Text="[CumulativeWeeklyT10.Service]" VertAlign="Center" Font="Arial, 10pt"/>
+        <TextObject Name="Text102" Left="524.2" Width="157.1" Height="18.9" Border.Lines="All" GrowToBottom="true" Text="[IIf([CumulativeWeeklyT10.days] != 0,[CumulativeWeeklyT10.days] + &quot;d, &quot;,&quot;&quot;)][IIf([CumulativeWeeklyT10.hours] != 0,[CumulativeWeeklyT10.hours] + &quot;h, &quot;,&quot;&quot;)][IIf([CumulativeWeeklyT10.min] != 0,[CumulativeWeeklyT10.min] + &quot;m, &quot;,&quot;&quot;)][CumulativeWeeklyT10.sec]s" VertAlign="Center" Font="Arial, 10pt"/>
+        <TextObject Name="Text113" Left="680.85" Width="132.3" Height="18.9" Border.Lines="All" Text="[CumulativeWeeklyT10.number]" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+      </DataBand>
+    </DataBand>
+    <DataBand Name="Data8" Top="799.65" Width="1047.06" Height="103.95" Border.Lines="Bottom">
+      <TextObject Name="Text104" Left="9.45" Top="28.35" Width="481.95" Height="18.9" Text="Cumulative Force/Bypass Duration Quarterly - Top 10 " Font="Arial, 12pt, style=Bold"/>
+      <LineObject Name="Line3" Top="18.9" Width="1046.5" Border.Style="DashDotDot" Diagonal="true"/>
+      <TextObject Name="Text105" Left="9.45" Top="56.7" Width="481.95" Height="18.9" Text="From [FormatDateTime(AddMonths([Date],-3),&quot;dd-MMM-yyyy&quot;)] to [FormatDateTime([Date],&quot;dd-MMM-yyyy&quot;)]" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text106" Top="85.05" Width="18.9" Height="18.9" Text="#" Font="Arial, 10pt"/>
+      <TextObject Name="Text107" Left="18.9" Top="85.05" Width="56.7" Height="18.9" Text="Area" HorzAlign="Center" Font="Arial, 10pt"/>
+      <TextObject Name="Text108" Left="75.6" Top="85.05" Width="141.75" Height="18.9" Text="Device" HorzAlign="Center" Font="Arial, 10pt"/>
+      <TextObject Name="Text109" Left="217.35" Top="85.05" Width="151.2" Height="18.9" Text="Tagname" HorzAlign="Center" Font="Arial, 10pt"/>
+      <TextObject Name="Text110" Left="368.55" Top="85.05" Width="151.2" Height="18.9" Text="Service" HorzAlign="Center" Font="Arial, 10pt"/>
+      <TextObject Name="Text111" Left="519.75" Top="85.05" Width="151.2" Height="18.9" Text="Duration" HorzAlign="Center" Font="Arial, 10pt"/>
+      <DataBand Name="Data9" Top="907.6" Width="1047.06" Height="18.9" DataSource="Table3">
+        <TextObject Name="Text114" Width="23.9" Height="18.9" Border.Lines="All" GrowToBottom="true" Text="[Row#]" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+        <TextObject Name="Text115" Left="23.35" Width="56.7" Height="18.9" Border.Lines="All" Text="[CumulativeQurterlyT10.areaName]" VertAlign="Center" Font="Arial, 10pt"/>
+        <TextObject Name="Text116" Left="80.05" Width="132.3" Height="18.9" Border.Lines="All" Text="[CumulativeQurterlyT10.device]" VertAlign="Center" Font="Arial, 10pt"/>
+        <TextObject Name="Text117" Left="212.35" Width="155.65" Height="18.9" Border.Lines="All" GrowToBottom="true" Text="[CumulativeQurterlyT10.Tagnumber]" VertAlign="Center" Font="Arial, 10pt"/>
+        <TextObject Name="Text118" Left="367.55" Width="157.1" Height="18.9" Border.Lines="All" GrowToBottom="true" Text="[CumulativeQurterlyT10.Service]" VertAlign="Center" Font="Arial, 10pt"/>
+        <TextObject Name="Text119" Left="524.2" Width="157.1" Height="18.9" Border.Lines="All" GrowToBottom="true" Text="[IIf([CumulativeQurterlyT10.days] != 0,[CumulativeQurterlyT10.days] + &quot;d, &quot;,&quot;&quot;)][IIf([CumulativeQurterlyT10.hours] != 0,[CumulativeQurterlyT10.hours] + &quot;h, &quot;,&quot;&quot;)][IIf([CumulativeQurterlyT10.min] != 0,[CumulativeQurterlyT10.min] + &quot;m, &quot;,&quot;&quot;)][CumulativeQurterlyT10.sec]s" VertAlign="Center" Font="Arial, 10pt"/>
+        <TextObject Name="Text120" Left="680.85" Width="132.3" Height="18.9" Border.Lines="All" Text="[CumulativeWeeklyT10.number]" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+      </DataBand>
+    </DataBand>
+    <DataBand Name="Data10" Top="930.5" Width="1047.06" Height="122.85" Border.Lines="Bottom">
+      <TextObject Name="Text121" Left="9.45" Top="28.35" Width="481.95" Height="18.9" Text="A Number of Forces and Bypasses - Last Month" Font="Arial, 12pt, style=Bold"/>
+      <LineObject Name="Line4" Top="18.9" Width="1046.5" Border.Style="DashDotDot" Diagonal="true"/>
+      <TextObject Name="Text122" Left="9.45" Top="56.7" Width="481.95" Height="18.9" Text="From [FormatDateTime(AddMonths([Date],-1),&quot;dd-MMM-yyyy&quot;)] to [FormatDateTime([Date],&quot;dd-MMM-yyyy&quot;)]" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text123" Left="9.45" Top="75.6" Width="670.95" Height="18.9" Text="(Tags with cumulative time in bypass/force of &gt;12 hours are counted)" Font="Arial, 8pt, style=Italic"/>
+      <TextObject Name="Text124" Top="103.95" Width="18.9" Height="18.9" Text="#" Font="Arial, 10pt"/>
+      <TextObject Name="Text125" Left="18.9" Top="103.95" Width="56.7" Height="18.9" Text="Area" HorzAlign="Center" Font="Arial, 10pt"/>
+      <TextObject Name="Text126" Left="75.6" Top="103.95" Width="103.95" Height="18.9" Text="Count of tags" HorzAlign="Center" Font="Arial, 10pt"/>
+      <TextObject Name="Text127" Left="179.55" Top="103.95" Width="255.15" Height="18.9" Text="Total Cumulative Time in Bypass/Force" HorzAlign="Center" Font="Arial, 10pt"/>
+      <DataBand Name="Data11" Top="1057.35" Width="1047.06" Height="18.9" DataSource="Table4">
+        <TextObject Name="Text128" Left="23.35" Width="56.7" Height="18.9" Border.Lines="All" Text="[LastMonthMore12H.areaname]" VertAlign="Center" Font="Arial, 10pt"/>
+        <TextObject Name="Text129" Width="23.9" Height="18.9" Border.Lines="All" GrowToBottom="true" Text="[Row#]" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+        <TextObject Name="Text130" Left="80.05" Width="103.95" Height="18.9" Border.Lines="All" Text="[LastMonthMore12H.tagcnt]" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+        <TextObject Name="Text131" Left="184" Width="251.6" Height="18.9" Border.Lines="All" GrowToBottom="true" Text="[IIf([LastMonthMore12H.month] != 0,[LastMonthMore12H.month] + &quot;M, &quot;,&quot;&quot;)][IIf([LastMonthMore12H.days] != 0,[LastMonthMore12H.days] + &quot;d, &quot;,&quot;&quot;)][IIf([LastMonthMore12H.hours] != 0,[LastMonthMore12H.hours] + &quot;h, &quot;,&quot;&quot;)][IIf([LastMonthMore12H.min] != 0,[LastMonthMore12H.min] + &quot;m, &quot;,&quot;&quot;)][LastMonthMore12H.sec]s" VertAlign="Center" Font="Arial, 10pt"/>
+      </DataBand>
+    </DataBand>
+    <DataBand Name="Data13" Top="1080.25" Width="1047.06" Height="18.9" Border.Lines="Bottom">
+      <TextObject Name="Text138" Width="18.9" Height="18.9" Text="#" Font="Arial, 10pt"/>
+      <TextObject Name="Text139" Left="28.35" Width="85.05" Height="18.9" Text="Area" HorzAlign="Center" Font="Arial, 10pt"/>
+      <TextObject Name="Text140" Left="113.4" Width="245.7" Height="18.9" Text="Tagname" HorzAlign="Center" Font="Arial, 10pt"/>
+      <TextObject Name="Text142" Left="359.1" Width="255.15" Height="18.9" Text="Total Cumulative Time in Bypass/Force" HorzAlign="Center" Font="Arial, 10pt"/>
+      <TextObject Name="Text143" Left="614.25" Width="122.85" Height="18.9" Text="Count of times set" HorzAlign="Center" Font="Arial, 10pt"/>
+      <TextObject Name="Text144" Left="737.1" Width="94.5" Height="18.9" Text="FG / Non-FG" HorzAlign="Center" Font="Arial, 10pt"/>
+    </DataBand>
+    <GroupHeaderBand Name="GroupHeader10" Top="1103.15" Width="1047.06" Height="18.9" Condition="[LastMonthMore12H_Details.areaName]">
+      <TextObject Name="Text132" Left="28.35" Width="94.5" Height="18.9" Text="[LastMonthMore12H_Details.areaName]" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold, Underline"/>
+      <TextObject Name="Text145" Width="23.9" Height="18.9" GrowToBottom="true" Text="[Row#]" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <DataBand Name="Data12" Top="1126.05" Width="1047.06" Height="18.9" DataSource="Table5">
+        <TextObject Name="Text133" Left="23.9" Width="94.5" Height="18.9" Border.Lines="All" Text="[LastMonthMore12H_Details.areaName]" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+        <TextObject Name="Text134" Left="117.85" Width="245.7" Height="18.9" Border.Lines="All" Text="[LastMonthMore12H_Details.tag]" VertAlign="Center" Font="Arial, 10pt"/>
+        <TextObject Name="Text135" Left="614.7" Width="122.85" Height="18.9" Border.Lines="All" Text="[LastMonthMore12H_Details.cnt]" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+        <TextObject Name="Text136" Left="738" Width="94.5" Height="18.9" Border.Lines="All" Text="[LastMonthMore12H_Details.FG]" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+        <TextObject Name="Text137" Width="23.9" Height="18.9" Border.Lines="All" GrowToBottom="true" Text="[Row#]" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+        <TextObject Name="Text141" Left="363.55" Width="251.6" Height="18.9" Border.Lines="All" GrowToBottom="true" Text="[IIf([LastMonthMore12H_Details.days] != 0,[LastMonthMore12H_Details.days] + &quot;d, &quot;,&quot;&quot;)][IIf([LastMonthMore12H_Details.hours] != 0,[LastMonthMore12H_Details.hours] + &quot;h, &quot;,&quot;&quot;)][IIf([LastMonthMore12H_Details.min] != 0,[LastMonthMore12H_Details.min] + &quot;m, &quot;,&quot;&quot;)][LastMonthMore12H_Details.sec]s" HorzAlign="Right" VertAlign="Center" Font="Arial, 10pt"/>
+        <Sort>
+          <Sort Expression="[LastMonthMore12H_Details.areaName]"/>
+          <Sort Expression="[LastMonthMore12H_Details.duration]" Descending="true"/>
+        </Sort>
+      </DataBand>
+    </GroupHeaderBand>
+    <PageFooterBand Name="PageFooter1" Top="1148.95" Width="1047.06" Height="22.9" CanGrow="true">
+      <TextObject Name="Text26" Left="850.5" Width="196.56" Height="13.45" Text="[PageN] of [TotalPages#]" HorzAlign="Right" Font="Arial, 10pt" Style="Footer"/>
+      <TextObject Name="Text49" Width="756" Height="18.9" Text="Report generated at [FormatDateTime([Date],&quot;dd-MMM-yyyy HH:mm:ss&quot;)]  Reporting period is from [FormatDateTime(AddDays([Date],-1),&quot;dd-MMM-yyyy&quot;)] 06:00:00 to [FormatDateTime([Date],&quot;dd-MMM-yyyy&quot;)] 06:00:00" Font="Arial, 7pt"/>
+    </PageFooterBand>
+  </ReportPage>
+</Report>

@@ -1,0 +1,22 @@
+﻿@model List<EnumsModel>
+@{
+    ViewData["Title"] = "Static codes in application";
+}
+
+<h2>List of static IDs</h2>
+@{
+    <div>
+        @foreach (var record in Model)
+        {
+            <h2>@record.Name</h2>
+            @foreach (var item in record.EnumsList)
+            {
+                <div>
+                    @item.Id - @item.Value
+                </div>
+            }
+            <br>
+        }
+    </div>
+
+}

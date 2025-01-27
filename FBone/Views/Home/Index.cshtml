@@ -1,0 +1,166 @@
+﻿@using FBone.Service
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+@model FBone.Models.HomePageModel
+
+@{
+    ViewData["Title"] = "Home Page";
+    var createAct = "disabled";
+    var translateAct = "disabled";
+    var isShiftEngineer = "disabled";
+    if (Model.canCreateAct)
+    {
+        createAct = "";
+    }
+    if (Model.canTranslateAct)
+    {
+        translateAct = "";
+    }
+    if (Model.isShiftEngineer)
+    {
+        isShiftEngineer = "";
+    }
+    var total1 = 0;
+    var total2 = 0;
+}
+<h1 class="display-6 text-center">@localizer["welcome"]</h1>
+<hr />
+@foreach (var lockF in Model.Locks)
+{
+    total1 = lockF.Bypasses + lockF.Forces;
+    total2 = lockF.Disabled + lockF.Inhibited;
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-1">
+            <span class="badge bg-primary"><a asp-area="" asp-controller="Reporting" asp-action="ActiveLocks" asp-route-facilityid="@lockF.FacilityId" class="my-nounderline-white" style="color: white"><h4>@lockF.FacilityName</h4></a></span>
+            @*<h3><span class="label label-info"></span></h3>*@
+        </div>
+        <div class="col-md-3">
+            <div>
+                <span class="badge badge-sub">
+                    <a asp-area="" asp-controller="Reporting" asp-action="ActiveLocks" asp-route-facilityid="@lockF.FacilityId" asp-route-typeid="150" class="my-nounderline-white" style="color: white">@localizer["active_locks"]</a>
+                </span>&nbsp;
+                <span class="badge badge-num">
+                    <a asp-area="" asp-controller="Reporting" asp-action="ActiveLocks" asp-route-facilityid="@lockF.FacilityId" asp-route-typeid="150" class="my-nounderline-white" style="color: white">@total1</a>
+                </span>
+            </div>
+            <div>
+                &emsp;
+                <span class="badge badge-sub">
+                    <a asp-area="" asp-controller="Reporting" asp-action="ActiveLocks" asp-route-facilityid="@lockF.FacilityId" asp-route-typeid="1" class="my-nounderline-white" style="color: white">@localizer["active_forces"]</a>
+                </span>&nbsp;
+                <span class="badge badge-num">
+                    <a asp-area="" asp-controller="Reporting" asp-action="ActiveLocks" asp-route-facilityid="@lockF.FacilityId" asp-route-typeid="1" class="my-nounderline-white" style="color: white">@lockF.Forces</a>
+                </span>
+            </div>
+            <div>
+                &emsp;
+                <span class="badge badge-sub">
+                    <a asp-area="" asp-controller="Reporting" asp-action="ActiveLocks" asp-route-facilityid="@lockF.FacilityId" asp-route-typeid="2" class="my-nounderline-white" style="color: white">@localizer["active_bypasses"]</a>
+                </span>&nbsp;
+                <span class="badge badge-num">
+                    <a asp-area="" asp-controller="Reporting" asp-action="ActiveLocks" asp-route-facilityid="@lockF.FacilityId" asp-route-typeid="2" class="my-nounderline-white" style="color: white">@lockF.Bypasses</a>
+                </span>
+            </div>
+        </div>
+        <div class="col-md-1"></div>
+        <div class="col-md-3">
+            <div>
+                <span class="badge badge-sub">
+                    <a asp-area="" asp-controller="Reporting" asp-action="ActiveLocks" asp-route-facilityid="@lockF.FacilityId" asp-route-typeid="160" class="my-nounderline-white" style="color: white">@localizer["active_alarms"]</a>
+                </span>&nbsp;<span class="badge badge-num">
+                    <a asp-area="" asp-controller="Reporting" asp-action="ActiveLocks" asp-route-facilityid="@lockF.FacilityId" asp-route-typeid="160" class="my-nounderline-white" style="color: white">@total2</a>
+                </span>
+            </div>
+            <div>
+                &emsp;
+                <span class="badge badge-sub">
+                    <a asp-area="" asp-controller="Reporting" asp-action="ActiveLocks" asp-route-facilityid="@lockF.FacilityId" asp-route-typeid="3" class="my-nounderline-white" style="color: white">@localizer["active_disabled"]</a>
+                </span>&nbsp;
+                <span class="badge badge-num">
+                    <a asp-area="" asp-controller="Reporting" asp-action="ActiveLocks" asp-route-facilityid="@lockF.FacilityId" asp-route-typeid="3" class="my-nounderline-white" style="color: white">@lockF.Disabled</a>
+                </span>
+            </div>
+            <div>
+                &emsp;
+                <span class="badge badge-sub">
+                    <a asp-area="" asp-controller="Reporting" asp-action="ActiveLocks" asp-route-facilityid="@lockF.FacilityId" asp-route-typeid="4" class="my-nounderline-white" style="color: white">@localizer["active_inhibited"]</a>
+                </span>&nbsp;
+                <span class="badge badge-num">
+                    <a asp-area="" asp-controller="Reporting" asp-action="ActiveLocks" asp-route-facilityid="@lockF.FacilityId" asp-route-typeid="4" class="my-nounderline-white" style="color: white">@lockF.Inhibited</a>
+                </span>
+            </div>
+        </div>
+        <div class="col-md-1"></div>
+    </div>
+}
+
+<hr />
+<div class="row">
+    <div class="col-md-2">
+    </div>
+    <div class="col-md-3">
+        <div class="form-group">
+            <a asp-area="" asp-controller="Acts" asp-action="Index" class="form-control btn btn-primary">@localizer["actlistbtn"]</a>
+        </div>
+        &nbsp;
+        <div class="form-group">
+            <a asp-area="" asp-controller="Acts" asp-action="RegisterAct" class="form-control btn btn-primary @createAct">@localizer["newactbtn"]</a>
+        </div>
+        &nbsp;
+        <div class="form-group">
+            <a asp-area="" asp-controller="Translation" asp-action="Index" class="form-control btn btn-primary @translateAct">@localizer["translationbtn"]</a>
+        </div>
+        &nbsp;
+        <div class="form-group">
+            <a asp-area="" asp-controller="Auditing" asp-action="Index" class="form-control btn btn-primary">@localizer["auditbtn"]</a>
+        </div>
+    </div>
+    <div class="col-md-2">
+    </div>
+    <div class="col-md-3">
+        <div class="form-group">
+            <a asp-area="" asp-controller="Reporting" asp-action="ActiveLocks" class="form-control btn btn-primary">@localizer["currlocks"]</a>
+        </div>
+        &nbsp;
+        <div class="form-group">
+            <a asp-area="" asp-controller="Reporting" asp-action="ReportList" class="form-control btn btn-primary">@localizer["allreports"]</a>
+        </div>
+        &nbsp;
+        <div class="form-group">
+            <a asp-area="" asp-controller="Reporting" asp-action="Index" class="form-control btn btn-primary @isShiftEngineer">@localizer["corrections"]</a>
+        </div>
+        &nbsp;
+        <div class="form-group">
+            <a asp-area="" asp-controller="Tags" asp-action="Index" class="form-control btn btn-primary @isShiftEngineer">@localizer["tags"]</a>
+        </div>
+    </div>
+    <div class="col-md-2">
+    </div>
+</div>
+@*<div class="row">
+        <legend class="text-center">@localizer["pss_status"]</legend>
+        @foreach (var facility in Model.Facilities)
+        {
+        <div class="row">
+            <div class="col-sm-1"></div>
+            <div class="col-sm-1"><h3><span class="label label-default">@facility.Name</span></h3></div>
+            @foreach (var area in facility.Areas)
+            {
+                <div class="col-sm-1">
+                    <div class="alert alert-@area.Style" role="alert">@area.Name.Trim() <br >@area.LastEventDate.ToString("dd-MMM-yy HH:MM:ss")</div>
+                </div>
+            }
+        </div>
+        }
+    </div>*@
+<hr />
+@*<div class="col-sm-1">
+        <div class="card text-white @area.Style">
+            <div class="card-header">@area.Name</div>
+            <div class="card-body">
+                <h4 class="card-title">@area.LastEventDate.ToString("dd-MMM-yy HH:MM:ss")</h4>
+            </div>
+        </div>
+    </div>*@
+@*<div class="card text-white @area.Style" style="max-width: 25rem;">*@
+

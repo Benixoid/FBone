@@ -1,0 +1,70 @@
+﻿@model IEnumerable<FBone.Database.Entities.tArea>
+
+    @{
+        ViewData["Title"] = "List of Areas";
+    }
+
+    <h2>@ViewData["Title"]</h2>
+
+    <p>
+        <a asp-controller="Admin" asp-action="Index" class="btn btn-light">Back</a>
+        <a asp-action="CreateArea" class="btn btn-secondary">Create New Area</a>
+    </p>
+    <table class="table table-light table-hover" id="table" role="banner" aria-describedby="areas">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Facility)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Name_EN)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ReportGroup)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ShiftEngFacilityId)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.IsEventsFromPSS)
+                </th>                
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Facility.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name_EN)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ReportGroup)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ShiftEngFacility.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IsEventsFromPSS)
+                </td>                
+                <td>
+                    <a asp-action="EditArea" asp-route-id="@item.Id">Edit</a>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+
+    @section scripts
+    {
+        <script>
+        $(document).ready(function () {
+            $("#table").DataTable({
+                "lengthMenu": [[50, 100, 200, -1], [50, 100, 200, "All"]]
+            });
+        });
+        </script>
+    }

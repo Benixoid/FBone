@@ -1,0 +1,88 @@
+﻿@model IEnumerable<FBone.Database.Entities.tUser>
+
+@{
+    ViewData["Title"] = "List of users";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<p>
+    <a asp-controller="Admin" asp-action="Index" class="btn btn-light">Back</a>
+    <a asp-action="CreateUser" class="btn btn-secondary">Create New User</a>
+</p>
+<table class="table table-light table-hover" id="users" role="banner" aria-describedby="users">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.CAI)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name_EN)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Position)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Facility)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Area)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsAdmin)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsActive)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.CAI)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name_EN)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Position.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Facility.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Area.Name_EN)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsAdmin)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsActive)
+            </td>
+            <td>
+                <a asp-action="EditUser" asp-route-id="@item.Id">Edit</a>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+@section scripts
+    {
+    <script>
+        $(document).ready(function () {
+            $("#users").DataTable({
+                "lengthMenu": [[50, 100, 200, -1], [50, 100, 200, "All"]]
+            });
+        });
+    </script>
+}

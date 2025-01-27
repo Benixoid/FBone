@@ -1,0 +1,248 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <AssemblyName>FBone</AssemblyName>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <SignAssembly>false</SignAssembly>
+    <PlatformTarget>x64</PlatformTarget>
+	<Nullable>disable</Nullable>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE</DefineConstants>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors>NU1605</WarningsAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>false</Optimize>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Controllers\NModeRecordsController - Copy.cs" />
+    <Compile Remove="Migrations\20201118165952_AddedCauseImpactProtection.cs" />
+    <Compile Remove="Migrations\20201118165952_AddedCauseImpactProtection.Designer.cs" />
+    <Compile Remove="Migrations\20201201144509_AddedPositionToUser.cs" />
+    <Compile Remove="Migrations\20201201144509_AddedPositionToUser.Designer.cs" />
+    <Compile Remove="Migrations\20201201144922_AddedPositionToUser.cs" />
+    <Compile Remove="Migrations\20201201144922_AddedPositionToUser.Designer.cs" />
+    <Compile Remove="Migrations\20201202170143_AddedActTable.cs" />
+    <Compile Remove="Migrations\20201202170143_AddedActTable.Designer.cs" />
+    <Compile Remove="Migrations\20201202170232_AddedActTable.cs" />
+    <Compile Remove="Migrations\20201202170232_AddedActTable.Designer.cs" />
+    <Compile Remove="Migrations\20211219135329_AddedRequiredForActTable.cs" />
+    <Compile Remove="Migrations\20211219135329_AddedRequiredForActTable.Designer.cs" />
+    <Compile Remove="Migrations\20211229170200_RenameField.cs" />
+    <Compile Remove="Migrations\20211229170200_RenameField.Designer.cs" />
+    <Compile Remove="Migrations\20220227042159_AddedNotifierFor24hrs.cs" />
+    <Compile Remove="Migrations\20220227042159_AddedNotifierFor24hrs.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="bundleconfig.json" />
+    <Content Remove="Views\NModeRecords\Edit2.cshtml" />
+    <Content Remove="Views\NModeRecords\IndexOld.cshtml" />
+    <Content Remove="Views\NMTotalRecords\Index - Copy.cshtml" />
+    <Content Remove="Views\NMTotalRecords\Records - Copy.cshtml" />
+    <Content Remove="Views\NMTotalRecords\Records1.cshtml" />
+    <Content Remove="Views\NMTotalRecords\RecordsOld.cshtml" />
+    <Content Remove="Views\NMTotalRecords\Totals.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BuildBundlerMinifier" Version="3.2.449" />
+    <PackageReference Include="ClosedXML" Version="0.102.2" />
+    <PackageReference Include="FastReport.Data.MsSql" Version="2024.1.10" />
+    <PackageReference Include="FastReport.OpenSource" Version="2024.1.10" />
+    <PackageReference Include="FastReport.OpenSource.Export.PdfSimple" Version="2024.1.10" />
+    <PackageReference Include="FastReport.OpenSource.Web" Version="2024.1.10" />
+    <!--<PackageReference Include="Microsoft.AspNetCore.App" />-->
+    <!--<PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />-->
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.9.2" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.9.2" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Features" Version="4.9.2" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.9.2" />
+    <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic" Version="4.9.2" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="4.9.2" />
+    <PackageReference Include="Microsoft.DotNet.Scaffolding.Shared" Version="8.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="8.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.2" />
+    <PackageReference Include="toastr" Version="2.1.1" />
+    <PackageReference Include="Twitter.Typeahead" Version="0.11.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Resources\Views\NMode\" />
+    <Folder Include="Service\Authorize\" />
+    <Folder Include="wwwroot\images\" />
+    <Folder Include="wwwroot\Reports\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="bundleconfig.json" />
+    <None Include="Views\NModeAreas\Create.cshtml" />
+    <None Include="Views\NModeAreas\Delete.cshtml" />
+    <None Include="Views\NModeAreas\Details.cshtml" />
+    <None Include="Views\NModeAreas\Edit.cshtml" />
+    <None Include="Views\NModeAreas\Index.cshtml" />
+    <None Include="Views\NModeLcns\Create.cshtml" />
+    <None Include="Views\NModeLcns\Delete.cshtml" />
+    <None Include="Views\NModeLcns\Details.cshtml" />
+    <None Include="Views\NModeLcns\Edit.cshtml" />
+    <None Include="Views\NModeLcns\Index.cshtml" />
+    <None Include="Views\NModeConditions\Index.cshtml" />
+    <None Include="Views\NModeRecords\Create.cshtml" />
+    <None Include="Views\NModeRecords\Delete.cshtml" />
+    <None Include="Views\NModeRecords\Details.cshtml" />
+    <None Include="Views\NModeRecords\Edit.cshtml" />
+    <None Include="wwwroot\StaticPages\PleaseEnableJavascript.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="OSIsoft.PISDK">
+      <HintPath>..\..\..\Windows\assembly\GAC_64\OSIsoft.PISDK\1.4.0.0__c3309f0734ba2805\OSIsoft.PISDK.dll</HintPath>
+    </Reference>
+    <Reference Include="OSIsoft.PISDKCommon">
+      <HintPath>..\..\..\Windows\assembly\GAC_64\OSIsoft.PISDKCommon\1.4.0.0__c3309f0734ba2805\OSIsoft.PISDKCommon.dll</HintPath>
+    </Reference>
+    <Reference Include="OSIsoft.PITimeServer">
+      <HintPath>..\..\..\Windows\assembly\GAC_64\OSIsoft.PITimeServer\1.4.0.0__c3309f0734ba2805\OSIsoft.PITimeServer.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Views\Acts\PrintAct.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Admin\UserDetails.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Admin\ActCauses.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Shared\_LayoutClear.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Translation\Translate.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Views\Access\Denied.ru.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Access\Denied.kk.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Access\Denied.en.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Acts\ActDetails.kk.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Acts\ActDetails.en.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Acts\Delegate.kk.resx">
+      <LastGenOutput>Delegate.Designer.cs</LastGenOutput>
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Acts\Index.kk.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Acts\Index.en.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Acts\Reject.kk.resx">
+      <LastGenOutput>Reject.Designer.cs</LastGenOutput>
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Acts\Reject.en.resx">
+      <LastGenOutput>Reject.Designer.cs</LastGenOutput>
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Acts\Reject.ru.resx">
+      <LastGenOutput>Reject.Designer.cs</LastGenOutput>
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Acts\Delegate.ru.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Delegate.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Acts\Index.ru.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Acts\ActDetails.ru.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Home\About.ru.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Home\About.kk.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Home\About.en.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Home\Index.en.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Shared\_Layout.kk.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Shared\_Layout.ru.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Shared\_Layout.en.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Tags\Index.en.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Tags\Index.kk.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Tags\Index.ru.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Translation\Index.kk.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Translation\Index.en.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Translation\Translate.ru.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Translation\Index.ru.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>

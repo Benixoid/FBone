@@ -1,0 +1,9 @@
+---
+- hosts: localhost
+  connection: local
+  roles:
+    - role: ansible-role-azure-asp
+    - role: ansible-role-azure-app-service
+    - role: ansible-role-azure-app-service-bindcertificate
+    - role: ansible-role-azure-azuresql-server
+    - role: ansible-role-azure-azuresql-database

@@ -1,0 +1,176 @@
+﻿@using FBone.Components;
+@model FBone.Components.NMTotalAverageRecord
+
+<!DOCTYPE html>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+<h4 id="vcTitle">Total Records Average</h4>
+
+<div>
+    <label>Start:</label>
+    <input type="datetime-local" id="dtAvgStart" style="width: auto;" onchange="pickerchange(this)" />
+    <label>End:</label>
+    <input type="datetime-local" id="dtAvgEnd" style="width: auto;" disabled=@Model.Snapshot onchange="pickerchange(this)" />
+    <label>
+        <input type="checkbox" id="snapshot" style="width: auto;" checked=@Model.Snapshot onchange="checkboxChange(this.checked)" />
+        Snapshot
+    </label>
+    <button type="button" id="btnGetAvg" class="btn btn-secondary">
+        Get Average
+        <i id="avgSpinner" class="fa fa-spinner fa-spin" style="font-size:24px; display:none"></i>
+    </button>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(m => m.TotalRecord.Tagname)
+            </th>
+            <th>
+                @Html.DisplayNameFor(m => m.NormalTotal)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            @if (@Model.TotalRecord != null)
+            {
+                <td>
+                    @Model.TotalRecord.Tagname
+                </td>
+                <td>
+                    @Model.NormalTotal.ToString("f2")
+                </td>
+            }
+        </tr>
+        @for (int i = 0; i < Model.SubTotals.Count; i++)
+        {
+            var item = Model.SubTotals[i];
+            <tr>
+                <td>
+                    @item.TotalRecord.Tagname
+                </td>
+                <td>
+                    @item.NormalTotal.ToString("f2")
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script type="text/javascript">
+    Number.prototype.AddZero = function (b, c) {
+        var l = (String(b || 10).length - String(this).length) + 1;
+        return l > 0 ? new Array(l).join(c || '0') + this : this;
+    }//to add zero to less than 10
+
+    document.getElementById('btnGetAvg').addEventListener('click', getAverage);
+
+
+    var now = new Date();
+    var now = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0);
+    var weekago = new Date(now);
+    weekago.setDate(now.getDate() - 7);
+
+    var dtS = new Date('@Model.StartTime.ToString("yyyy-MM-ddTHH:mm")');
+    var dtE = new Date('@Model.EndTime.ToString("yyyy-MM-ddT00:00")');
+    console.log("weekago: " + weekago + '\n' + "now: " + now + '\n' + "dtS: " + dtS + '\n' + "dtE: " + dtE);
+
+    document.addEventListener("load", setDateTime("dtAvgStart", weekago, dtS));
+    document.addEventListener("load", setDateTime("dtAvgEnd", now, dtE));
+    document.addEventListener("load", setbuttonCaption());
+
+    function dateIsValid(date) {
+        if (date instanceof Date && !isNaN(date)) {
+            if (date.getFullYear() == 1)
+                return false;
+            else
+                return true;
+        }
+        else
+            return true;
+    }
+
+    //Prepare date for datetime-local
+    function initDate(d) {
+        localDateTime = [d.getFullYear(), (d.getMonth() + 1).AddZero(),
+        d.getDate().AddZero(),
+        ].join('-') + 'T' +
+            [d.getHours().AddZero(),
+            d.getMinutes().AddZero()].join(':');
+        return localDateTime;
+    }
+
+    function setbuttonCaption() {
+        var text = document.querySelector('#btnGetAvg').innerHTML;
+        var checked = document.querySelector('#snapshot').checked;
+        document.querySelector('#btnGetAvg').innerHTML = checked ? text.replace("Get Average", "Get Snapshot") : text.replace("Get Snapshot", "Get Average");
+        $("#vcTitle").html(checked ? "Total Records Snapshot" : "Total Records Average");
+    }
+
+    function setDateTime(element, selectedDate, modelDate) {
+        let input = document.getElementById(element);
+        let endDate = new Date();
+        if (!isNaN(Date.parse(modelDate)))
+            selectedDate = new Date(modelDate);
+        else
+            selectedDate = new Date(selectedDate);
+
+        input.max = endDate.toISOString().slice(0, 16);
+        if (dateIsValid(selectedDate))
+            input.value = initDate(selectedDate);
+        else
+            input.value = initDate(endDate);
+    }
+
+    async function getAverage() {
+        var spinner = document.getElementById('avgSpinner');
+        spinner.style.display = 'inline-block';
+        var dtS = $('#dtAvgStart').val();
+        var dtE = $('#dtAvgEnd').val();
+        var snapshot = $('#snapshot').prop('checked');
+        // if (!snapshot) { 
+        //     dtS = new Date(dtS);
+        //     dtS.setDate(dtS.getDate() + 1);
+        //     dtS = initDate(dtS);
+        //     dtE = new Date(dtE);
+        //     if (dtE.getHours() == 0) {
+        //         dtE.setHours(dtE.getHours() + 2);
+        //         dtE= initDate(dtE);
+        //     }
+        //     console.log("dtS: " + dtS + '\ndtE: '+ dtE);
+        // }
+        const resp = await fetch(`/NMTotalRecords/LoadAverage?RecordId=${@Model.RecordId}&starttime=${dtS}&endtime=${dtE}&snapshot=${snapshot}`);
+        if (!resp.ok) {
+            console.error('Something went wrong');
+            return;
+        }
+        result = await resp.text();
+        $("#average").html(result);
+        spinner.style.display = 'none';
+    }
+
+    function pickerchange(el) {
+        var now = new Date();
+        var dtpic = el;
+        //console.log("test: " + dtpic.id);
+        if (new Date(dtpic.value) > now) {
+            var newMax = initDate(now);
+            dtpic.value = newMax;
+            dtpic.max = newMax;
+        }
+        //console.log("datepicker: " + dtpic.value + "\nnow: " + now + "\nmax: " + dtpic.max);
+    }
+
+    function checkboxChange(val) {
+        document.getElementById('dtAvgEnd').disabled = val;
+        var text = document.querySelector('#btnGetAvg').innerHTML;
+        document.querySelector('#btnGetAvg').innerHTML = val ? text.replace("Get Average", "Get Snapshot") : text.replace("Get Snapshot", "Get Average");
+        $("#vcTitle").html(val ? "Total Records Snapshot" : "Total Records Average");
+    }
+</script>
+
+

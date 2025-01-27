@@ -1,0 +1,68 @@
+﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+@inject FBone.Database.DataManager DM
+
+@using FBone.Service;
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    @await Html.PartialAsync("_PartialHeader")
+    <title>FB one</title>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom box-shadow mb-3 my-no-padding">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">FB one</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">@localizer["home"]</a>
+                        </li>
+                        @if (DM.IsUserInRoles(User, new Enums.Roles[] { Enums.Roles.IsNModeEditor, Enums.Roles.IsNModeUser }))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="NModeRecords" asp-action="NModeIndex">NMode</a>
+                            </li>
+                        }
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="About">@localizer["about"]</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Admin" asp-action="Index">@localizer["admin"]</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="nav navbar-btn">
+                <partial name="_Language" />
+            </div>
+            &nbsp;
+            <span class="navbar-text my-no-padding">
+                @localizer["hello"] @UserHelper.GetUserName(User.Identity.Name)!
+            </span>
+            @*<p class="nav navbar-text pull-right no-wrap">@localizer["hello"] @UserHelper.GetUserName(User.Identity.Name)!</p>*@
+        </nav>
+    </header>
+
+    <div class="container-fluid">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2021-2023 - @localizer["automation"]
+        </div>
+    </footer>
+
+    @await Html.PartialAsync("_PartialScripts")
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,117 @@
+﻿@model FBone.Models.NMode.NModeRecord
+
+<style>
+    .intervals {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        margin: 20px;
+    }
+</style>
+
+<!DOCTYPE html>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+<script type="text/javascript">
+    function addDataset(key, values, dataset) {
+        dataset.push({
+            label: key,
+            borderWidth: 1, fill: false,
+            data: values
+        });
+        return dataset;
+    }
+</script>
+
+@if (Model != null && Model.Calculated)
+{
+    <h2>Result</h2>
+    <p>Result: @Model.ResultToString()</p>
+    if (Model.NormalIntervals != null)
+    {
+        <div class="intervals">
+            @foreach (string key in Model.AllConditionsValues.Keys)
+            {
+                <label>@key</label>
+                <br />
+                <span>
+                    @Html.DropDownListFor(x => Model.AllConditionsValues[key]  , new SelectList(Model.AllConditionsValues[key]), new { style = "width: 250px;" })
+                    <text>&nbsp;</text>
+                </span>
+                <br />
+                <br />
+            }
+            <div>
+                <label>Intervals</label>
+                @Html.DropDownListFor(x => Model.NormalIntervals   , new SelectList(Model.NormalIntervals), new { style = "width: 250px;" })
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="chart" style="width:100%; height:500px"></canvas>
+        </div>
+
+
+        var XLabels = Newtonsoft.Json.JsonConvert.SerializeObject(Model.AllConditionsValues.Values.First().Select(x => x.TimeStamp.ToShortTimeString()).ToList());
+        Dictionary<string, string> values = new Dictionary<string, string>();
+        foreach (string key in Model.AllConditionsValues.Keys)
+        {
+            string YValues = Newtonsoft.Json.JsonConvert.SerializeObject(Model.AllConditionsValues[key].Select(x => x.DValue).ToList());
+            values.Add(key, YValues);
+        }
+
+        <script type="text/javascript">
+            var ds2 = [];
+
+            @foreach (var key in values.Keys)
+            {
+                @:addDataset("@key", @values[key], ds2);
+            }
+
+                $(function () {
+                    var chartName = "chart";
+                    var ctx = document.getElementById(chartName).getContext('2d');
+                    var data = {
+                        labels: @Html.Raw(XLabels),
+                        datasets: ds2
+                    };
+
+                    var options = {
+                        maintainAspectRatio: false,
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    min: 0,
+                                    beginAtZero: true
+                                },
+                                gridLines: {
+                                    display: true,
+                                    color: "rgba(255,99,164,0.2)"
+                                }
+                            }],
+                            xAxes: [{
+                                ticks: {
+                                    min: 0,
+                                    beginAtZero: true
+                                },
+                                gridLines: {
+                                    display: false
+                                }
+                            }]
+                        }
+                    };
+
+                    var myChart = new Chart(ctx, {
+                        options: options,
+                        data: data,
+                        type: 'line'
+
+                    });
+                });
+
+        </script>
+    }
+}
+

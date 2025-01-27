@@ -1,0 +1,430 @@
+﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+@using FBone.Service
+@model FBone.Models.Act.ActDetailsModel
+@{
+    var disabledCRU = "";
+    var disabledCKK = "";
+    var disabledCEN = "";
+    var disabledIRU = "";
+    var disabledIKK = "";
+    var disabledIEN = "";
+    var disabledPRU = "";
+    var disabledPKK = "";
+    var disabledPEN = "";
+
+    var langKK = "";
+    var langRU = "";
+    var langEN = "";
+    var i = 0;
+    ViewData["Title"] = localizer["title"].Value + " № " + @Model.Act.Id;
+    //Disable original lang
+    if (Model.Act.OriginalLang.ToUpper() == "RU")
+    {
+        disabledCRU = "disabled";
+        disabledIRU = "disabled";
+        disabledPRU = "disabled";
+        langRU = "bg_green";
+    } else if (Model.Act.OriginalLang.ToUpper() == "KK")
+    {
+        disabledCKK = "disabled";
+        disabledIKK = "disabled";
+        disabledPKK = "disabled";
+        langKK = "bg_green";
+    }
+    else if (Model.Act.OriginalLang.ToUpper() == "EN")
+    {
+        disabledCEN = "disabled";
+        disabledIEN = "disabled";
+        disabledPEN = "disabled";
+        langEN = "bg_green";
+    }
+
+    //Disable if selected from list
+    if (Model.Act.IsCauseTranslated)
+    {
+        disabledCRU = "disabled";
+        disabledCKK = "disabled";
+        disabledCEN = "disabled";
+    }
+    if (Model.Act.IsImpactTranslated)
+    {
+        disabledIRU = "disabled";
+        disabledIKK = "disabled";
+        disabledIEN = "disabled";
+    }
+    if (Model.Act.IsProtectTranslated)
+    {
+        disabledPRU = "disabled";
+        disabledPKK = "disabled";
+        disabledPEN = "disabled";
+    }
+}
+<div class="row">
+    <div class="col-md-12">
+        <h1 style="text-align:center">@ViewData["Title"] - 
+            @if (Model.Act.StatusId == (int)Enums.ActStatusCode.Draft)
+            {@localizer["statusdraft"]}
+            else if (Model.Act.StatusId == (int)Enums.ActStatusCode.InApproval)
+            {@localizer["statusinapproval"]}
+            else if (Model.Act.StatusId == (int)Enums.ActStatusCode.Active)
+            {@localizer["statusactive"]}
+            else if (Model.Act.StatusId == (int)Enums.ActStatusCode.Closed)
+            {@localizer["statusclosed"]}
+            else if (Model.Act.StatusId == (int)Enums.ActStatusCode.InApprovalAdd)
+            {@localizer["statusinaddapproval"]}
+            else if (Model.Act.StatusId == (int)Enums.ActStatusCode.Approved)
+            {@localizer["statusapproved"]}
+            </h1>
+    </div>
+</div>
+
+<form asp-action="TranslationConfirmed" onsubmit="return validateForm()">
+    <input type="hidden" asp-for="@Model.Act.Id" />
+    <input type="hidden" asp-for="@Model.Act.OriginalLang" />
+    <input type="hidden" asp-for="@Model.Act.IsTranslated" />
+    <input type="hidden" asp-for="@Model.Act.IsCauseTranslated" id="IsCauseTranslated" />
+    <input type="hidden" asp-for="@Model.Act.IsImpactTranslated" id="IsImpactTranslated" />
+    <input type="hidden" asp-for="@Model.Act.IsProtectTranslated" id="IsProtectTranslated" />
+    <input type="hidden" asp-for="@Model.SelectedFacilityId" />
+    <input type="hidden" asp-for="@Model.ItemPerPage" />
+    <input type="hidden" asp-for="@Model.PageIndex" />
+
+    <div class="row">
+        <div class="col-md-12" style="text-align: center">
+            <b>@localizer["area"]:</b> <select asp-for="@Model.Act.AreaId" asp-items="@Model.Areas" class="changearea" disabled></select>
+        </div>
+    </div>
+    <div class="row my-form-control-space">
+        <div class="col-md-12" style="text-align: center">
+            <b>@localizer["date"]:</b> <input disabled asp-for="@Model.Act.CreatedOn" />
+            <b>@localizer["crew"]:</b> <input disabled asp-for="@Model.Act.Crew" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-9 my-form-control-space">
+            @if (Model.Act.ApproverPos1 != 0)
+            {
+                <div class="row">
+                    <div class="col-sm-2"></div>
+                    <div class="col-sm-3">
+                        @Html.DropDownListFor(m => m.Act.ApproverPos1, Model.Positions, htmlAttributes: new { @style = "width: 100%", disabled = "disabled" })
+                    </div>
+                    <div class="col-sm-3">
+                        <select asp-for="@Model.Act.Approver1" asp-items="@Model.Approvers1" style="width: 100%" disabled></select>
+                    </div>
+                    <div class="col-sm-4">
+                        @if (Model.Act.is1Approved && Model.Act.StatusId != (int)Enums.ActStatusCode.Draft)
+                        {
+                            @localizer["approved"] @Model.Act.ApprovedBy1On.ToString()
+                        }
+                    </div>
+                </div>
+                if (Model.Act.ApproverPos2 != 0)
+                {
+                    <div class="row">
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-3">
+                            @Html.DropDownListFor(m => m.Act.ApproverPos2, Model.Positions, htmlAttributes: new { @style = "width: 100%", @Disabled = "disabled" })
+                        </div>
+                        <div class="col-sm-3">
+                            <select asp-for="@Model.Act.Approver2" asp-items="@Model.Approvers2" style="width: 100%" disabled></select>
+                        </div>
+                        <div class="col-sm-4">
+                            @if (Model.Act.is2Approved && Model.Act.StatusId != (int)Enums.ActStatusCode.Draft)
+                            {
+                                @localizer["approved"] @Model.Act.ApprovedBy2On.ToString()
+                            }
+                        </div>
+                    </div>
+                    if (Model.Act.ApproverPos3 != 0)
+                    {
+                        <div class="row">
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-3">
+                                @Html.DropDownListFor(m => m.Act.ApproverPos3, Model.Positions, htmlAttributes: new { @style = "width: 100%", @disabled = "disabled" })
+                            </div>
+                            <div class="col-sm-3">
+                                <select asp-for="@Model.Act.Approver3" asp-items="@Model.Approvers3" style="width: 100%" disabled></select>
+                            </div>
+                            <div class="col-sm-4">
+                                @if (Model.Act.is3Approved && Model.Act.StatusId != (int)Enums.ActStatusCode.Draft)
+                                {
+                                    @localizer["approved"] @Model.Act.ApprovedBy3On.ToString()
+                                }
+                            </div>
+                        </div>
+                        if (Model.Act.ApproverPos4 != 0)
+                        {
+                            <div class="row">
+                                <div class="col-sm-2"></div>
+                                <div class="col-sm-3">
+                                    @Html.DropDownListFor(m => m.Act.ApproverPos4, Model.Positions, htmlAttributes: new { @style = "width: 100%", @disabled = "disabled" })
+                                </div>
+                                <div class="col-sm-3">
+                                    <select asp-for="@Model.Act.Approver4" asp-items="@Model.Approvers4" style="width: 100%" disabled></select>
+                                </div>
+                                <div class="col-sm-4">
+                                    @if (Model.Act.is4Approved && Model.Act.StatusId != (int)Enums.ActStatusCode.Draft)
+                                    {
+                                        @localizer["approved"] @Model.Act.ApprovedBy4On.ToString()
+                                    }
+                                </div>
+                            </div>
+                            if (Model.Act.ApproverPos5 != 0)
+                            {
+                                <div class="row">
+                                    <div class="col-sm-2"></div>
+                                    <div class="col-sm-3">
+                                        @Html.DropDownListFor(m => m.Act.ApproverPos5, Model.Positions, htmlAttributes: new { @style = "width: 100%", @disabled = "disabled" })
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <select asp-for="@Model.Act.Approver5" asp-items="@Model.Approvers5" style="width: 100%" disabled></select>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        @if (Model.Act.is5Approved && Model.Act.StatusId != (int)Enums.ActStatusCode.Draft)
+                                        {
+                                            @localizer["approved"] @Model.Act.ApprovedBy5On.ToString()
+                                        }
+                                    </div>
+                                </div>
+                                if (Model.Act.ApproverPos6 != 0)
+                                {
+                                    <div class="row">
+                                        <div class="col-sm-2"></div>
+                                        <div class="col-sm-3">
+                                            @Html.DropDownListFor(m => m.Act.ApproverPos6, Model.Positions, htmlAttributes: new { @style = "width: 100%", @disabled = "disabled" })
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <select asp-for="@Model.Act.Approver6" asp-items="@Model.Approvers6" style="width: 100%" disabled></select>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            @if (Model.Act.is6Approved && Model.Act.StatusId != (int)Enums.ActStatusCode.Draft)
+                                            {
+                                                @localizer["approved"] @Model.Act.ApprovedBy6On.ToString()
+                                            }
+                                        </div>
+                                    </div>
+                                    if (Model.Act.ApproverPos7 != 0)
+                                    {
+                                        <div class="row">
+                                            <div class="col-sm-2"></div>
+                                            <div class="col-sm-3">
+                                                @Html.DropDownListFor(m => m.Act.ApproverPos7, Model.Positions, htmlAttributes: new { @style = "width: 100%", @disabled = "disabled" })
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <select asp-for="@Model.Act.Approver7" asp-items="@Model.Approvers7" style="width: 100%" disabled></select>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                @if (Model.Act.is7Approved && Model.Act.StatusId != (int)Enums.ActStatusCode.Draft)
+                                                {
+                                                    @localizer["approved"] @Model.Act.ApprovedBy7On.ToString()
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+        </div>
+        <div class="col-sm-3">
+            <b>@localizer["acttype"]</b>
+            <br /><input class="changeType" id="Act_Type" name="Act.Type" type="radio" value="1" disabled @(Model.Act.Type == 1 ? "checked" : "")> @localizer["forces"]
+            <br /><input class="changeType" id="Act_Type" name="Act.Type" type="radio" value="2" disabled @(Model.Act.Type == 2 ? "checked" : "")> @localizer["bypasses"]
+            <br /><input class="changeType" id="Act_Type" name="Act.Type" type="radio" value="3" disabled @(Model.Act.Type == 3 ? "checked" : "")> @localizer["s2of3"]
+            <br /><input class="changeType" id="Act_Type" name="Act.Type" type="radio" value="4" disabled @(Model.Act.Type == 4 ? "checked" : "")> @localizer["inactive"]
+            <br /><input class="changeType" id="Act_Type" name="Act.Type" type="radio" value="5" disabled @(Model.Act.Type == 5 ? "checked" : "")> @localizer["inhibited"]
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+            <table class="" width="100%" role="banner" aria-describedby="tags">
+                <thead>
+                    <tr>
+                        <th class="text-center">
+                            @localizer["tagname"]
+                        </th>
+                        <th class="text-center">
+                            @localizer["unit"]
+                        </th>
+                        <th class="text-center">
+                            @localizer["equipment"]
+                        </th>
+                        <th class="text-center">
+                            @localizer["device"]
+                        </th>
+                        <th class="text-center">
+                            @localizer["location"]
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var ActItems in Model.Act.ActItems)
+                    {
+                        <tr>
+                            <td>
+                                <input asp-for="@ActItems.TagName" class="form-control" disabled />
+                            </td>
+                            <td>
+                                <input asp-for="@ActItems.Unit" class="form-control" disabled />
+                            </td>
+                            <td>
+                                <input asp-for="@ActItems.Equipment" class="form-control" disabled />
+                            </td>
+                            <td>
+                                <select asp-for="@ActItems.DeviceId" class="form-control" asp-items="@Model.Devices" disabled></select>
+                            </td>
+                            <td>
+                                <input asp-for="@ActItems.Location" class="form-control" disabled />
+                            </td>
+                        </tr>
+                        i++;
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-1"></div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+            <div style="text-align: center">
+                <b>@localizer["cause"]</b>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                        Русский<br><textarea asp-for="@Model.Act.CauseRU" class="form-control @langRU" id="causeRU" rows="4" cols="80" disabled="@(disabledCRU != "" ? "disabled" : null)"></textarea>
+                </div>
+                <div class="col-md-4">
+                        Қазақша<br><textarea asp-for="@Model.Act.CauseKK" class="form-control @langKK" id="causeKK" rows="4" cols="80" disabled="@(disabledCKK != "" ? "disabled" : null)"></textarea>
+                </div>
+                <div class="col-md-4">
+                        English<br><textarea asp-for="@Model.Act.CauseEN" class="form-control @langEN" id="causeEN" rows="4" cols="80" disabled="@(disabledCEN != "" ? "disabled" : null)"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+            <div style="text-align: center">
+                <b>@localizer["impact"]</b>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                        Русский<br><textarea asp-for="@Model.Act.ImpactRU" class="form-control @langRU" id="impactRU" rows="4" cols="80" disabled="@(disabledIRU != "" ? "disabled" : null)"></textarea>
+                </div>
+                <div class="col-md-4">
+                        Қазақша<br><textarea asp-for="@Model.Act.ImpactKK" class="form-control @langKK" id="impactKK" rows="4" cols="80" disabled="@(disabledIKK != "" ? "disabled" : null)"></textarea>
+                </div>
+                <div class="col-md-4">
+                        English<br><textarea asp-for="@Model.Act.ImpactEN" class="form-control @langEN" id="impactEN" rows="4" cols="80" disabled="@(disabledIEN != "" ? "disabled" : null)"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-1"></div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+            <div style="text-align: center">
+                <b>@localizer["protect"]</b>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                        Русский<br><textarea asp-for="@Model.Act.ProtectRU" class="form-control @langRU" id="protectRU" rows="4" cols="80" disabled="@(disabledPRU != "" ? "disabled" : null)"></textarea>
+                </div>
+                <div class="col-md-4">
+                        Қазақша<br><textarea asp-for="@Model.Act.ProtectKK" class="form-control @langKK" id="protectKK" rows="4" cols="80" disabled="@(disabledPKK != "" ? "disabled" : null)"></textarea>
+                </div>
+                <div class="col-md-4">
+                        English<br><textarea asp-for="@Model.Act.ProtectEN" class="form-control @langEN" id="protectEN" rows="4" cols="80" disabled="@(disabledPEN != "" ? "disabled" : null)"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-1"></div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+            <div style="text-align: center">
+                <b>@localizer["actnotes"]</b>
+            </div>
+            <input asp-for="@Model.Act.ActNotes" class="form-control" disabled="disabled" />
+        </div>
+        <div class="col-md-1"></div>
+    </div>
+
+    <br>
+
+    <div class="row">
+        <div style="text-align: center">
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+                <a asp-action="Index" 
+                   asp-route-ItemPerPage="@Model.ItemPerPage"
+                   asp-route-SelectedFacilityId="@Model.SelectedFacilityId"
+                   asp-route-PageIndex="@Model.PageIndex"
+                   class="btn btn-secondary">Back to List</a>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section scripts
+{
+    @{await Html.RenderPartialAsync($"_ValidationScriptsPartial");}
+
+    <script>
+        function validateForm() {
+            var result = CheckElement($("#causeRU"));
+            
+            
+            result = CheckElement($("#causeKK")) && result;
+            result = CheckElement($("#causeEN")) && result;
+
+            result = CheckElement($("#impactRU")) && result;
+            result = CheckElement($("#impactKK")) && result;
+            result = CheckElement($("#impactEN")) && result;
+
+            result = CheckElement($("#protectRU")) && result;
+            result = CheckElement($("#protectEN")) && result;
+            result = CheckElement($("#protectKK")) && result;
+
+            //alert(result);
+            return result;
+        }
+
+        function CheckElement(element) {
+            element.removeClass("input-validation-error");
+            if (element.prop('disabled')) {
+                return true;
+            } else if (element.val() === "") {
+                element.addClass("input-validation-error");
+                return false;
+            } else {
+                return true;
+            }
+            
+        }
+
+        $(document).ready(function() {
+            var host = "@Model.URL";
+            validateForm();
+            //$('#modDialog_Delegate').modal('show');
+        });
+
+        
+
+    </script>
+}

@@ -1,0 +1,13 @@
+{
+  "PIServer": "tcogilpit",
+  "InterpolatedValuesCount": 12,
+  "StartingHour": 6,
+  "NONEasNormal": true,
+  "ManualState": "MAN",
+  "CaseInsensitive": true,
+  "NMODEThreshold": 95,
+  "TotalHistoryDays": 10,
+  "ReportHour": 1,
+  "States": [ "MAN", "AUTO", "CAS", "BCAS", "NONE" ],
+  "WriteToPI": false
+}

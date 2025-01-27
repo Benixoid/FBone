@@ -1,0 +1,23 @@
+﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+@inject FBone.Database.DataManager DM
+@using FBone.Service;
+@model FBone.Models.NMode.NMRecordListModel
+@addTagHelper *, FBone
+
+@*<!DOCTYPE html>*@
+@{
+    Layout = "_NModeLayout";
+}
+
+@{
+    ViewBag.Title = $"NMRecord List";
+}
+
+<p>
+    @if (DM.IsUserInRole(User, Enums.Roles.IsNModeAdministrator))
+    {
+        <a asp-action="Create" class="btn btn-secondary">Create New</a>
+    }
+</p>
+
+@await Html.PartialAsync("~/Views/NMTotalRecords/Records.cshtml",  Model)

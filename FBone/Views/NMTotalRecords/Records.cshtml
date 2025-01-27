@@ -1,0 +1,649 @@
+﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+@inject FBone.Database.DataManager DM
+@using FBone.Service;
+@model FBone.Models.NMode.NMRecordListModel
+@addTagHelper *, FBone
+
+<style>
+    select {
+        width: 100px
+    }
+
+    input {
+        width: 200px
+    }
+
+    label {
+        padding-right: 10px;
+        margin-top: 0.40em;
+    }
+
+    .labelwide {
+        width: 150px
+    }
+
+    .glyphicon {
+        display: inline-block;
+        padding: 0 5px;
+    }
+
+    .glyphicon-chevron-right:after {
+        content: "\00BB";
+    }
+
+    .glyphicon-chevron-left:before {
+        content: "\00AB";
+    }
+
+    .shade {
+        background-color: aqua;
+    }
+
+    .align-to-right {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .right-aligned {
+        align-self: flex-end;
+        padding: 0px;
+    }
+
+    .form-check-input[type=checkbox] {
+        margin-top: 0.55em;
+    }
+
+    }
+    */
+</style>
+<!DOCTYPE html>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+@if (Model.NModeRecords.Count > 0 || !string.IsNullOrEmpty(Model.Search) || Model.Hide100PercentResults)
+{
+    <form id="sform1" method="get">
+        <input type="hidden" name="SelectedDate" value=@Model.SelectedDate.ToString("yyyy-MM-dd") />
+        <input type="hidden" name="Calculated" value=@Model.Calculated.ToString() />
+        <input type="hidden" name="Snapshot" value=@Model.Snapshot.ToString() />
+        <input type="hidden" name="sortOrder" value=@Model.SortViewModel.Current.ToString() />
+        <input type="hidden" name="page" value=@Model.Page.PageNumber />
+
+        <text>&nbsp;</text>
+        <h4>
+            Records
+            <i id="recordSpinner" class="fa fa-spinner fa-spin" style="font-size:24px; display:none"></i>
+        </h4>
+
+        <div class="fg-toolbar ui-toolbar ui-widget-header ui-helper-clearfix ui-corner-tl ui-corner-tr">
+            <div class="align-to-right">
+                <div class="left-aligned">
+                    <span>
+                        <text>Page size</text>
+                        <select name="PageSize" asp-items="Model.Page.PageSizeList" onchange="submitRequest('sform1')"></select>
+                    </span>
+                    <text>&nbsp;</text>
+                    @if (Model.Areas != null)
+                    {
+                        <span>
+                            <text>Area</text>
+                            <select name="AreaId" asp-items="Model.Areas" onchange="submitRequest('sform1')"></select>
+                        </span>
+                        <text>&nbsp;</text>
+                        <span>
+                            <text>@Html.DisplayNameFor(model => model.NModeRecords[0].Lcn)</text>
+                            <select name="LcnId" asp-items="Model.LCNs" onchange="submitRequest('sform1')"></select>
+                        </span>
+                    }
+                </div>
+                <div>
+                    <div style="float:right; margin-right:0px; padding-left:10px;">
+                        <page-link page-model="Model.Page" page-controller=@ViewData["Controller"] page-action=@ViewData["Action"] page-size="Model.Page.PageSize"
+                                   page-calculated=@Model.Calculated snapshot=@Model.Snapshot page-search=@Model.Search selected-date=@Model.SelectedDate validate-tags=@Model.ValidateTags
+                                   result-details=@Model.ResultDetails hide-details=@Model.HideDetails page-area-id="Model.AreaId" page-lcn-id="Model.LcnId"
+                                   sort-order="@Model.SortViewModel.Current" hide-in-active-records=@Model.HideInActiveRecords hide100-percent-results=@Model.Hide100PercentResults 
+                                   onclick="submitRequest('sform1')"></page-link>
+                    </div>
+                    <div class="right-aligned" style="float:right;">
+                        <div class="right-aligned">
+                            <input type="search" id="search" asp-for="Search" name="Search" placeholder="Search for Tagnames" onsearch="onSearchChanged(this, this.form)" />
+                            <input type="submit" value="Search" class="btn btn-secondary" />
+
+                            <scope>
+                                <input class="form-check-input" asp-for=@Model.HideInActiveRecords name="HideInActiveRecords" onchange="submitRequest('sform1')" />
+                                <label for="HideInActiveRecords">Hide Inactive Records</label>
+                                <input class="form-check-input" asp-for=@Model.Hide100PercentResults name="Hide100PercentResults" onchange="submitRequest('sform1')" />
+                                <label for="Hide100PercentResults">Hide Results with 100%</label>
+                                <input class="form-check-input" asp-for=@Model.HideDetails name="hideDetails" onchange="submitRequest('sform1')" />
+                                <label for="hideDetails">Hide record's details</label>
+                                <input class="form-check-input" asp-for=@Model.ResultDetails name="resultDetails" onchange="submitRequest('sform1')" />
+                                <label for="ResultDetails">Result details</label>
+                                <input class="form-check-input" asp-for=@Model.ValidateTags name="ValidateTags" onchange="submitRequest('sform1')" />
+                                <label for="ValidateTags">Validate tags</label>
+                            </scope>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </form>
+
+    <table class="table table-light table-hover" id="nmoderecords" role="banner" aria-describedby="nmoderecords">
+        <thead>
+            <tr>
+                <th>
+                    <a asp-action=@ViewData["Action"] asp-controller=@ViewData["Controller"]
+                       asp-route-sortOrder="@(Model.SortViewModel.TagnameSort)"
+                       asp-route-Calculated="@(Model.Calculated)"
+                       asp-route-Snapshot="@(Model.Snapshot)"
+                       asp-route-SelectedDate="@(Model.SelectedDate.ToString("yyyy-MM-dd"))"
+                       asp-route-page="@(Model.Page.PageNumber)"
+                       asp-route-PageSize="@(Model.Page.PageSize)"
+                       asp-route-AreaId="@(Model.AreaId)"
+                       asp-route-LcnId="@(Model.LcnId)"
+                       asp-route-Search="@(Model.Search)"
+                       asp-route-ValidateTags="@Model.ValidateTags"
+                       asp-route-HideDetails="@Model.HideDetails"
+                       asp-route-ResultDetails="@Model.ResultDetails"
+                       asp-route-HideInActiveRecords="@Model.HideInActiveRecords" onclick="submitRequest()">
+                        Tagname
+                    </a>
+                </th>
+                @if (Model.Areas != null)
+                {
+                    <th>
+                        <a asp-action=@ViewData["Action"] asp-controller=@ViewData["Controller"]
+                           asp-route-sortOrder="@(Model.SortViewModel.AreaSort)"
+                           asp-route-Calculated="@(Model.Calculated)"
+                           asp-route-Snapshot="@(Model.Snapshot)"
+                           asp-route-SelectedDate="@(Model.SelectedDate.ToString("yyyy-MM-dd"))"
+                           asp-route-page="@(Model.Page.PageNumber)"
+                           asp-route-PageSize="@(Model.Page.PageSize)"
+                           asp-route-AreaId="@(Model.AreaId)"
+                           asp-route-LcnId="@(Model.LcnId)"
+                           asp-route-Search="@(Model.Search)"
+                           asp-route-ValidateTags="@Model.ValidateTags"
+                           asp-route-HideDetails="@Model.HideDetails"
+                           asp-route-ResultDetails="@Model.ResultDetails"
+                           asp-route-HideInActiveRecords="@Model.HideInActiveRecords" onclick="submitRequest()">
+                            Area
+                        </a>
+                    </th>
+                    <th>
+                        <a asp-action=@ViewData["Action"] asp-controller=@ViewData["Controller"]
+                           asp-route-sortOrder="@(Model.SortViewModel.LcnSort)"
+                           asp-route-Calculated="@(Model.Calculated)"
+                           asp-route-Snapshot="@(Model.Snapshot)"
+                           asp-route-SelectedDate="@(Model.SelectedDate.ToString("yyyy-MM-dd"))"
+                           asp-route-page="@(Model.Page.PageNumber)"
+                           asp-route-PageSize="@(Model.Page.PageSize)"
+                           asp-route-AreaId="@(Model.AreaId)"
+                           asp-route-LcnId="@(Model.LcnId)"
+                           asp-route-Search="@(Model.Search)"
+                           asp-route-ValidateTags="@Model.ValidateTags"
+                           asp-route-HideDetails="@Model.HideDetails"
+                           asp-route-ResultDetails="@Model.ResultDetails"
+                           asp-route-HideInActiveRecords="@Model.HideInActiveRecords" onclick="submitRequest()">
+                            @Html.DisplayNameFor(model => model.NModeRecords[0].Lcn)
+                        </a>
+                    </th>
+                }
+                @if (Model.Calculated || Model.ResultsAvailable)
+                {
+                    @if (Model.ResultDetails)
+                    {
+                        <th>@Html.DisplayNameFor(m => m.NModeRecords[0].DayNormal)</th>
+                        <th>@Html.DisplayNameFor(m => m.NModeRecords[0].DayManual)</th>
+                        <th>@Html.DisplayNameFor(m => m.NModeRecords[0].DayOther)</th>
+                        <th>@Html.DisplayNameFor(m => m.NModeRecords[0].NightNormal)</th>
+                        <th>@Html.DisplayNameFor(m => m.NModeRecords[0].NightManual)</th>
+                        <th>@Html.DisplayNameFor(m => m.NModeRecords[0].NightOther)</th>
+                    }
+                    <th>
+                        <a asp-action=@ViewData["Action"] asp-controller=@ViewData["Controller"]
+                           asp-route-sortOrder="@(Model.SortViewModel.NormalTotalSort)"
+                           asp-route-Calculated="@(Model.Calculated)"
+                           asp-route-Snapshot="@(Model.Snapshot)"
+                           asp-route-SelectedDate="@(Model.SelectedDate.ToString("yyyy-MM-dd"))"
+                           asp-route-page="@(Model.Page.PageNumber)"
+                           asp-route-PageSize="@(Model.Page.PageSize)"
+                           asp-route-AreaId="@(Model.AreaId)"
+                           asp-route-LcnId="@(Model.LcnId)"
+                           asp-route-Search="@(Model.Search)"
+                           asp-route-ValidateTags="@Model.ValidateTags"
+                           asp-route-HideDetails="@Model.HideDetails"
+                           asp-route-ResultDetails="@Model.ResultDetails"
+                           asp-route-HideInActiveRecords="@Model.HideInActiveRecords">
+                            NormalTotal
+                        </a>
+                    </th>
+                    <th>@Html.DisplayNameFor(m => m.NModeRecords[0].TimeStamp)</th>
+                    <th>@Html.DisplayNameFor(m => m.NModeRecords[0].RecordTime)</th>
+                    <th>@Html.DisplayNameFor(m => m.NModeRecords[0].User)</th>
+                }
+                @if (!Model.HideDetails)
+                {
+                    <th>@Html.DisplayNameFor(m => m.NModeRecords[0].Nmode)</th>
+                    <th>@Html.DisplayNameFor(m => m.NModeRecords[0].Descriptor)</th>
+                    <th>@Html.DisplayNameFor(m => m.NModeRecords[0].CountIt)</th>
+                    <th>@Html.DisplayNameFor(m => m.NModeRecords[0].NModeORed)</th>
+                    <th>@Html.DisplayNameFor(m => m.NModeRecords[0].ConditionORed)</th>
+                    <th>
+                        <a asp-action=@ViewData["Action"] asp-controller=@ViewData["Controller"]
+                           asp-route-sortOrder="@(Model.SortViewModel.ConditionsSort)"
+                           asp-route-Calculated="@(Model.Calculated)"
+                           asp-route-Snapshot="@(Model.Snapshot)"
+                           asp-route-SelectedDate="@(Model.SelectedDate.ToString("yyyy-MM-dd"))"
+                           asp-route-page="@(Model.Page.PageNumber)"
+                           asp-route-PageSize="@(Model.Page.PageSize)"
+                           asp-route-AreaId="@(Model.AreaId)"
+                           asp-route-LcnId="@(Model.LcnId)"
+                           asp-route-Search="@(Model.Search)"
+                           asp-route-ValidateTags="@Model.ValidateTags"
+                           asp-route-HideDetails="@Model.HideDetails"
+                           asp-route-ResultDetails="@Model.ResultDetails"
+                           asp-route-HideInActiveRecords="@Model.HideInActiveRecords">
+                            @Html.DisplayNameFor(m => m.NModeRecords[0].Conditions)
+                        </a>
+                    </th>
+                    @if (DM.IsUserInRole(User, Enums.Roles.IsNModeAdministrator))
+                    {
+                        <th>
+                            <a asp-action=@ViewData["Action"] asp-controller=@ViewData["Controller"]
+                               asp-route-sortOrder="@(Model.SortViewModel.EditorSort)"
+                               asp-route-Calculated="@(Model.Calculated)"
+                               asp-route-Snapshot="@(Model.Snapshot)"
+                               asp-route-SelectedDate="@(Model.SelectedDate.ToString("yyyy-MM-dd"))"
+                               asp-route-page="@(Model.Page.PageNumber)"
+                               asp-route-PageSize="@(Model.Page.PageSize)"
+                               asp-route-AreaId="@(Model.AreaId)"
+                               asp-route-LcnId="@(Model.LcnId)"
+                               asp-route-Search="@(Model.Search)"
+                               asp-route-ValidateTags="@Model.ValidateTags"
+                               asp-route-HideDetails="@Model.HideDetails"
+                               asp-route-ResultDetails="@Model.ResultDetails"
+                               asp-route-HideInActiveRecords="@Model.HideInActiveRecords">
+                                @Html.DisplayNameFor(m => m.NModeRecords[0].Editor)
+                            </a>
+                        </th>
+                        <th>
+                            <a asp-action=@ViewData["Action"] asp-controller=@ViewData["Controller"]
+                               asp-route-sortOrder="@(Model.SortViewModel.ChangeDateSort)"
+                               asp-route-Calculated="@(Model.Calculated)"
+                               asp-route-Snapshot="@(Model.Snapshot)"
+                               asp-route-SelectedDate="@(Model.SelectedDate.ToString("yyyy-MM-dd"))"
+                               asp-route-page="@(Model.Page.PageNumber)"
+                               asp-route-PageSize="@(Model.Page.PageSize)"
+                               asp-route-AreaId="@(Model.AreaId)"
+                               asp-route-LcnId="@(Model.LcnId)"
+                               asp-route-Search="@(Model.Search)"
+                               asp-route-ValidateTags="@Model.ValidateTags"
+                               asp-route-HideDetails="@Model.HideDetails"
+                               asp-route-ResultDetails="@Model.ResultDetails"
+                               asp-route-HideInActiveRecords="@Model.HideInActiveRecords">
+                                @Html.DisplayNameFor(m => m.NModeRecords[0].ChangeDate)
+                            </a>
+                        </th>
+                    }
+                }
+                <th>
+                    Links
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.NModeRecords)
+            {
+                <tr style="@((item.TagHealthStatus != FBone.Models.NMode.TagHealthStatus.Good && item.TagHealthStatus != FBone.Models.NMode.TagHealthStatus.Unchecked )?
+                "color:red;":
+                item.Evaluation?
+                "color:green;":
+                item.CountIt?
+                "":
+                "color:rgb(255, 165, 0);")">
+                    <td>
+                        <a asp-controller="NModeRecords" asp-action="Details" asp-route-id="@item.Id">@item.Tagname</a>
+                    </td>
+                    @if (Model.Areas != null)
+                    {
+                        <td>@item.Area.Name</td>
+                        <td>@item.Lcn.Name</td>
+                    }
+                    @if (Model.Calculated || Model.ResultsAvailable)
+                    {
+                        @if (Model.ResultDetails)
+                        {
+                            <td>@item.DayNormal.ToString("f2")</td>
+                            <td>@item.DayManual.ToString("f2")</td>
+                            <td>@item.DayOther.ToString("f2")</td>
+                            <td>@item.NightNormal.ToString("f2")</td>
+                            <td>@item.NightManual.ToString("f2")</td>
+                            <td>@item.NightOther.ToString("f2")</td>
+                        }
+                        <td>@item.NormalTotal.ToString("f2")</td>
+                        <td>@item.TimeStamp</td>
+                        <td>@item.RecordTime</td>
+                        <td>@item.User</td>
+                    }
+                    @if (!Model.HideDetails)
+                    {
+                        <td>@item.Nmode</td>
+                        <td>@item.Descriptor</td>
+                        <td>@item.CountIt</td>
+                        <td>@item.NModeORed</td>
+                        <td>@item.ConditionORed</td>
+                        <td>@item.Conditions.Count</td>
+                        @if (DM.IsUserInRole(User, Enums.Roles.IsNModeAdministrator))
+                        {
+                            <td>@item.Editor</td>
+                            <td>@item.ChangeDate</td>
+                        }
+                    }
+                    <td>
+                        @* <a asp-controller="NModeRecords" asp-action="Details" asp-route-id="@item.Id">Details</a> *@
+                        @if (DM.IsUserInRole(User, Enums.Roles.IsNModeEditor))
+                        {
+                            <a asp-controller="NModeRecords" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                        }
+                        @if (DM.IsUserInRole(User, Enums.Roles.IsNModeAdministrator))
+                        {
+                            <a asp-controller="NModeRecords" asp-action="Delete" asp-route-id="@item.Id">| Delete</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+}
+
+<form id="sform2" method="get" asp-action=@ViewData["Action"]>
+    <input type="hidden" name="sortOrder" value=@Model.SortViewModel.Current.ToString() />
+    <input type="hidden" name="page" value=@Model.Page.PageNumber />
+    <input type="hidden" name="Search" value="@Model.Search" />
+    <input type="hidden" name="PageSize" value=@Model.Page.PageSize />
+    <input type="hidden" name="AreaId" value=@Model.AreaId />
+    <input type="hidden" name="LcnId" value=@Model.LcnId />
+
+    @if (Model.NModeRecords.Count > 0)
+    {
+        <div class="fg-toolbar ui-toolbar ui-widget-header ui-helper-clearfix ui-corner-tl ui-corner-tr">
+            <div class="align-to-right">
+                <div class="left-aligned">
+                    Showing @Model.Page.StartRecord to @Model.Page.EndRecord of @Model.Page.RecordCount
+                    @*                    <span>
+                <input class="form-check-input" id="chkSnapshot" asp-for=@Model.Snapshot name="Snapshot" />
+                <label for="Snapshot">Snapshot</label>
+                </span> *@
+                </div>
+                <div>
+                    <div style="float:right; margin-right:0px; padding-left:10px;">
+                        <page-link page-model="Model.Page" page-controller=@ViewData["Controller"] page-action=@ViewData["Action"] page-size="Model.Page.PageSize"
+                                   page-calculated=@Model.Calculated snapshot=@Model.Snapshot page-search=@Model.Search selected-date=@Model.SelectedDate validate-tags=@Model.ValidateTags
+                                   result-details=@Model.ResultDetails hide-details=@Model.HideDetails page-area-id="Model.AreaId" page-lcn-id="Model.LcnId"
+                                   Sort-Order="@Model.SortViewModel.Current" hide-in-active-records=@Model.HideInActiveRecords hide100-percent-results=@Model.Hide100PercentResults
+                                   onclick="submitRequest('sform2')"></page-link>
+                    </div>
+                    <div class="right-aligned" style="float:right;">
+                        <div class="right-aligned">
+                            <scope>
+                                <input class="form-check-input" asp-for=@Model.HideInActiveRecords name="HideInActiveRecords" onchange="submitRequest('sform2')" />
+                                <label for="HideInActiveRecords">Hide Inactive Records</label>
+                                <input class="form-check-input" asp-for=@Model.Hide100PercentResults name="Hide100PercentResults" onchange="submitRequest('sform2')" />
+                                <label for="Hide100PercentResults">Hide Results with 100%</label>
+                                <input class="form-check-input" asp-for=@Model.HideDetails name="hideDetails" onchange="submitRequest('sform2')" />
+                                <label for="hideDetails">Hide record's details</label>
+                                <input class="form-check-input" asp-for=@Model.ResultDetails name="resultDetails" onchange="submitRequest('sform2')" />
+                                <label for="ResultDetails">Result details</label>
+                                <input class="form-check-input" asp-for=@Model.ValidateTags name="ValidateTags" onchange="submitRequest()" />
+                                <label for="ValidateTags">Validate tags</label>
+                            </scope>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <span>
+        <b>
+            <div class="align-to-right">
+                <div class="left-aligned">
+                    <input type="datetime-local" id="datepicker" asp-for="SelectedDate" name="SelectedDate" onchange="pickerchange()" step="any" />
+                    <span style="padding-left:10px;padding-top:10px;">
+                        <input class="form-check-input" id="chkSnapshot" asp-for=@Model.Snapshot name="Snapshot" onchange="chkSnapshotChange()" />
+                        <label for="Snapshot">Snapshot</label>
+                    </span>
+                    <input type="submit" value="Load" class="btn btn-primary" onclick="submitRequest()" />
+                    <input type="button" id="exportToExcel" value="Export to Excel" class="btn btn-secondary" />
+                    @if (Model.AllowCalculate && DM.IsUserInRole(User, Enums.Roles.IsNModeEditor))
+                    {
+                        <input type="submit" value="Calculate & Load" class="btn btn-secondary" onclick="setCalculate()" />
+                        <input id="calcRecords" type="hidden" name="Calculate" value=false />
+                    }
+                </div>
+                <div>
+                </div>
+            </div>
+        </b>
+    </span>
+</form>
+
+<script>
+    Number.prototype.AddZero = function (b, c) {
+        var l = (String(b || 10).length - String(this).length) + 1;
+        return l > 0 ? new Array(l).join(c || '0') + this : this;
+    }//to add zero to less than 10
+
+    if (@Model.Snapshot.ToString().ToLower())
+        document.addEventListener("load", setDatePicker("datepicker", new Date("@Model.SelectedDate.ToString("yyyy-MM-ddTHH:mm")")));
+    else
+        document.addEventListener("load", setDatePicker("datepicker", new Date("@Model.SelectedDate.ToString("yyyy-MM-ddT00:00")")));
+
+    // document.getElementById('datepicker').addEventListener('onchange', pickerchange);
+    document.getElementById('exportToExcel').addEventListener('click', exportToExcel);
+
+    function pickerchange() {
+        var now = new Date();
+        var dtpic = document.getElementById('datepicker');
+        if (new Date(dtpic.value) > now) {
+            var newMax = initDate(now);
+            dtpic.value = newMax;
+            dtpic.max = newMax;
+        }
+        // console.log("new val bigger than now: " + (new Date(dtpic.value) > new Date()));
+        console.log("datepicker: " + dtpic.value + "\nnow: " + now + "\nmax: " + dtpic.max);
+    }
+    //Prepare date for datetime-local
+    function initDate(d) {
+        localDateTime = [d.getFullYear(), (d.getMonth() + 1).AddZero(),
+        d.getDate().AddZero(),
+        ].join('-') + 'T' +
+            [d.getHours().AddZero(),
+            d.getMinutes().AddZero()].join(':') + ':00.000';
+        return localDateTime;
+    }
+
+    function setDatePicker(element, selectedDate, modelDate) {
+        let input = document.getElementById(element);
+        let endDate = new Date();
+        //endDate.setDate(endDate.getDate() - 1);
+        console.log(selectedDate);
+        if (!isNaN(Date.parse(modelDate)))
+            selectedDate = new Date(modelDate);
+        else
+            selectedDate = new Date(selectedDate);
+
+        input.max = initDate(endDate);
+        if (dateIsValid(selectedDate)) {
+            input.value = initDate(selectedDate);
+            console.log(selectedDate);
+        }
+        else {
+            console.log(selectedDate);
+            input.value = initDate(endDate);
+        }
+    }
+    function chkSnapshotChange() {
+        var dtpic = document.getElementById('datepicker');
+        console.log("old max: " + dtpic.max);
+        if (document.getElementById('chkSnapshot').checked) {
+            dtpic.max = initDate(new Date());
+            console.log("new max: " + dtpic.max);
+        }
+        else {
+            let endDate = new Date();
+            //endDate.setDate(endDate.getDate() - 1);
+            dtpic.max = initDate(endDate);
+        }
+    }
+
+    var form1 = document.getElementById("sform1");
+    if (form1 != null)
+        form1.addEventListener("submit", submitRequest);
+    var form2 = document.getElementById("sform2");
+    if (form2 != null)
+        form2.addEventListener("submit", submitRequest);
+
+    document.getElementById("sform2").addEventListener("submit", submitRequest);
+
+    function submitRequest(form) {
+        var spinner1 = document.getElementById('recordSpinner');
+        if (spinner1 != null)
+            spinner1.style.display = 'inline-block';
+
+        var spinner2 = document.getElementById('viewSpinner');
+
+        if (spinner2 != null)
+            spinner2.style.display = 'inline-block';
+
+        var f = document.getElementById(form);
+        if (f != null)
+            f.submit();
+    };
+    function startSpinner() {
+        var spinner1 = document.getElementById('recordSpinner');
+        if (spinner1 != null) {
+            spinner1.style.display = 'inline-block';
+            console.log(spinner1.style.display);
+        }
+
+        var spinner2 = document.getElementById('viewSpinner');
+        if (spinner2 != null) {
+            spinner2.style.display = 'inline-block';
+            console.log(spinner2.style.display);
+        }
+    };
+    function stopSpinner() {
+        //debugger;
+        var spinner1 = document.getElementById('recordSpinner');
+        if (spinner1 != null)
+            spinner1.style.display = 'none';
+
+        var spinner2 = document.getElementById('viewSpinner');
+        if (spinner2 != null)
+            spinner2.style.display = 'none';
+    };
+
+    function setCalculate() {
+        var calcRecords = document.getElementById("calcRecords");
+        calcRecords.value = true;
+        var chkSnapshot = document.getElementById("chkSnapshot");
+        chkSnapshot.checked = false;
+        submitRequest();
+    };
+
+    function exportToExcel() {
+        var TRId = @Model.ParentId;
+
+        var search = "";
+        if (document.getElementById("search") === null)
+            search = "";
+        else
+            search = document.getElementById("search").value;
+        var dt = new Date("@Model.SelectedDate.ToString("yyyy-MM-dd HH:mm:ss")");
+        var hideinactive = @Model.HideInActiveRecords.ToString().ToLower();
+        var hide100 = @Model.Hide100PercentResults.ToString().ToLower();
+        var snapshot = document.getElementById("chkSnapshot").checked;
+        const url = `/NMTotalRecords/ExportToExcel?totalrecordid=${TRId}&areaid=${@Model.AreaId}&lcnid=${@Model.LcnId}&dt=${dt.toISOString()}&hideinactiverecords=${hideinactive}&hide100percentresults=${hide100}&searchtext=${search}&snapshot=${snapshot}`;
+        startSpinner();
+
+        $.ajax({
+            type: 'GET',
+            url: url,
+            xhrFields: {
+                responseType: 'blob'
+            },
+            success: function (data, status, jqXHR) {
+                var a = document.createElement('a');
+                var url = window.URL.createObjectURL(data);
+                var header = jqXHR.getResponseHeader("content-disposition");
+                //console.log(header);
+                var iP1 = header.indexOf("filename=") + 9;
+                var iP2 = header.indexOf(";", iP1);
+                var fn = header.substring(iP1, iP2);
+                //console.log(iP1 + ',' + iP2 + ': ' + fn);
+                a.href = url;
+                a.download = fn;
+                a.click();
+                window.URL.revokeObjectURL(url);
+                stopSpinner();
+            },
+            error: function () { }
+        });
+
+
+    };
+
+    function downloadFile(filePath) {
+        var link = document.createElement('a');
+        link.href = filePath;
+        link.download = filePath.substr(filePath.lastIndexOf('/') + 1);
+        link.click();
+        link.addEventListener("load", stopSpinner());
+        //stopSpinner();
+    }
+    //browser.downloads.onCreated.addListener(handleCreated);
+    function handleCreated(downloadItem) {
+        console.log(
+            `Download from ${downloadItem.url} +''
+                                                                               +at starttime ${downloadItem.startTime}`);
+    };
+
+    function dateIsValid(date) {
+        if (date instanceof Date && !isNaN(date)) {
+            if (date.getFullYear() == 1)
+                return false;
+            else
+                return true;
+        }
+        else
+            return true;
+    };
+
+    function setDateTime(element, selectedDate) {
+        let input = document.getElementById(element);
+        let currentDate = new Date();
+        let startDate = currentDate;
+        startDate.setDate(currentDate.getDate() - 31);
+        let endDate = new Date();
+        endDate.setDate(endDate.getDate() - 1);
+        selectedDate = new Date(selectedDate);
+
+        //input.min = startDate.toISOString().slice(0, 10);
+        input.max = endDate.toISOString().slice(0, 10);
+        if (dateIsValid(selectedDate))
+            input.value = selectedDate.toISOString().slice(0, 10);
+        else
+            input.value = endDate.toISOString().slice(0, 10);
+    };
+
+    function onSearchChanged(input, form) {
+        console.log(input);
+        if (input.value == "") {
+            form.submit();
+        }
+    };
+
+
+</script>

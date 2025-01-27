@@ -1,0 +1,8 @@
+﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+
+@{
+    ViewBag.Title = @localizer["denied"];
+}
+
+<h1 style="color:red;font-weight:bold;">@localizer["denied"]</h1>
+@localizer["denied1"] <a asp-controller="Home" asp-action="About">@localizer["about"]</a> @localizer["denied2"]

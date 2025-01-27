@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="03/17/2022 08:08:44" ReportInfo.Modified="08/10/2022 10:52:18" ReportInfo.CreatorVersion="2022.1.0.0">
+  <Styles Name="Standard">
+    <Style Name="Title" Font="Arial, 12pt, style=Bold"/>
+    <Style Name="Header" Font="Arial, 10pt, style=Bold"/>
+    <Style Name="Group" Font="Arial, 10pt, style=Bold"/>
+    <Style Name="Data" Font="Arial, 10pt"/>
+    <Style Name="Footer" Font="Arial, 10pt"/>
+    <Style Name="EvenRows" Fill.Color="WhiteSmoke" Font="Arial, 10pt"/>
+  </Styles>
+  <Dictionary>
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqtbDBSzlTxxx25U8ly727rfaFqrdFv4TZu87uuOA305V971atLB3gugc7kMSuLMbJ4qVrHU8Y4PTpJ0S577pxVCF7458nC5dMvhjji3PYrpWtMvlFUT54BTFZm4IPYht1LCbrr250vrQm1lekNMB2NRyZE5ZT/qdmFNmatUjlBIAm250P8aNLXDfMxQ8+nQ82iUtq6QO77hZlmyycKyD639JzLCLEkQu22+pjLVlTRd4=">
+      <TableDataSource Name="Table" Alias="Alarms_current" DataType="System.Int32" Enabled="true" SelectCommand="--declare @ReportGroup as nvarchar(100) = 'KTL'&#13;&#10;declare @ReportDate as datetime&#13;&#10;set @ReportDate = cast(CONVERT(varchar(10), year(GETDATE())) + '-' + CONVERT(varchar(10), month(GETDATE())) + '-' + CONVERT(varchar(10), day(GETDATE())) + ' 06:00:00' as datetime2)&#13;&#10;&#13;&#10;SELECT a.Name_EN as areaName, T.Tagnumber, d.Name as device, T.Service, E.EventDateTimeSet, E.Action, E.TypeId, ac.CauseEN,ac.CauseRU,ac.CauseKK, ai.ActId, iif(E.TypeId=3,'Disable','Inhibite') as type, ac.ActNotes&#13;&#10;FROM &quot;Event&quot; E &#13;&#10;INNER JOIN &quot;Tag&quot; T ON E.TagId = T.Id &#13;&#10;INNER JOIN &quot;tArea&quot; a ON t.AreaId = a.Id &#13;&#10;left JOIN &quot;tActItems&quot; ai ON e.ActItemId = ai.Id&#13;&#10;left JOIN &quot;tAct&quot; ac ON ai.ActId = ac.Id&#13;&#10;left join Device d on t.DeviceId = d.Id&#13;&#10;where e.ReportIt=1 &#13;&#10;and e.EventDateTimeSet&lt;@ReportDate&#13;&#10;and (e.EventDateTimeClear is null &#13;&#10;or (e.EventDateTimeClear&gt;@ReportDate and e.EventDateTimeSet&lt;@ReportDate))&#13;&#10;and e.TypeId in (3,4)&#13;&#10;and a.id in (select id from tArea where ReportGroup = @ReportGroup)&#13;&#10;order by a.Name_EN, type, EventDateTimeSet&#13;&#10;">
+        <Column Name="ActId" DataType="System.Int32"/>
+        <Column Name="Action" DataType="System.String"/>
+        <Column Name="areaName" DataType="System.String"/>
+        <Column Name="CauseEN" DataType="System.String"/>
+        <Column Name="Device" DataType="System.String"/>
+        <Column Name="EventDateTimeSet" DataType="System.DateTime"/>
+        <Column Name="Service" DataType="System.String"/>
+        <Column Name="Tagnumber" DataType="System.String"/>
+        <Column Name="type" DataType="System.String"/>
+        <Column Name="TypeId" DataType="System.Int32"/>
+        <Column Name="CauseRU" DataType="System.String"/>
+        <Column Name="CauseKK" DataType="System.String"/>
+        <Column Name="ActNotes" DataType="System.String"/>
+        <CommandParameter Name="@ReportGroup" DataType="22" Expression="[ReportGroup]"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Parameter Name="ReportGroup" DataType="System.String"/>
+    <Total Name="Total_area" TotalType="Count" Evaluator="Data1" PrintOn="GroupFooter1"/>
+    <Total Name="Total_type" TotalType="Count" Evaluator="Data1" PrintOn="GroupFooter2"/>
+  </Dictionary>
+  <ReportPage Name="Page1" Landscape="true" PaperWidth="297" PaperHeight="210" RawPaperSize="9" FirstPageSource="15" OtherPagesSource="15" LastPageSource="15" Watermark.Font="Arial, 60pt">
+    <ReportTitleBand Name="ReportTitle1" Width="1047.06" Height="75.6">
+      <TextObject Name="Text4" Top="9.45" Width="1047.06" Height="28.35" Text="[ReportGroup] Inactive Alarms Report [FormatDateTime(AddDays([Date],-1),&quot;dd-MMM-yyyy&quot;)]" HorzAlign="Center" Font="Arial, 16pt, style=Bold"/>
+      <TextObject Name="Text27" Left="9.45" Top="47.25" Width="746.55" Height="18.9" Text="Up to Date Inactive Alarms [FormatDateTime([Date],&quot;dd-MMM-yyyy&quot;)] 06:00:00" Font="Arial, 12pt, style=Bold"/>
+    </ReportTitleBand>
+    <GroupHeaderBand Name="GroupHeader1" Top="102.5" Width="1047.06" Height="18.9" Condition="[Alarms_current.areaName]">
+      <TextObject Name="Text24" Width="498.96" Height="18.9" Text="[Alarms_current.areaName] Area - Disabled and Inhibite" Font="Arial, 10pt, style=Bold" Style="Group"/>
+      <DataHeaderBand Name="DataHeader1" Top="79.6" Width="1047.06" Height="18.9" Border.Lines="Bottom">
+        <TextObject Name="Text31" Width="18.9" Height="18.9" Text="#" Font="Arial, 10pt, style=Bold"/>
+        <TextObject Name="Text36" Left="380.55" Width="94.5" Height="18.9" Text="Inactivated" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+        <TextObject Name="Text32" Left="21.45" Width="85.05" Height="18.9" Text="Device" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+        <TextObject Name="Text33" Left="106.5" Width="151.2" Height="18.9" Text="Tagname" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+        <TextObject Name="Text34" Left="257.7" Width="122.85" Height="18.9" Text="Service" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+        <TextObject Name="Text38" Left="475.05" Width="75.6" Height="18.9" Text="ACT #" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+        <TextObject Name="Text40" Left="550.65" Width="378" Height="18.9" Text="Cause" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+        <TextObject Name="Text42" Left="928.65" Width="120.85" Height="18.9" Text="Comment" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      </DataHeaderBand>
+      <GroupHeaderBand Name="GroupHeader2" Top="125.4" Width="1047.06" Height="18.9" Condition="[Alarms_current.type]">
+        <TextObject Name="Text25" Left="37.8" Width="291.06" Height="18.9" Text="[Alarms_current.type]" Font="Arial, 10pt"/>
+        <DataBand Name="Data1" Top="148.3" Width="1047.06" Height="18.9" CanGrow="true" DataSource="Table">
+          <TextObject Name="Text45" Width="27.9" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Row#]" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+          <TextObject Name="Text28" Left="108.4" Width="151.2" Height="18.9" Border.Lines="All" GrowToBottom="true" Text="[Alarms_current.Tagnumber]" VertAlign="Center" Font="Arial, 10pt"/>
+          <TextObject Name="Text29" Left="28.35" Width="80.05" Height="18.9" Border.Lines="All" GrowToBottom="true" Text="[Alarms_current.Device]" VertAlign="Center" Font="Arial, 10pt"/>
+          <TextObject Name="Text35" Left="259.6" Width="122.85" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Alarms_current.Service]" VertAlign="Center" Font="Arial, 10pt"/>
+          <TextObject Name="Text37" Left="382.45" Width="94.5" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[FormatDateTime([Alarms_current.EventDateTimeSet],&quot;dd-MMM-yyyy HH:mm:ss&quot;)]" VertAlign="Center" Font="Arial, 10pt"/>
+          <TextObject Name="Text39" Left="476.95" Width="75.6" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[IIf([Alarms_current.ActId] != 0,[Alarms_current.ActId],&quot;&quot;)]" VertAlign="Center" Font="Arial, 10pt"/>
+          <TextObject Name="Text41" Left="552.55" Width="378" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[IIf(Length([Alarms_current.CauseKK])&gt;0,[Alarms_current.CauseKK],&quot;&quot;)][IIf(Length([Alarms_current.CauseKK])&gt;0 &amp;&amp; (Length([Alarms_current.CauseRU])&gt;0 || Length([Alarms_current.CauseEN])&gt;0),&quot; / &quot;,&quot;&quot;)][IIf(Length([Alarms_current.CauseRU])&gt;0,[Alarms_current.CauseRU],&quot;&quot;)][IIf((Length([Alarms_current.CauseKK])&gt;0 || Length([Alarms_current.CauseRU])&gt;0) &amp;&amp; Length([Alarms_current.CauseEN])&gt;0,&quot; / &quot;,&quot;&quot;)][IIf(Length([Alarms_current.CauseEN])&gt;0,[Alarms_current.CauseEN],&quot;&quot;)]" VertAlign="Center" Font="Arial, 10pt"/>
+          <TextObject Name="Text43" Left="930.55" Width="113.85" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Alarms_current.ActNotes]" VertAlign="Center" Font="Arial, 10pt"/>
+        </DataBand>
+        <GroupFooterBand Name="GroupFooter2" Top="171.2" Width="1047.06" Height="18.9">
+          <TextObject Name="Text48" Left="37.8" Width="291.06" Height="18.9" Text="Total [Alarms_current.type]: [Total_type]" Font="Arial, 10pt"/>
+        </GroupFooterBand>
+      </GroupHeaderBand>
+      <GroupFooterBand Name="GroupFooter1" Top="194.1" Width="1047.06" Height="28.35">
+        <TextObject Name="Text46" Width="396.9" Height="18.9" Text="Total Disabled and Inhibite: [Total_area]" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      </GroupFooterBand>
+    </GroupHeaderBand>
+    <PageFooterBand Name="PageFooter1" Top="226.45" Width="1047.06" Height="22.9" CanGrow="true">
+      <TextObject Name="Text49" Width="756" Height="18.9" Text="Report generated at [FormatDateTime([Date],&quot;dd-MMM-yyyy HH:mm:ss&quot;)]  Reporting period is from [FormatDateTime(AddDays([Date],-1),&quot;dd-MMM-yyyy&quot;)] 06:00:00 to [FormatDateTime([Date],&quot;dd-MMM-yyyy&quot;)] 06:00:00" Font="Arial, 7pt"/>
+      <TextObject Name="Text26" Left="841.05" Width="196.56" Height="13.45" Text="[PageN] of [TotalPages#]" HorzAlign="Right" Font="Arial, 10pt" Style="Footer"/>
+    </PageFooterBand>
+  </ReportPage>
+</Report>

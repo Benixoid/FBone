@@ -1,0 +1,1502 @@
+﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+@using FBone.Service
+@using Microsoft.CodeAnalysis.CSharp.Syntax
+@model FBone.Models.Act.ActDetailsModel
+@{
+    var Disabled = "";
+    var Disabled6 = "";
+    var comment_disabled = "";
+    var element = "";
+    var i = 0;
+    if (Model.Act.StatusId != 1)
+    {
+        Disabled = "disabled";
+        if (Model.Act.StatusId == (int)Enums.ActStatusCode.Closed)
+        {
+            comment_disabled = "disabled";
+        }
+    }
+
+    if (!Model.canEdit)
+    {
+        Disabled = "disabled";
+        Disabled6 = "disabled";
+        comment_disabled = "disabled";
+    }
+
+    if (Model.Type6Disabled)
+    {
+        Disabled6 = "disabled";
+    }
+
+    if (Model.Act.Id == 0)
+    {
+        ViewData["Title"] = @localizer["create"];
+    }
+    else
+    {
+        //ViewData["Title"] = @localizer["edit"];
+        ViewData["Title"] = localizer["edit"].Value + " № " + @Model.Act.Id;
+
+        //ViewData["Title"] = @localizer["edit"] + " № " + @Model.act.Id;
+    }
+
+    var hiddenKK = Model.Lang == "KK" ? "" : "d-none";
+    var hiddenRU = Model.Lang == "RU" ? "" : "d-none";
+    var hiddenEN = Model.Lang == "EN" ? "" : "d-none";
+
+}
+<div class="row">
+    <div class="col-md-12">
+        <h1 style="text-align:center">@ViewData["Title"] - 
+            @if (Model.Act.StatusId == (int)Enums.ActStatusCode.Draft)
+            {@localizer["statusdraft"]}
+            else if (Model.Act.StatusId == (int)Enums.ActStatusCode.InApproval)
+            {
+                @localizer["statusinapproval"]
+                @if(Model.Act.isIPL)
+                {
+                    <p style="color:red;font-weight:bold;" id="blink2">!!! IPL tags !!!</p>
+                }
+            }
+            else if (Model.Act.StatusId == (int)Enums.ActStatusCode.Active)
+            {@localizer["statusactive"]}
+            else if (Model.Act.StatusId == (int)Enums.ActStatusCode.Closed)
+            {@localizer["statusclosed"]}
+            else if (Model.Act.StatusId == (int)Enums.ActStatusCode.Approved)
+            {@localizer["statusapproved"]}
+            else if (Model.Act.StatusId == (int)Enums.ActStatusCode.InApprovalAdd)
+            {@localizer["statusinapprovaladd"]}
+            </h1>
+    </div>
+</div>
+
+<form asp-action="ChangeAct" name="RefreshData" method="post" id="RefreshData">
+    <input type="hidden" name="Act.AreaId" value="@Model.Act.AreaId" id="Areaid1">
+    <input type="hidden" name="Act.Type" value="@Model.Act.Type" id="acttype1">
+    <input type="hidden" name="Act.StatusId" value="@Model.Act.StatusId" id="actstatusid">
+    <input type="hidden" name="Act.Crew" value="@Model.Act.Crew" id="actcrew1">
+    <input type="hidden" asp-for="@Model.Act.Id" />
+</form>
+
+<form asp-action="SaveAct" onsubmit="return validateForm()">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>    
+    <input type="hidden" asp-for="@Model.Act.Id" />
+    <input type="hidden" asp-for="@Model.Act.StatusId" />
+    <input type="hidden" asp-for="@Model.Act.OriginalLang" />
+    <input type="hidden" asp-for="@Model.Act.IsTranslated" id="IsActTranslated" />
+    <input type="hidden" asp-for="@Model.Act.CreatedOn" />
+    <input type="hidden" asp-for="@Model.Act.CreatedByUserId" />
+    <input type="hidden" asp-for="@Model.Act.OrderColumn" />
+    <input type="hidden" asp-for="@Model.Act.IsCauseTranslated" id="IsCauseTranslated" />
+    <input type="hidden" asp-for="@Model.Act.IsImpactTranslated" id="IsImpactTranslated" />
+    <input type="hidden" asp-for="@Model.Act.IsProtectTranslated" id="IsProtectTranslated" />
+    <input type="hidden" asp-for="@Model.startApporval" id="startApproval" />
+
+    <div class="row">
+        <div class="col-md-12" style="text-align: center">
+            <b>@localizer["area"]:</b> <select asp-for="@Model.Act.AreaId" asp-items="@Model.Areas" class="changearea" id="areaid" disabled="@(Disabled != "" ? "disabled" : null)"></select>
+        </div>
+    </div>
+    <div class="row my-form-control-space">
+        <div class="col-md-12" style="text-align: center">
+            <b>@localizer["date"]:</b> <input type="text" disabled value="@Model.Act.CreatedOn.ToString("dd-MM-yyyy HH:mm:ss")" />
+            <b>@localizer["crew"]:</b>
+            <select asp-for="@Model.Act.Crew" asp-items="@Model.CrewList" id="crew" disabled="@(Disabled != "" ? "disabled" : null)"></select>
+            @*<input asp-for="@Model.Act.Crew" disabled="@(Disabled != "" ? "disabled" : null)" />*@
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-8 my-form-control-space">
+            @if (Model.Act.ApproverPos1 != 0)
+            {
+                <div class="row">
+                    <div class="col-sm-2"></div>
+                    <div class="col-sm-3">
+                        <select asp-for="@Model.Act.ApproverPos1" asp-items="@Model.Positions" style="width: 100%" onchange="ApproverPositionChanged(this, 1)" disabled="@(Disabled != "" ? "disabled" : null)"></select>
+                        @*@Html.DropDownListFor(m => m.Act.ApproverPos1, Model.Positions, htmlAttributes: new { @style = "width: 100%", @onchange = "ApproverPositionChanged(this,1)" })*@
+                    </div>
+                    <div class="col-sm-3">
+                        <select asp-for="@Model.Act.Approver1" asp-items="@Model.Approvers1" id="approver1" style="width: 100%" disabled="@(Disabled != "" ? "disabled" : null)"></select>
+                    </div>
+                    <div class="col-sm-4">
+                        @if (Model.Act.is1Approved && Model.Act.StatusId != (int)Enums.ActStatusCode.Draft)
+                        {
+                            @localizer["approved"] @Model.Act.ApprovedBy1On.ToString()
+                        }
+                        else if (Model.Act.StatusId == (int)Enums.ActStatusCode.InApproval && Model.canEdit)
+                        {
+                            @*<a position="1" class="btn my-small-form-control delegate"> @localizer["delegate1"]</a>*@
+                            <a href="#" class="btn btn-light my-small-form-control" data-bs-toggle="modal" data-bs-target="#delegateModal" onclick="DelegatePosition(1);">@localizer["delegate1"]</a>
+                        }
+                    </div>
+                </div>
+                if (Model.Act.ApproverPos2 != 0)
+                {
+                    <div class="row">
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-3">
+                            <select asp-for="@Model.Act.ApproverPos2" asp-items="@Model.Positions" style="width: 100%" onchange="ApproverPositionChanged(this, 2)" disabled="@(Disabled != "" ? "disabled" : null)"></select>
+                            @*@Html.DropDownListFor(m => m.Act.ApproverPos2, Model.Positions, htmlAttributes: new { @style = "width: 100%"})*@
+                        </div>
+                        <div class="col-sm-3">
+                            <select asp-for="@Model.Act.Approver2" asp-items="@Model.Approvers2" id="approver2" style="width: 100%" disabled="@(Disabled != "" ? "disabled" : null)"></select>
+                            @*@Html.DropDownListFor(m => m.Act.Approver2, Model.Approvers2, htmlAttributes: new { @style = "width: 100%", Disabled })*@
+                        </div>
+                        <div class="col-sm-4">
+                            @if (Model.Act.is2Approved && Model.Act.StatusId != (int)Enums.ActStatusCode.Draft)
+                            {
+                                @localizer["approved"] @Model.Act.ApprovedBy2On.ToString()
+                            }
+                            else if (Model.Act.StatusId == (int)Enums.ActStatusCode.InApproval && Model.canEdit)
+                            {
+                                @*<a position="2" class="btn my-small-form-control delegate"> @localizer["delegate1"]</a>*@
+                                <a href="#" class="btn btn-light my-small-form-control" data-bs-toggle="modal" data-bs-target="#delegateModal" onclick="DelegatePosition(2);">@localizer["delegate1"]</a>
+                            }
+                        </div>
+                    </div>
+                    if (Model.Act.ApproverPos3 != 0)
+                    {
+                        <div class="row">
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-3">
+                                <select asp-for="@Model.Act.ApproverPos3" asp-items="@Model.Positions" style="width: 100%" onchange="ApproverPositionChanged(this, 3)" disabled="@(Disabled != "" ? "disabled" : null)"></select>
+                                @*@Html.DropDownListFor(m => m.Act.ApproverPos3, Model.Positions, htmlAttributes: new { @style = "width: 100%"})*@
+                            </div>
+                            <div class="col-sm-3">
+                                <select asp-for="@Model.Act.Approver3" asp-items="@Model.Approvers3" id="approver3" style="width: 100%" disabled="@(Disabled != "" ? "disabled" : null)"></select>
+                                @*@Html.DropDownListFor(m => m.Act.Approver3, Model.Approvers3, htmlAttributes: new { @style = "width: 100%", @Disabled })*@
+                            </div>
+                            <div class="col-sm-4">
+                                @if (Model.Act.is3Approved && Model.Act.StatusId != (int)Enums.ActStatusCode.Draft)
+                                {
+                                    @localizer["approved"] @Model.Act.ApprovedBy3On.ToString()
+                                }
+                                else if (Model.Act.StatusId == (int)Enums.ActStatusCode.InApproval && Model.canEdit)
+                                {
+                                    @*<a position="3" class="btn my-small-form-control delegate"> @localizer["delegate1"]</a>*@
+                                    <a href="#" class="btn btn-light my-small-form-control" data-bs-toggle="modal" data-bs-target="#delegateModal" onclick="DelegatePosition(3);">@localizer["delegate1"]</a>
+                                }
+                            </div>
+                        </div>
+                        if (Model.Act.ApproverPos4 != 0)
+                        {
+                            <div class="row">
+                                <div class="col-sm-2"></div>
+                                <div class="col-sm-3">
+                                    <select asp-for="@Model.Act.ApproverPos4" asp-items="@Model.Positions" style="width: 100%" onchange="ApproverPositionChanged(this, 4)" disabled="@(Disabled != "" ? "disabled" : null)"></select>
+                                    @*@Html.DropDownListFor(m => m.Act.ApproverPos4, Model.Positions, htmlAttributes: new { @style = "width: 100%"})*@
+                                </div>
+                                <div class="col-sm-3">
+                                    <select asp-for="@Model.Act.Approver4" asp-items="@Model.Approvers4" id="approver4" style="width: 100%" disabled="@(Disabled != "" ? "disabled" : null)"></select>
+                                    @*@Html.DropDownListFor(m => m.Act.Approver4, Model.Approvers4, htmlAttributes: new { @style = "width: 100%", @Disabled })*@
+                                </div>
+                                <div class="col-sm-4">
+                                    @if (Model.Act.is4Approved && Model.Act.StatusId != (int)Enums.ActStatusCode.Draft)
+                                    {
+                                        @localizer["approved"] @Model.Act.ApprovedBy4On.ToString()
+                                    }
+                                    else if (Model.Act.StatusId == (int)Enums.ActStatusCode.InApproval && Model.canEdit)
+                                    {
+                                        @*<a position="4" class="btn my-small-form-control delegate"> @localizer["delegate1"]</a>*@
+                                        <a href="#" class="btn btn-light my-small-form-control" data-bs-toggle="modal" data-bs-target="#delegateModal" onclick="DelegatePosition(4);">@localizer["delegate1"]</a>
+                                    }
+                                </div>
+                            </div>
+                            if (Model.Act.ApproverPos5 != 0)
+                            {
+                                <div class="row">
+                                    <div class="col-sm-2"></div>
+                                    <div class="col-sm-3">
+                                        <select asp-for="@Model.Act.ApproverPos5" asp-items="@Model.Positions" style="width: 100%" onchange="ApproverPositionChanged(this,5)" disabled="@(Disabled != "" ? "disabled" : null)"></select>
+                                        @*@Html.DropDownListFor(m => m.Act.ApproverPos5, Model.Positions, htmlAttributes: new { @style = "width: 100%"})*@
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <select asp-for="@Model.Act.Approver5" asp-items="@Model.Approvers5" id="approver5" style="width: 100%" disabled="@(Disabled != "" ? "disabled" : null)"></select>
+                                        @*@Html.DropDownListFor(m => m.Act.Approver5, Model.Approvers5, htmlAttributes: new { @style = "width: 100%", @Disabled })*@
+                                    </div>
+                                    <div class="col-sm-4">
+                                        @if (Model.Act.is5Approved && Model.Act.StatusId != (int)Enums.ActStatusCode.Draft)
+                                        {
+                                            @localizer["approved"] @Model.Act.ApprovedBy5On.ToString()
+                                        }
+                                        else if (Model.Act.StatusId == (int)Enums.ActStatusCode.InApproval && Model.canEdit)
+                                        {
+                                            @*<a position="5" class="btn my-small-form-control delegate"> @localizer["delegate1"]</a>*@
+                                            <a href="#" class="btn btn-light my-small-form-control" data-bs-toggle="modal" data-bs-target="#delegateModal" onclick="DelegatePosition(5);">@localizer["delegate1"]</a>
+                                        }
+                                    </div>
+                                </div>
+                                if (Model.Act.ApproverPos6 != 0)
+                                {
+                                    <div class="row">
+                                        <div class="col-sm-2"></div>
+                                        <div class="col-sm-3">
+                                            <select asp-for="@Model.Act.ApproverPos6" asp-items="@Model.Positions" style="width: 100%" onchange="ApproverPositionChanged(this, 6)" disabled="@(Disabled != "" ? "disabled" : null)"></select>
+                                            @*@Html.DropDownListFor(m => m.Act.ApproverPos6, Model.Positions, htmlAttributes: new { @style = "width: 100%"})*@
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <select asp-for="@Model.Act.Approver6" asp-items="@Model.Approvers6" id="approver6" style="width: 100%" disabled="@(Disabled != "" ? "disabled" : null)"></select>
+                                            @*@Html.DropDownListFor(m => m.Act.Approver6, Model.Approvers6, htmlAttributes: new { @style = "width: 100%", @Disabled })*@
+                                        </div>
+                                        <div class="col-sm-4">
+                                            @if (Model.Act.is6Approved && Model.Act.StatusId != (int)Enums.ActStatusCode.Draft)
+                                            {
+                                                @localizer["approved"] @Model.Act.ApprovedBy6On.ToString()
+                                            }
+                                            else if (Model.Act.StatusId == (int)Enums.ActStatusCode.InApproval && Model.canEdit)
+                                            {
+                                                @*<a position="6" class="btn my-small-form-control delegate"> @localizer["delegate1"]</a>*@
+                                                <a href="#" class="btn btn-light my-small-form-control" data-bs-toggle="modal" data-bs-target="#delegateModal" onclick="DelegatePosition(6);">@localizer["delegate1"]</a>
+                                            }
+                                        </div>
+                                    </div>
+                                    if (Model.Act.ApproverPos7 != 0)
+                                    {
+                                        <div class="row">
+                                            <div class="col-sm-2"></div>
+                                            <div class="col-sm-3">
+                                                <select asp-for="@Model.Act.ApproverPos7" asp-items="@Model.Positions" style="width: 100%" onchange="ApproverPositionChanged(this, 7)" disabled="@(Disabled != "" ? "disabled" : null)"></select>
+                                                @*@Html.DropDownListFor(m => m.Act.ApproverPos7, Model.Positions, htmlAttributes: new { @style = "width: 100%"})*@
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <select asp-for="@Model.Act.Approver7" asp-items="@Model.Approvers7" id="approver7" style="width: 100%" disabled="@(Disabled != "" ? "disabled" : null)"></select>
+                                                @*@Html.DropDownListFor(m => m.Act.Approver7, Model.Approvers7, htmlAttributes: new { @style = "width: 100%", @Disabled })*@
+                                            </div>
+                                            <div class="col-sm-4">
+                                                @if (Model.Act.is7Approved && Model.Act.StatusId != (int)Enums.ActStatusCode.Draft)
+                                                {
+                                                    @localizer["approved"] @Model.Act.ApprovedBy7On.ToString()
+                                                }
+                                                else if (Model.Act.StatusId == (int)Enums.ActStatusCode.InApproval && Model.canEdit)
+                                                {
+                                                    @*<a position="7" class="btn my-small-form-control delegate"> @localizer["delegate1"]</a>*@
+                                                    <a href="#" class="btn btn-light my-small-form-control" data-bs-toggle="modal" data-bs-target="#delegateModal" onclick="DelegatePosition(7);">@localizer["delegate1"]</a>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            @if (Model.Act.ApproverPosAdd != 0)
+            {
+                <div class="row">
+                    <div class="col-sm-2" style="text-align: right">@localizer["approveradd"]</div>
+                    <div class="col-sm-3">
+                        @Html.DropDownListFor(m => m.Act.ApproverPosAdd, Model.Positions, htmlAttributes: new { @style = "width: 100%", @disabled = "disabled" })
+                    </div>
+                    <div class="col-sm-3">
+                        <select asp-for="@Model.Act.ApproverAdd" asp-items="@Model.ApproversAdd" style="width: 100%" disabled="@(Disabled != "" ? "disabled" : null)"></select>
+                        @*@Html.DropDownListFor(m => m.Act.Approver7, Model.Approvers7, htmlAttributes: new { @style = "width: 100%", @Disabled })*@
+                    </div>
+                    <div class="col-sm-4">
+                        @if (Model.Act.isAddApproved && Model.Act.StatusId != (int)Enums.ActStatusCode.Draft)
+                        {
+                            @localizer["approved"] @Model.Act.ApprovedByAddOn.ToString()
+                        }
+                        else if (Model.Act.StatusId == (int)Enums.ActStatusCode.InApprovalAdd && Model.canEdit)
+                        {
+                            @*<a position="8" class="btn my-small-form-control delegate"> @localizer["delegate1"]</a>*@
+                            <a href="#" class="btn my-small-form-control" data-bs-toggle="modal" data-bs-target="#delegateModal" onclick="DelegatePosition(8);">@localizer["delegate1"]</a>
+                        }
+                    </div>
+                </div>
+            }
+
+        </div>
+        <div class="col-sm-4">
+            <b>@localizer["acttype"]</b>
+            <br /><input class="changeType" id="Act_Type" name="Act.Type" type="radio" value="1" disabled="@(Disabled != "" ? "disabled" : null)" @(Model.Act.Type == 1 ? "checked" : "")> @localizer["forces"]
+            <br /><input class="changeType" id="Act_Type" name="Act.Type" type="radio" value="2" disabled="@(Disabled != "" ? "disabled" : null)" @(Model.Act.Type == 2 ? "checked" : "")> @localizer["bypasses"]
+            <br /><input class="changeType" id="Act_Type" name="Act.Type" type="radio" value="3" disabled="@(Disabled != "" ? "disabled" : null)" @(Model.Act.Type == 3 ? "checked" : "")> @localizer["s2of3"]
+            <br /><input class="changeType" id="Act_Type" name="Act.Type" type="radio" value="6" disabled="@(Disabled6 != "" ? "disabled" : null)" @(Model.Act.Type == 6 ? "checked" : "")> @localizer["manual"]
+            <br /><input class="changeType" id="Act_Type" name="Act.Type" type="radio" value="4" disabled="@(Disabled != "" ? "disabled" : null)" @(Model.Act.Type == 4 ? "checked" : "")> @localizer["inactive"]
+            <br /><input class="changeType" id="Act_Type" name="Act.Type" type="radio" value="5" disabled="@(Disabled != "" ? "disabled" : null)" @(Model.Act.Type == 5 ? "checked" : "")> @localizer["inhibited"]
+            @*@Html.RadioButtonFor(model => model.Act.Type, "1", new { @class = "changeType", @Disabled }) @localizer["forces"]<br />*@
+            @*@Html.RadioButtonFor(model => model.Act.Type, "2", new { @class = "changeType", @Disabled }) @localizer["bypasses"]<br />
+                @Html.RadioButtonFor(model => model.Act.Type, "3", new { @class = "changeType", @Disabled }) @localizer["s2of3"]<br />
+                @Html.RadioButtonFor(model => model.Act.Type, "4", new { @class = "changeType", @Disabled }) @localizer["inactive"]<br />*@
+        </div>
+    </div>
+    <br />
+    @if (Model.Act.StatusId == (int)Enums.ActStatusCode.Draft)
+    {        
+        <table role="banner" aria-describedby="FGtags">
+            <tr>
+                <th>
+                    <button title="@localizer["title_fgblock"]" type="button" class="btn btn-default btn-sm" aria-label="Left Align" onclick="ShoHideFG();">
+                    <img id="showhideimg" src="/images/show.png" width="40" alt=""/></button>
+                </th>
+                <th id="FGblock1">@localizer["unit"]</th>
+                <th id="FGblock2"><select id="cmbBulkUnit" asp-items="@Model.BulkUnit" onchange="BulkUnitChanged()" style="width: 100%"></select></th>
+                <th id="FGblock3">@localizer["equipment"]</th>
+                <th id="FGblock4"><select id="cmbEquipment" asp-items="@Model.BulkEquipment" style="width: 100%"></select></th>
+                <th id="FGblock5"><input type="button" id="btnAddFg" value="@localizer["addfgtags"]" onclick="AddFGTags()" /></th>
+            </tr>
+        </table>        
+    }
+
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+            <div style="text-align: center">
+                <b>@localizer["taglistmessage"]</b>
+            </div>
+            <table class="" id="TagsTable" width="100%" aria-describedby="Tags">
+                <thead>
+                    <tr>
+                        <th class="text-center">
+                            NN
+                        </th>
+                        <th class="text-center">
+                            @localizer["tagname"]
+                        </th>
+                        <th class="text-center">
+                            @localizer["unit"]
+                        </th>
+                        <th class="text-center">
+                            @localizer["equipment"]
+                        </th>
+                        <th class="text-center">
+                            @localizer["device"]
+                        </th>
+                        <th class="text-center">
+                            @localizer["location"]
+                        </th>
+                        <th class="text-center">
+                            <button title="@localizer["add_title"]" type="button" class="btn btn-outline-secondary btn-sm" aria-label="Left Align" onclick="AddNewLine('', '', '', 0);" @Disabled>
+                                <svg width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+                                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                                </svg>                                
+                            </button>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="actions_body">
+                    @foreach (var ActItems in Model.Act.ActItems)
+                    {
+                        <tr>
+                            <td id="nn_@i">
+                                @(i + 1)
+                            </td>
+                            <td>
+                                <input type="hidden" asp-for="@ActItems.Id" class="" name="Act.ActItems[@i].Id" id="Id_@i" />
+                                @if (Model.CanBeClosed != null && Model.CanBeClosed.Count != 0 && !Model.CanBeClosed[ActItems.Id])
+                                {
+                                    <input type="hidden" name="Act.ActItems[@i].Id" id="CanCloseFlag_@i" value="0" />
+                                }
+                                else
+                                {
+                                    <input type="hidden" name="Act.ActItems[@i].Id" id="CanCloseFlag_@i" value="1" />
+                                }
+                                <div class="input-group">
+                                    <input asp-for="@ActItems.TagName" class="form-control" name="Act.ActItems[@i].TagName" oninput="TagNameInput(@i)" id="Tagname_@i" disabled="@(Disabled != "" ? "disabled" : null)" />
+                                    <div class="input-group-btn">
+                                        <button type="button" class="btn btn-light dropdown-toggle border border-dark" id="dropdown_tagname_@i" data-bs-toggle="dropdown" aria-expanded="false" @Disabled> <span class="caret"></span></button>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink" id="ul_tagname_@i"></ul>
+                                    </div><!-- /btn-group -->
+                                </div><!-- /input-group -->
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <input asp-for="@ActItems.Unit" class="form-control" name="Act.ActItems[@i].Unit" oninput="UnitInput(@i)" id="Unit_@i" disabled="@(Disabled != "" ? "disabled" : null)" />
+                                    <div class="input-group-btn">
+                                        <button type="button" class="btn btn-light dropdown-toggle border border-dark" id="dropdown_unit_@i" data-bs-toggle="dropdown" aria-expanded="false" @Disabled> <span class="caret"></span></button>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink" id="ul_unit_@i"></ul>
+                                    </div><!-- /btn-group -->
+                                </div><!-- /input-group -->
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <input asp-for="@ActItems.Equipment" class="form-control" name="Act.ActItems[@i].Equipment" oninput="EquipmentInput(@i)" id="Equipment_@i" disabled="@(Disabled != "" ? "disabled" : null)" />
+                                    <div class="input-group-btn">
+                                        <button type="button" class="btn btn-light dropdown-toggle border border-dark" id="dropdown_equipment_@i" data-bs-toggle="dropdown" aria-expanded="false" @Disabled> <span class="caret"></span></button>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink" id="ul_equipment_@i"></ul>
+                                    </div><!-- /btn-group -->
+                                </div><!-- /input-group -->
+                            </td>
+                            <td>
+                                <select asp-for="@ActItems.DeviceId" class="my-form-control" asp-items="@Model.Devices" name="Act.ActItems[@i].DeviceId" id="Device_@i" disabled="@(Disabled != "" ? "disabled" : null)"></select>
+                            </td>
+                            <td>
+                                <input asp-for="@ActItems.Location" class="form-control" name="Act.ActItems[@i].Location" id="Location_@i" disabled="@(Disabled != "" ? "disabled" : null)" />
+                            </td>
+                            <td>
+                                <button title="@localizer["remove_title"]" type="button" class="btn btn-outline-secondary btn-sm tr-remove" myid="@i" id="buttonRemove_@i" aria-label="Left Align" @Disabled>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dash" viewBox="0 0 16 16">
+                                      <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z"/>
+                                    </svg>
+                                </button>
+                            </td>
+                        </tr>
+                        i++;                        
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-1"></div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+            <div style="text-align: center">
+                <b>@localizer["cause"]</b>
+            </div>
+            <div class="row @hiddenRU">
+                <div class="col-md-12">
+                    <div class="input-group">
+                        <input asp-for="@Model.Act.CauseRU" class="form-control" oninput="CauseChangedManually()" id="causeRU" disabled="@(Disabled != "" ? "disabled" : null)" />
+                        @*@Html.TextBoxFor(m => m.Act.CauseRU, htmlAttributes: new { @class = $"form-control", @id = "causeRU", onchange = "CauseChangedManually()" })*@
+                        <div class="input-group-btn">
+                            <button type="button" class="btn btn-light dropdown-toggle border border-dark" data-bs-toggle="dropdown" aria-expanded="false" @Disabled> <span class="caret"></span></button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                @foreach (var item in Model.CauseList)
+                                {
+                                    <li><a class="dropdown-item" href="/StaticPages/PleaseEnableJavascript.html" onclick="CauseChanged(@item.Value);return false;">@item.Text</a></li>
+                                }
+                            </ul>
+                        </div><!-- /btn-group -->
+                    </div><!-- /input-group -->
+                </div><!-- /.col-lg-6 -->
+            </div><!-- /.row -->
+            <div class="row @hiddenKK">
+                <div class="col-md-12">
+                    <div class="input-group">
+                        @*<input type="text" class="form-control " id="causeKK" name="Act.CauseKK" aria-label="...">*@
+                        <input asp-for="@Model.Act.CauseKK" class="form-control" oninput="CauseChangedManually()" id="causeKK" disabled="@(Disabled != "" ? "disabled" : null)" />
+                        @*@Html.TextBoxFor(m => m.Act.CauseKK, htmlAttributes: new { @class = $"form-control", @id = "causeKK", onchange = "CauseChangedManually()" })*@
+                        <div class="input-group-btn">
+                            <button type="button" class="btn btn-light dropdown-toggle border border-dark" data-bs-toggle="dropdown" aria-expanded="false" @Disabled> <span class="caret"></span></button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                @foreach (var item in Model.CauseList)
+                                {
+                                    <li><a class="dropdown-item" href="/StaticPages/PleaseEnableJavascript.html" onclick="CauseChanged(@item.Value);return false;">@item.Text</a></li>
+                                }
+                            </ul>
+                        </div><!-- /btn-group -->
+                    </div><!-- /input-group -->
+                </div><!-- /.col-lg-6 -->
+            </div><!-- /.row -->
+            <div class="row @hiddenEN">
+                <div class="col-md-12">
+                    <div class="input-group">
+                        <input asp-for="@Model.Act.CauseEN" class="form-control" oninput="CauseChangedManually()" id="causeEN" disabled="@(Disabled != "" ? "disabled" : null)" />
+                        @*@Html.TextBoxFor(m => m.Act.CauseEN, htmlAttributes: new { @class = $"form-control", @id = "causeEN", onchange = "CauseChangedManually()" })*@
+                        <div class="input-group-btn">
+                            <button type="button" class="btn btn-light dropdown-toggle border border-dark" data-bs-toggle="dropdown" aria-expanded="false" @Disabled> <span class="caret"></span></button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                @foreach (var item in Model.CauseList)
+                                {
+                                    <li><a class="dropdown-item" href="/StaticPages/PleaseEnableJavascript.html" onclick="CauseChanged(@item.Value);return false;">@item.Text</a></li>
+                                }
+                            </ul>
+                        </div><!-- /btn-group -->
+                    </div><!-- /input-group -->
+                </div><!-- /.col-lg-6 -->
+            </div><!-- /.row -->
+        </div>
+        <div class="col-md-1"></div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+            <div style="text-align: center">
+                <b>@localizer["impact"]</b>
+            </div>
+            <div class="row @hiddenRU">
+                <div class="col-md-12">
+                    <div class="input-group">
+                        <input asp-for="@Model.Act.ImpactRU" class="form-control" oninput="ImpactChangedManually()" id="impactRU" disabled="@(Disabled != "" ? "disabled" : null)" />
+                        @*@Html.TextBoxFor(m => m.Act.ImpactRU, htmlAttributes: new { @class = $"form-control", @id = "impactRU", onchange = "ImpactChangedManually()" })*@
+                        <div class="input-group-btn">
+                            <button type="button" class="btn btn-light dropdown-toggle border border-dark" data-bs-toggle="dropdown" aria-expanded="false" @Disabled> <span class="caret"></span></button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                @foreach (var item in Model.ImpactList)
+                                {
+                                    <li><a class="dropdown-item" href="/StaticPages/PleaseEnableJavascript.html" onclick="ImpactChanged(@item.Value);return false;">@item.Text</a></li>
+                                }
+                            </ul>
+                        </div><!-- /btn-group -->
+                    </div><!-- /input-group -->
+                </div><!-- /.col-lg-6 -->
+            </div><!-- /.row -->
+            <div class="row @hiddenKK">
+                <div class="col-md-12">
+                    <div class="input-group">
+                        <input asp-for="@Model.Act.ImpactKK" class="form-control" oninput="ImpactChangedManually()" id="impactKK" disabled="@(Disabled != "" ? "disabled" : null)" />
+                        @*@Html.TextBoxFor(m => m.Act.ImpactKK, htmlAttributes: new { @class = $"form-control", @id = "impactKK", onchange = "ImpactChangedManually()" })*@
+                        <div class="input-group-btn">
+                            <button type="button" class="btn btn-light dropdown-toggle border border-dark" data-bs-toggle="dropdown" aria-expanded="false" @Disabled> <span class="caret"></span></button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                @foreach (var item in Model.ImpactList)
+                                {
+                                    <li><a class="dropdown-item" href="/StaticPages/PleaseEnableJavascript.html" onclick="ImpactChanged(@item.Value);return false;">@item.Text</a></li>
+                                }
+                            </ul>
+                        </div><!-- /btn-group -->
+                    </div><!-- /input-group -->
+                </div><!-- /.col-lg-6 -->
+            </div><!-- /.row -->
+            <div class="row @hiddenEN">
+                <div class="col-md-12">
+                    <div class="input-group">
+                        <input asp-for="@Model.Act.ImpactEN" class="form-control" oninput="ImpactChangedManually()" id="impactEN" disabled="@(Disabled != "" ? "disabled" : null)" />
+                        @*@Html.TextBoxFor(m => m.Act.ImpactEN, htmlAttributes: new { @class = $"form-control", @id = "impactEN", onchange = "ImpactChangedManually()" })*@
+                        <div class="input-group-btn">
+                            <button type="button" class="btn btn-light dropdown-toggle border border-dark" data-bs-toggle="dropdown" aria-expanded="false" @Disabled> <span class="caret"></span></button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                @foreach (var item in Model.ImpactList)
+                                {
+                                    <li><a class="dropdown-item" href="/StaticPages/PleaseEnableJavascript.html" onclick="ImpactChanged(@item.Value);return false;">@item.Text</a></li>
+                                }
+                            </ul>
+                        </div><!-- /btn-group -->
+                    </div><!-- /input-group -->
+                </div><!-- /.col-lg-6 -->
+            </div><!-- /.row -->
+        </div>
+        <div class="col-md-1"></div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+            <div style="text-align: center">
+                <b>@localizer["protect"]</b>
+            </div>
+            <div class="row @hiddenRU">
+                <div class="col-md-12">
+                    <div class="input-group">
+                        <input asp-for="@Model.Act.ProtectRU" class="form-control" oninput="ProtectChangedManually()" id="protectRU" disabled="@(Disabled != "" ? "disabled" : null)" />
+                        @*@Html.TextBoxFor(m => m.Act.ProtectRU, htmlAttributes: new { @class = $"form-control", @id = "protectRU", onchange = "ProtectChangedManually()" })*@
+                        <div class="input-group-btn">
+                            <button type="button" class="btn btn-light dropdown-toggle border border-dark" data-bs-toggle="dropdown" aria-expanded="false" @Disabled> <span class="caret"></span></button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                @foreach (var item in Model.ProtectList)
+                                {
+                                    <li><a class="dropdown-item" href="/StaticPages/PleaseEnableJavascript.html" onclick="ProtectChanged(@item.Value);return false;">@item.Text</a></li>
+                                }
+                            </ul>
+                        </div><!-- /btn-group -->
+                    </div><!-- /input-group -->
+                </div><!-- /.col-lg-6 -->
+            </div><!-- /.row -->
+            <div class="row @hiddenKK">
+                <div class="col-md-12">
+                    <div class="input-group">
+                        <input asp-for="@Model.Act.ProtectKK" class="form-control" oninput="ProtectChangedManually()" id="protectKK" disabled="@(Disabled != "" ? "disabled" : null)" />
+                        @*@Html.TextBoxFor(m => m.Act.ProtectKK, htmlAttributes: new { @class = $"form-control", @id = "protectKK", onchange = "ProtectChangedManually()" })*@
+                        <div class="input-group-btn">
+                            <button type="button" class="btn btn-light dropdown-toggle border border-dark" data-bs-toggle="dropdown" aria-expanded="false" @Disabled> <span class="caret"></span></button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                @foreach (var item in Model.ProtectList)
+                                {
+                                    <li><a class="dropdown-item" href="/StaticPages/PleaseEnableJavascript.html" onclick="ProtectChanged(@item.Value);return false;">@item.Text</a></li>
+                                }
+                            </ul>
+                        </div><!-- /btn-group -->
+                    </div><!-- /input-group -->
+                </div><!-- /.col-lg-6 -->
+            </div><!-- /.row -->
+            <div class="row @hiddenEN">
+                <div class="col-md-12">
+                    <div class="input-group">
+                        <input asp-for="@Model.Act.ProtectEN" class="form-control" oninput="ProtectChangedManually()" id="protectEN" disabled="@(Disabled != "" ? "disabled" : null)" />
+                        @*@Html.TextBoxFor(m => m.Act.ProtectEN, htmlAttributes: new { @class = $"form-control", @id = "protectEN", onchange = "ProtectChangedManually()" })*@
+                        <div class="input-group-btn">
+                            <button type="button" class="btn btn-light dropdown-toggle border border-dark" data-bs-toggle="dropdown" aria-expanded="false" @Disabled> <span class="caret"></span></button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                @foreach (var item in Model.ProtectList)
+                                {
+                                    <li><a class="dropdown-item" href="/StaticPages/PleaseEnableJavascript.html" onclick="ProtectChanged(@item.Value);return false;">@item.Text</a></li>
+                                }
+                            </ul>
+                        </div><!-- /btn-group -->
+                    </div><!-- /input-group -->
+                </div><!-- /.col-lg-6 -->
+            </div><!-- /.row -->
+        </div>
+        <div class="col-md-1"></div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+            <div style="text-align: center">
+                <b>@localizer["actnotes"]</b>
+            </div>
+            <input asp-for="@Model.Act.ActNotes" class="form-control" disabled="@(comment_disabled != "" ? "disabled" : null)" />
+            @*@Html.TextBoxFor(m => m.Act.ActNotes, htmlAttributes: new { @class = $"form-control" })*@
+        </div>
+        <div class="col-md-1"></div>
+    </div>
+
+    <br>
+
+    <div class="row">
+        <div style="text-align: center">
+            @if (Model.canEdit && Model.Act.StatusId == (int)Enums.ActStatusCode.Draft)
+            {
+                <div class="form-group">
+                    <div class="checkbox">
+                        <input type="checkbox" class="startApprove"> @localizer["startapprove"]
+                    </div>
+                </div>
+            }
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-3">
+                        <a asp-action="Index"
+                            asp-route-PageIndex="@Model.PageIndex" 
+                            asp-route-itemperpage="@Model.ItemPerPage" 
+                            asp-route-SelectedFacilityId="@Model.SelectedFacilityId"
+                            asp-route-SelectedAreaId="@Model.SelectedAreaId"
+                            asp-route-SelectedActStatus="@Model.SelectedActStatus"
+                            asp-route-SelectedActType="@Model.SelectedActType"
+                            asp-route-SmartSearch="@Model.SmartSearch"
+                            asp-route-DateFromS="@Model.DateFrom"
+                           asp-route-DateToS="@Model.DateTo"
+                            class="btn btn-secondary">@localizer["backtolist"]</a>
+                        @if (Model.canEdit && Model.Act.StatusId != (int)Enums.ActStatusCode.Closed)
+                        {
+                            <input type="submit" value="@localizer["saveact"]" class="btn btn-primary" />
+                        }
+                    </div>
+</form>
+                    <div class="col-md-5">
+                        @if (Model.CanApprove && Model.Act.StatusId == (int)Enums.ActStatusCode.InApproval)
+                        {
+                            <a asp-action="Approve" asp-route-actId="@Model.Act.Id" class="btn btn-success"> @localizer["approve"]</a>
+                            @*<a class="btn btn-danger" id="rejectBtm"> @localizer["reject"]</a>*@
+                            <div class="modal" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
+                              <div class="modal-dialog">
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <h5 class="modal-title" id="rejectModalLabel">@localizer["reject2"]</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                  </div>
+                                  <form asp-controller="Acts" asp-action="RejectConfirmed" method="post" class="form-horizontal" role="form">
+                                      <input type="hidden" asp-for="@Model.Act.Id" id="actid" name="actid" />
+                                      <div class="modal-body">
+                                            @localizer["rejectm"]
+                                            <textarea name="rejectcomment" id="rejectcomment" rows="5" cols="60"></textarea>
+                                      </div>
+                                      <div class="modal-footer">
+                                          <input type="submit" value="@localizer["reject"]" class="btn btn-primary" id="rejectbtn" disabled/>
+                                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@localizer["cancel"]</button>
+                                      </div>
+                                  </form>
+                                </div>
+                              </div>
+                            </div>
+                            <a href="#" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectModal">@localizer["reject"]</a>
+                        }
+
+                        @if (Model.CanApprove && Model.Act.StatusId == (int)Enums.ActStatusCode.InApprovalAdd)
+                        {
+                            <a asp-action="Approve" asp-route-actId="@Model.Act.Id" class="btn btn-success"> @localizer["approve"]</a>
+                        }
+
+                        @if (Model.canEdit && Model.Act.Id != 0 && Model.Act.StatusId == (int)Enums.ActStatusCode.Draft)
+                        {
+                            <a class="btn btn-danger" onclick="DeleteAct(@Model.Act.Id)"> @localizer["delete"]</a>
+                        }
+
+                        @if (Model.canEdit && (Model.Act.StatusId == (int)Enums.ActStatusCode.InApproval || Model.Act.StatusId == (int)Enums.ActStatusCode.Approved))
+                        {
+                            <a class="btn btn-warning" onclick="ReturnAct(@Model.Act.Id)"> @localizer["returndraft"]</a>
+                        }
+
+                        @if (Model.canEdit && Model.Act.StatusId == (int)Enums.ActStatusCode.Active)
+                        {
+                            @if (Model.CanBeClosed.Count != 0)
+                            {
+                                <a class="btn btn-success" id="closeBtm"> @localizer["close"]</a>
+                            }
+                            else
+                            {
+                                <a class="btn btn-success" id="closeBtmGO" onclick="CloseAct(@Model.Act.Id)"> @localizer["close"]</a>
+                            }
+
+                        }
+                        @if (Model.canEdit && Model.Act.StatusId == (int)Enums.ActStatusCode.Approved)
+                        {
+                            <a asp-action="Start" asp-route-actId="@Model.Act.Id" class="btn btn-success"> @localizer["startact"]</a>
+                        }
+                    </div>
+                    <div class="col-md-4">
+                        @if (Model.canEdit)
+                        {
+                            <a asp-action="CopyAct" asp-route-actId="@Model.Act.Id" class="btn btn-secondary"> @localizer["copyact"]</a>
+                        }
+                        @if (Model.Act.StatusId != (int)Enums.ActStatusCode.Draft && Model.Act.StatusId != (int)Enums.ActStatusCode.InApproval)
+                        {
+                            <a asp-action="PrintAct" asp-route-actId="@Model.Act.Id" class="btn btn-info"> @localizer["printact"]</a>
+                        }
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+@*</form>*@
+
+<div class="row">
+    <h2>@localizer["acthtitle"]</h2>
+    <div class="col-sm-6">
+        <table class="table" aria-describedby="history">
+            <thead>
+                <tr>
+                    <th class="text-center">@localizer["acthdate"]</th>
+                    <th class="text-center">@localizer["acthUser"]</th>
+                    <th class="text-center">@localizer["acthevent"]</th>
+                    <th class="text-center">@localizer["comment"]</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var history in @Model.ActHistories)
+                {
+                <tr>
+                    <td>
+                        @Html.Raw(history.date)
+                    </td>
+                    <td>
+                        @Html.Raw(history.User.Name_EN)
+                    </td>
+                    <td>
+                        @if (history.ActionCode == (int)Enums.ActHistoryActionCodes.approvedby)
+                        {@localizer["approvedby"]}
+                    else if (history.ActionCode == (int)Enums.ActHistoryActionCodes.approvalstarted)
+                    {@localizer["approvalstarted"]}
+                else if (history.ActionCode == (int)Enums.ActHistoryActionCodes.approved)
+                {@localizer["approvedh"]}
+                else if (history.ActionCode == (int)Enums.ActHistoryActionCodes.closed)
+                {@localizer["closed"]}
+                else if (history.ActionCode == (int)Enums.ActHistoryActionCodes.created)
+                {@localizer["created"]}
+                else if (history.ActionCode == (int)Enums.ActHistoryActionCodes.delegated)
+                {@localizer["delegated"]}
+                else if (history.ActionCode == (int)Enums.ActHistoryActionCodes.saved)
+                {@localizer["saved"]}
+                else if (history.ActionCode == (int)Enums.ActHistoryActionCodes.rejected)
+                {@localizer["rejected"]}
+                else if (history.ActionCode == (int)Enums.ActHistoryActionCodes.translated)
+                {@localizer["translated"]}
+                else if (history.ActionCode == (int)Enums.ActHistoryActionCodes.copied)
+                {@localizer["copied"]}
+                else if (history.ActionCode == (int)Enums.ActHistoryActionCodes.started)
+                {@localizer["started"]}
+                else if (history.ActionCode == (int)Enums.ActHistoryActionCodes.approvalstartedadd)
+                {@localizer["approvalstartedadd"]}
+                else if (history.ActionCode == (int)Enums.ActHistoryActionCodes.returntodraft)
+                {@localizer["returntodraft"]}
+                else if (history.ActionCode == (int)Enums.ActHistoryActionCodes.notifyMOC)
+                {@localizer["nitifyMOC"]}
+                else
+                {@localizer["unknown"]}
+                    </td>
+                    <td>
+                        @Html.Raw(history.Comment)
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+@if (Model.Act.Id != 0 && Model.Act.StatusId != (int)Enums.ActStatusCode.Draft)
+{
+<div class="modal" id="delegateModal" tabindex="-1" aria-labelledby="delegateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="delegateModalLabel">@localizer["delegate2"]</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-controller="Acts" asp-action="DelegateConfirmed" method="post" class="form-horizontal" role="form">
+                <div class="modal-body">
+                    @localizer["delegatem"]
+                    <input type="hidden" asp-for="@Model.Act.Id" id="actid" name="actid" />
+                    <input type="hidden" id="position_d" value="0" name="position_d" />
+                    @Html.DropDownListFor(m => m.selecteduser, new SelectList(Model.Users, "Id", "Value"), new {@class = "my-form-control"})
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" value="@localizer["delegate1"]" class="btn btn-primary" />
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@localizer["cancel"]</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+}
+
+@*<div class="modal fade" id="DeleagteMenu" tabindex="-1" role="dialog" aria-labelledby="DeleagteMenu" aria-hidden="true"></div>*@
+@*<div class="modal fade" id="RejectMenu" tabindex="-1" role="dialog" aria-labelledby="RejectMenu" aria-hidden="true"></div>*@
+
+
+@section scripts
+{
+    @{await Html.RenderPartialAsync($"_ValidationScriptsPartial");}
+
+    <script>
+        function DeleteAct(id) {
+            var host = "@Model.URL";
+            bootbox.confirm("@localizer["confirm_delete"]", function (result) {
+                if (result) {
+                    var url1 = host + "/Acts/Delete/?actid=" + id;
+                    window.location.href = url1;                    
+                }
+            });
+        }
+
+        function DelegatePosition(id){
+            var pos = $('#position_d');
+            pos.val(id);
+        }
+
+        function ReturnAct(id) {
+            var host = "@Model.URL";
+            bootbox.confirm("@localizer["confirm_return"]", function (result) {
+                if (result) {
+                    var url1 = host + "/Acts/ReturnDraft/?actid=" + id;
+                    window.location.href = url1;                    
+                }
+            });
+        }
+        
+
+        function ApproverPositionChanged(obj, num) {
+            var host = "@Model.URL";            
+            var posid = $(obj).val();            
+            var cmbApprovers = $('#approver' + num);
+            cmbApprovers.empty();
+            $.ajax({
+                url: host + '/api/Users/' + posid,
+                type: 'GET',
+                success: function (data, textStatus, jqXhr) {
+                    for (var i = 0; i < data.length; i++) {                        
+                        cmbApprovers.append($('<option/>',
+                            {
+                                value: data[i].id,
+                                text: data[i].value
+                            }));
+                    }
+                }
+            });
+        }
+
+        function ShoHideFG() {
+            //var fgBloc = $("#FGBloc");
+            var showhideimg = $("#showhideimg");
+            if ($("#FGblock1").is(":visible")) {
+                //fgBloc.hide();
+                $("#FGblock1").hide();
+                $("#FGblock2").hide();
+                $("#FGblock3").hide();
+                $("#FGblock4").hide();
+                $("#FGblock5").hide();
+                showhideimg.attr("src", "/images/show.png");
+            } else {
+                //fgBloc.show();
+                $("#FGblock1").show();
+                $("#FGblock2").show();
+                $("#FGblock3").show();
+                $("#FGblock4").show();
+                $("#FGblock5").show();
+                showhideimg.attr("src", "/images/hide.png");
+            }
+        }
+
+        function AddFGTags() {
+            var host = "@Model.URL";
+            var Equipment = $('#cmbEquipment').val();
+            var Unit = $('#cmbBulkUnit').val();
+            $.ajax({
+                url: host + '/Acts/GetBulkTags?unit=' + Unit + '&areaId=' + $('#areaid').val() + '&equipment=' + Equipment,
+                type: 'GET',
+                success: function (data, textStatus, jqXhr) {
+                    
+                    for (var i = 0; i < data.length; i++) {
+                        AddNewLine(data[i].tagnumber, data[i].unit, data[i].equipment, data[i].deviceId);
+                    }
+                }
+            });
+        }
+
+        function BulkUnitChanged() {
+            var host = "@Model.URL";
+            var cmbEquipment = $('#cmbEquipment');
+            var btnAddFg = $('#btnAddFg');
+            $.ajax({
+                url: host + '/Acts/GetEquipment?unit=' + $('#cmbBulkUnit').val() + '&areaId=' + $('#areaid').val(),
+                type: 'GET',
+                success: function (data, textStatus, jqXhr) {
+                    cmbEquipment.empty();
+                    btnAddFg.prop('disabled', true);
+                    for (var i = 0; i < data.length; i++) {
+                        btnAddFg.prop('disabled', false);
+                        cmbEquipment.append($('<option/>',
+                            {
+                                value: data[i],
+                                text: data[i]
+                            }));
+                    }
+                }
+            });
+        }
+
+        $('#closeBtm').on('click',
+            function() {
+                var i = $("#TagsTable" + " tr").length - 1;
+                var j = 0;
+                for (j = 0; j < i; j++) {
+                    if ($("#CanCloseFlag_" + j).val() == 0) {
+                        $("#Tagname_" + j).addClass('input-validation-error');
+                    } else {
+                        $("#Tagname_" + j).removeClass('input-validation-error');
+                    }
+                }
+                bootbox.alert("@localizer["cantclose"]");
+            });
+
+        $('#rejectBtm').on('click',
+            function() {
+                $("#RejectMenu").modal("hide");
+                var host = "@Model.URL";
+                $.ajax({
+                    url: host + '/Acts/Reject?actid=@Model.Act.Id',
+                    type: 'POST',
+                    dataType: 'html',
+                    success: function(response) {
+                        $("#RejectMenu").html(response);
+                        $("#RejectMenu").modal("show");
+                        return false;
+                    }
+                });
+                return false;
+            });
+
+        $(".delegate").click(function() {
+            $("#DeleagteMenu").modal("hide");
+            //var element = $(this);
+            var position = parseInt($(this).attr("position"));
+            var host = "@Model.URL";
+            $.ajax({
+                url: host + '/Acts/Delegate?actid=@Model.Act.Id&position=' + position,
+                type: 'POST',
+                dataType: 'html',
+                success: function(response) {
+                    $("#DeleagteMenu").html(response);
+                    $("#DeleagteMenu").modal("show");
+                    return false;
+                }
+            });
+            return false;
+        });
+
+        function CloseAct(id) {
+            var host = "@Model.URL";
+            var url = host + "/Acts/Close?actid=" + id;
+            bootbox.confirm("@localizer["close_confirm"]", function (result) {
+                if (result) {
+                    window.location.href = url;
+                }
+            });
+        }
+
+        function CheckDuplicates() {
+            var i = $("#TagsTable" + " tr").length - 1;
+            var txt = "";
+            var duplicated = -1;
+            var result = true;
+            var tags = [];
+            for (var j = 0; j < i; j++) {
+                tags.push($("#Tagname_" + j).val());
+            }
+            for (var j = 0; j < tags.length-1; j++) {
+                txt = tags[j];                
+                if (txt.length != 0) {
+                    tags[j] = "-";
+                    duplicated = tags.indexOf(txt);
+                    if (duplicated != -1) {
+                        $("#Tagname_" + j).addClass('input-validation-error');
+                        $("#Tagname_" + duplicated).addClass('input-validation-error');
+                        result = false;
+                    }
+                }                
+            }
+            return result;            
+        }
+        
+        function validateForm() {            
+            var i = $("#TagsTable" + " tr").length - 1;
+            var lang = "@Model.Lang";
+            var result = true;
+            var j = 0;
+            for (j = 0; j < i; j++) {
+                if ($("#Tagname_" + j).val() === "") {
+                    result = false;
+                    $("#Tagname_" + j).addClass('input-validation-error');
+                } else {
+                    $("#Tagname_" + j).removeClass('input-validation-error');
+                }
+
+                if ($("#Unit_" + j).val() === "") {
+                    result = false;
+                    $("#Unit_" + j).addClass('input-validation-error');
+                } else {
+                    $("#Unit_" + j).removeClass('input-validation-error');
+                }
+
+                if ($("#Equipment_" + j).val() === "") {
+                    result = false;
+                    $("#Equipment_" + j).addClass('input-validation-error');
+                } else {
+                    $("#Equipment_" + j).removeClass('input-validation-error');
+                }
+            }
+            if ($("#cause" + lang).val() === "") {
+                result = false;
+                $("#cause" + lang).addClass('input-validation-error');
+            } else {
+                $("#cause" + lang).removeClass('input-validation-error');
+            }
+
+            if ($("#impact" + lang).val() === "") {
+                result = false;
+                $("#impact" + lang).addClass('input-validation-error');
+            } else {
+                $("#impact" + lang).removeClass('input-validation-error');
+            }
+
+            if ($("#protect" + lang).val() === "") {
+                result = false;
+                $("#protect" + lang).addClass('input-validation-error');
+            } else {
+                $("#protect" + lang).removeClass('input-validation-error');
+            }
+            if (!CheckDuplicates())
+                return false;
+
+            return result;
+        }
+
+        function TagNameInput(id) {
+            var host = "@Model.URL";
+            var element = $("#Tagname_" + id);
+            $("#ul_tagname_" + id).empty();
+            if (element.val().length > 2) {
+                $.ajax({
+                    url: host + "/api/ActCombo/1?text=" + element.val(),
+                    method: "GET",
+                    //dataType: 'application/json; charset=utf-8',
+                    success: function(data, textStatus, jqXhr) {
+                        for (var i = 0; i < data.length; i++) {
+                            var str1 = "  ";
+                            var str = "<li><a class='dropdown-item' href='" +
+                                host +
+                                "/StaticPages/PleaseEnableJavascript.html' onclick='TagNameSelected(" +
+                                id +
+                                ',"' +
+                                data[i] +
+                                '")' +
+                                ";return false;'>" +
+                                data[i] +
+                                "</a></li>";
+                            $("#ul_tagname_" + id).append(str);
+                        }
+                        var isShown = $("#dropdown_tagname_" + id).attr("aria-expanded");
+                        //alert(isShown);
+                        if (data.length > 0 && isShown == 'false') {
+                            $('#dropdown_tagname_' + id).dropdown('toggle');
+                        }
+                        element.focus();
+                    },
+                    error: function(xhr, status, error) {
+                        toastr.error(
+                            "An error occurred... Status: " + error + " " + xhr.status + " " + xhr.responseText)
+                    }
+                });
+            }
+        }
+
+        function UnitInput(id) {
+            var host = "@Model.URL";
+            var element = $("#Unit_" + id);
+            $("#ul_unit_" + id).empty();
+            if (element.val().length > 2) {
+                $.ajax({
+                    url: host + "/api/ActCombo/2?text=" + element.val(),
+                    method: "GET",
+                    //dataType: 'application/json; charset=utf-8',
+                    success: function(data, textStatus, jqXhr) {
+                        for (var i = 0; i < data.length; i++) {
+                            $("#ul_unit_" + id).append("<li><a class='dropdown-item' href=" +
+                                host +
+                                "/StaticPages/PleaseEnableJavascript.html onclick='UnitSelected(" +
+                                id +
+                                ',"' +
+                                data[i] +
+                                '")' +
+                                ";return false;'>" +
+                                data[i] +
+                                "</a></li>");
+                        }
+                        var isShown = $("#dropdown_unit_" + id).attr("aria-expanded");
+                        if (data.length > 0 && isShown == 'false') {
+                            $('#dropdown_unit_' + id).dropdown('toggle');
+                        }
+                        element.focus();
+                    },
+                    error: function(xhr, status, error) {
+                        toastr.error(
+                            "An error occurred... Status: " + error + " " + xhr.status + " " + xhr.responseText)
+                    }
+                });
+            }
+        }
+
+        function EquipmentInput(id) {
+            var host = "@Model.URL";
+            var element = $("#Equipment_" + id);
+            $("#ul_equipment_" + id).empty();
+            if (element.val().length > 2) {
+                $.ajax({
+                    url: host + "/api/ActCombo/3?text=" + element.val(),
+                    method: "GET",
+                    //dataType: 'application/json; charset=utf-8',
+                    success: function(data, textStatus, jqXhr) {
+                        for (var i = 0; i < data.length; i++) {
+                            var str1 = "  ";
+                            var str = "<li><a class='dropdown-item' href='" +
+                                host +
+                                "/StaticPages/PleaseEnableJavascript.html' onclick='EquipmentSelected(" +
+                                id +
+                                ',"' +
+                                data[i] +
+                                '")' +
+                                ";return false;'>" +
+                                data[i] +
+                                "</a></li>";
+                            $("#ul_equipment_" + id).append(str);
+                        }
+                        var isShown = $("#dropdown_equipment_" + id).attr("aria-expanded");
+                        //alert(isShown);
+                        if (data.length > 0 && isShown == 'false') {
+                            $('#dropdown_equipment_' + id).dropdown('toggle');
+                        }
+                        element.focus();
+                    },
+                    error: function(xhr, status, error) {
+                        toastr.error(
+                            "An error occurred... Status: " + error + " " + xhr.status + " " + xhr.responseText)
+                    }
+                });
+            }
+        }
+
+        function TagNameSelected(id, str) {
+            var host = "@Model.URL";
+            $("#Tagname_" + id).val(str);
+            $.ajax({
+                url: host + '/api/ActItem/1?tagname=' + str,
+                type: 'GET',
+                success: function(data, textStatus, jqXhr) {
+                    $("#Unit_" + id).val(data.unit);
+                    $("#Equipment_" + id).val(data.equipment);
+                    $("#Device_" + id).val(data.deviceId);
+                    $("#Location_" + id).val(data.location);
+                }
+            });
+        }
+
+        function UnitSelected(id, str) {
+            $("#Unit_" + id).val(str);
+        }
+
+        function EquipmentSelected(id, str) {
+            $("#Equipment_" + id).val(str);
+        }
+
+        function AddNewLine(tagname, unit, equipment, deviceid) {
+            var markup1 = "";
+            var i = $("#TagsTable" + " tr").length - 1;
+            markup1 =
+                '<tr><td id="nn_' + i + '">' + (i+1) + '</td><td><input type="hidden" class="" name="Act.ActItems[' +
+                i +
+                '].Id" data-val="true" data-val-required="The Id field is required." id="Id_' +
+                i +
+                '" value="0"><div class="input-group"><input class="form-control" name="Act.ActItems[' +
+                i +
+                '].TagName" oninput="TagNameInput(' +
+                i +
+                ')" id="Tagname_' +
+                i +
+                '" type="text" value="' + tagname + '"><div class="input-group-btn"><button type="button" class="btn btn-light dropdown-toggle border border-dark" id="dropdown_tagname_' +
+                i +
+                '" data-bs-toggle="dropdown" aria-expanded="false"> <span class="caret"></span></button><ul class="dropdown-menu dropdown-menu-right" id="ul_tagname_' +
+                i +
+                '"></ul></div></div></td><td><div class="input-group"><input class="form-control" name="Act.ActItems[' +
+                i +
+                '].Unit" oninput="UnitInput(' +
+                i +
+                ')" id="Unit_' +
+                i +
+                '" type="text" value="' + unit + '"><div class="input-group-btn"><button type="button" class="btn btn-light dropdown-toggle border border-dark" id="dropdown_unit_' +
+                i +
+                '" data-bs-toggle="dropdown" aria-expanded="false"> <span class="caret"></span></button><ul class="dropdown-menu dropdown-menu-right" id="ul_unit_' +
+                i +
+                '"></ul></div></div></td><td><div class="input-group"><input class="form-control" name="Act.ActItems[' +
+                i +
+                '].Equipment" oninput="EquipmentInput(' +
+                i +
+                ')" id="Equipment_' +
+                i +
+                '" type="text" value="' + equipment + '"><div class="input-group-btn"><button type="button" class="btn btn-light dropdown-toggle border border-dark" id="dropdown_equipment_' +
+                i +
+                '" data-bs-toggle="dropdown" aria-expanded="false"> <span class="caret"></span></button><ul class="dropdown-menu dropdown-menu-right" id="ul_equipment_' +
+                i +
+                '"></ul></div></div></td><td><select class="my-form-control" name="Act.ActItems[' +
+                i +
+                '].DeviceId" data-val="true" data-val-required="The DeviceId field is required." id="Device_' +
+                i +
+                '" aria-describedby="ActItems_DeviceId-error" aria-invalid="false"><option selected="selected" value="0">...</option>'
+                @{
+                    foreach (var device in Model.Devices)
+                    {
+                        if (device.Value != "0")
+                        {
+                            element = element + "<option value=\"" + device.Value + "\">" + device.Text + "</option>";
+                        }
+                    }
+                }
+                +
+                '@Html.Raw(element)' +
+                '</select></td>' +
+                '<td><input class="form-control" name="Act.ActItems[' +
+                i +
+                '].Location" type="text" id="Location_' +
+                i +
+                '" value=""></td><td><button title="@localizer["remove_title"]" type="button" class="btn btn-outline-secondary btn-sm tr-remove" myid="' +
+                i +
+                '" id="buttonRemove_' +
+                i +
+                '" aria-label="Left Align"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dash" viewBox="0 0 16 16"><path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z" /></svg></button></td></tr>';
+            $("#TagsTable" + " tbody").append(markup1);
+            if (deviceid !== 0) {
+                $('#Device_' + i).val(deviceid);
+            }
+            console.log(deviceid);
+        }
+
+        $(document).ready(function() {
+            var host = "@Model.URL";
+            //$('#modDialog_Delegate').modal('show');
+            var fgBloc = $("#FGBloc");
+            fgBloc.hide();
+        });
+
+        ShoHideFG();
+
+        $('#rejectcomment').on('input', function() {
+            if ($('#rejectcomment').val().length>10)
+                $('#rejectbtn').prop('disabled', false);
+            else
+                $('#rejectbtn').prop('disabled', true);
+        });
+
+        $('#actions_body').on('click',
+            '.tr-remove',
+            function() {
+                if ($("#TagsTable tr").length > 2) {
+                    var myid = parseInt($(this).attr("myid")) + 1;
+                    var to = $("#TagsTable tr").length - 2;
+                    $(this).parents("tr").remove();
+                    var i;
+                    var j = 0;
+                    for (i = myid; i <= to; i++) {
+                        j = i - 1;
+                        var obj = $("#Id_" + i);
+                        obj.attr("id", "Id_" + j);
+                        obj.attr("name", "Act.ActItems[" + j + "].Id");
+
+
+                        obj = $("#nn_" + i);
+                        obj.attr("id", "nn_" + j);
+                        obj.text(i);
+
+                        obj = $("#Tagname_" + i);
+                        obj.attr("id", "Tagname_" + j);
+                        obj.attr("name", "Act.ActItems[" + j + "].TagName");
+                        obj.attr("oninput", "TagNameInput(" + j + ")");
+
+                        obj = $("#dropdown_tagname_" + i);
+                        obj.attr("id", "dropdown_tagname_" + j);
+
+                        obj = $("#ul_tagname_" + i);
+                        obj.attr("id", "ul_tagname_" + j);
+
+
+                        obj = $("#Unit_" + i);
+                        obj.attr("id", "Unit_" + j);
+                        obj.attr("name", "Act.ActItems[" + j + "].Unit");
+                        obj.attr("oninput", "UnitInput(" + j + ")");
+
+                        obj = $("#dropdown_unit_" + i);
+                        obj.attr("id", "dropdown_unit_" + j);
+
+                        obj = $("#ul_unit_" + i);
+                        obj.attr("id", "ul_unit_" + j);
+
+                        obj = $("#Equipment_" + i);
+                        obj.attr("id", "Equipment_" + j);
+                        obj.attr("name", "Act.ActItems[" + j + "].Equipment");
+                        obj.attr("oninput", "EquipmentInput(" + j + ")");
+
+                        obj = $("#dropdown_equipment_" + i);
+                        obj.attr("id", "dropdown_equipment_" + j);
+
+                        obj = $("#ul_equipment_" + i);
+                        obj.attr("id", "ul_equipment_" + j);
+
+                        obj = $("#Device_" + i);
+                        obj.attr("id", "Device_" + j);
+                        obj.attr("name", "Act.ActItems[" + j + "].DeviceId");
+
+                        obj = $("#Location_" + i);
+                        obj.attr("id", "Location_" + j);
+                        obj.attr("name", "Act.ActItems[" + j + "].Location");
+
+
+                        obj = $("#buttonRemove_" + i);
+                        obj.attr("id", "buttonRemove_" + j);
+                        obj.attr("myid", j);
+                    }
+                }
+            });
+
+        $(".changearea").change(function() {
+            var val = $(this).val();
+            $("#Areaid1").val(val);
+            $("#RefreshData").submit();
+        });
+
+        $(".changeType").change(function() {
+            var val = $(this).val();
+            $("#acttype1").val(val);
+            $("#actcrew1").val($("#crew").val());
+            $("#RefreshData").submit();
+        });
+
+        $(".startApprove").change(function() {
+
+            if ($(this).is(':checked')) {
+                $("#startApproval").val(true);
+            } else {
+                $("#startApproval").val(false);
+            }
+
+        });
+
+        function CauseChanged(id) {
+            var host = "@Model.URL";
+            var lang = "@Model.Lang";
+
+            $.ajax({
+                url: host + "/api/tCauseValues/" + id,
+                method: "GET",
+                //dataType: 'application/json; charset=utf-8',
+                success: function(data, textStatus, jqXhr) {
+                    //var returnedData = JSON.parse(data);
+                    $("#causeRU").val(data.name_RU);
+                    $("#causeEN").val(data.name_EN);
+                    $("#causeKK").val(data.name_KK);
+                    $('#IsCauseTranslated').val(true);
+                    $("#cause" + lang).removeClass('input-validation-error');
+                    //alert($('#IsProtectTranslated').val().toUpperCase());
+                    //alert($('#IsImpactTranslated').val().toUpperCase());
+                    if ($('#IsProtectTranslated').val().toUpperCase() == "TRUE" &&
+                        $('#IsImpactTranslated').val().toUpperCase() == "TRUE")
+                        $('#IsActTranslated').val(true);
+                },
+                error: function(xhr, status, error) {
+                    toastr.error(
+                        "An error occurred... Status: " + error + " " + xhr.status + " " + xhr.responseText)
+                }
+            });
+        }
+
+        function ProtectChanged(id) {
+            var host = "@Model.URL";
+            var lang = "@Model.Lang";
+            $.ajax({
+                url: host + "/api/tProtectValues/" + id,
+                method: "GET",
+                //dataType: 'application/json; charset=utf-8',
+                success: function(data, textStatus, jqXhr) {
+                    //var returnedData = JSON.parse(data);
+                    $("#protectRU").val(data.name_RU);
+                    $("#protectEN").val(data.name_EN);
+                    $("#protectKK").val(data.name_KK);
+                    $('#IsProtectTranslated').val(true);
+                    $("#protect" + lang).removeClass('input-validation-error');
+                    if ($('#IsCauseTranslated').val().toUpperCase() == "TRUE" &&
+                        $('#IsImpactTranslated').val().toUpperCase() == "TRUE")
+                        $('#IsActTranslated').val(true);
+                },
+                error: function(xhr, status, error) {
+                    toastr.error(
+                        "An error occurred... Status: " + error + " " + xhr.status + " " + xhr.responseText)
+                }
+            });
+        }
+
+        function ImpactChanged(id) {
+            var host = "@Model.URL";
+            var lang = "@Model.Lang";
+            $.ajax({
+                url: host + "/api/tImpactValues/" + id,
+                method: "GET",
+                //dataType: 'application/json; charset=utf-8',
+                success: function(data, textStatus, jqXhr) {
+                    //var returnedData = JSON.parse(data);
+                    $("#impactRU").val(data.name_RU);
+                    $("#impactEN").val(data.name_EN);
+                    $("#impactKK").val(data.name_KK);
+                    $("#impact" + lang).removeClass('input-validation-error');
+                    $('#IsImpactTranslated').val(true);
+                    if ($('#IsCauseTranslated').val().toUpperCase() == "TRUE" &&
+                        $('#IsProtectTranslated').val().toUpperCase() == "TRUE")
+                        $('#IsActTranslated').val(true);
+                },
+                error: function(xhr, status, error) {
+                    toastr.error(
+                        "An error occurred... Status: " + error + " " + xhr.status + " " + xhr.responseText)
+                }
+            });
+        }
+
+        function CauseChangedManually() {
+            $('#IsCauseTranslated').val(false);
+            $('#IsActTranslated').val(false);
+        };
+
+        function ImpactChangedManually() {
+            $('#IsImpactTranslated').val(false);
+            $('#IsActTranslated').val(false);
+        };
+
+        function ProtectChangedManually() {
+            $('#IsProtectTranslated').val(false);
+            $('#IsActTranslated').val(false);
+        };
+
+    </script>
+}

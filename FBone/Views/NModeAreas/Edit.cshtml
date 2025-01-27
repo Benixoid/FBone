@@ -1,0 +1,49 @@
+﻿@model FBone.Models.NMode.Area
+@{
+    Layout = "_NModeLayout";
+}
+@{
+    ViewData["Title"] = $"{Model.Name} Area Edit";
+}
+
+<h1>Edit</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+
+                <label asp-for="StartingHour" class="control-label"></label>
+                <input asp-for="StartingHour" class="form-control" />
+                <span asp-validation-for="StartingHour" class="text-danger"></span>
+
+                <label asp-for="InterpolatedValuesCount" class="control-label"></label>
+                <input asp-for="InterpolatedValuesCount" class="form-control" />
+                <span asp-validation-for="InterpolatedValuesCount" class="text-danger"></span>
+
+                <input class="form-check-input" asp-for="SplitToShift" /> @Html.DisplayNameFor(model => model.SplitToShift)
+                <span asp-validation-for="SplitToShift" class="text-danger"></span>
+
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

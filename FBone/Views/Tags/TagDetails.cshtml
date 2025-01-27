@@ -1,0 +1,91 @@
+﻿@model FBone.Models.Tags.TagEditModel
+
+@{
+    if (Model.Tag.Id != 0)
+    {
+        ViewData["Title"] = "Edit tag";
+    }
+    else
+    {
+        ViewData["Title"] = "New tag";
+    }
+
+}
+
+<h1 style="align-content:center">@ViewData["Title"]</h1>
+
+<hr />
+
+<div class="row">    
+    <div class="col-md-1"></div>
+    <div class="col-md-3">
+        <form asp-action="SaveTag">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="@Model.Tag.Id" />
+            <input type="hidden" asp-for="@Model.SearchString" />
+            <div class="form-group">
+                <label asp-for="@Model.Tag.Tagnumber" class="control-label"></label>
+                <input asp-for="@Model.Tag.Tagnumber" class="form-control" />
+                <span asp-validation-for="@Model.Tag.Tagnumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="@Model.Tag.TagnumberByp" class="control-label"></label>
+                <input asp-for="@Model.Tag.TagnumberByp" class="form-control" />
+                <span asp-validation-for="@Model.Tag.TagnumberByp" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="@Model.Tag.Equipment" class="control-label"></label>
+                <input asp-for="@Model.Tag.Equipment" class="form-control" />
+                <span asp-validation-for="@Model.Tag.Equipment" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="@Model.Tag.Type" class="control-label"></label>
+                <input asp-for="@Model.Tag.Type" class="form-control" />
+                <span asp-validation-for="@Model.Tag.Type" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="@Model.Tag.Service" class="control-label"></label>
+                <input asp-for="@Model.Tag.Service" class="form-control" />
+                <span asp-validation-for="@Model.Tag.Service" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="@Model.Tag.Unit" class="control-label"></label>
+                <input asp-for="@Model.Tag.Unit" class="form-control" />
+                <span asp-validation-for="@Model.Tag.Unit" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="@Model.Tag.AreaId" class="control-label"></label>
+                <select asp-for="@Model.Tag.AreaId" class="form-select" asp-items="@Model.Areas"></select>
+                <span asp-validation-for="@Model.Tag.AreaId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="@Model.Tag.DeviceId" class="control-label"></label>
+                <select asp-for="@Model.Tag.DeviceId" class="form-select" asp-items="@Model.Devices"></select>
+                <span asp-validation-for="@Model.Tag.DeviceId" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="@Model.Tag.isFG" /> @Html.DisplayNameFor(model => model.Tag.isFG)
+                </label>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="@Model.Tag.isIPL" /> @Html.DisplayNameFor(model => model.Tag.isIPL)
+                </label>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="@Model.Tag.isForBulkInsert" /> @Html.DisplayNameFor(model => model.Tag.isForBulkInsert)
+                </label>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+                <a asp-action="Index" asp-route-SearchString="@Model.SearchString" class="btn btn-secondary">Back to List</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

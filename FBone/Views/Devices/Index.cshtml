@@ -1,0 +1,41 @@
+﻿@model IEnumerable<FBone.Database.Entities.Device>
+
+@{
+    ViewData["Title"] = "Devices";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Devices</h2>
+
+<p>
+    <a asp-controller="Admin" asp-action="Index" class="btn btn-light">Back</a>
+    <a asp-action="Create" class="btn btn-secondary">Create New</a>
+</p>
+<div class="col-md-4">
+    <table class="table" role="banner" aria-describedby="devices">
+        <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model) {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+<div class="col-md-4">
+</div>
+

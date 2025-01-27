@@ -1,0 +1,84 @@
+﻿@using FBone.Models.NMode;
+@model FBone.Models.NMode.NModeSettings
+
+@{
+    Layout = "_NModeLayout";
+}
+
+<!DOCTYPE html>
+<h1>Settings</h1>
+
+<body>
+    <div>
+        <h4>Lcn</h4>
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-10">
+                @Html.DisplayNameFor(model => model.PIServer)
+            </dt>
+            <dt class="col-sm-10">
+                @Html.DisplayFor(model => model.PIServer)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayNameFor(model => model.InterpolatedValuesCount)
+            </dd>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.InterpolatedValuesCount)
+            </dd>
+            <dd class="col-sm-10">
+                @Html.DisplayNameFor(model => model.StartingHour)
+            </dd>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.StartingHour)
+            </dd>
+            <dd class="col-sm-10">
+                @Html.DisplayNameFor(model => model.NONEasNormal)
+            </dd>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.NONEasNormal)
+            </dd>
+            <dd class="col-sm-10">
+                @Html.DisplayNameFor(model => model.ManualState)
+            </dd>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.ManualState)
+            </dd>
+            <dd class="col-sm-10">
+                @Html.DisplayNameFor(model => model.CaseInsensitive)
+            </dd>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.CaseInsensitive)
+            </dd>
+            <dd class="col-sm-10">
+                @Html.DisplayNameFor(model => model.NMODEThreshold)
+            </dd>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.NMODEThreshold)
+            </dd>
+            <dd class="col-sm-10">
+                @Html.DisplayNameFor(model => model.TotalHistoryDays)
+            </dd>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.TotalHistoryDays)
+            </dd>
+            <dd class="col-sm-10">
+                @Html.DisplayNameFor(model => model.ReportHour)
+            </dd>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.ReportHour)
+            </dd>
+            <dd class="col-sm-10">
+                @Html.DisplayNameFor(model => model.States)
+            </dd>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.States)
+            </dd>
+        </dl>
+    </div>
+    <label>Json:</label>
+    <h6>@Model.Serialize()</h6>
+    <div>
+        <a asp-action="Index">Back to Record List</a>
+    </div>
+
+</body>
