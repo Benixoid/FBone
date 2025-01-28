@@ -19,6 +19,8 @@
         public static bool emailEnabled { get; set; }
         public static int ReportingDefaultEventType { get; set; }
         public static int ReportingDefaultReportIt { get; set; }
+        public static int AuditApproverPosition1 { get; set; }
+        public static int AuditApproverPosition2 { get; set; }
 
         public static string GetConnectionString()
         {

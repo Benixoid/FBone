@@ -4,6 +4,7 @@ using FBone.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FBone.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250127170411_AddedEmailTemplatesForAudit")]
+    partial class AddedEmailTemplatesForAudit
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -65,32 +68,17 @@ namespace FBone.Migrations
                     b.Property<int>("ActId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("ActionCompletedOn")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("ActionOwnerPositionId")
                         .HasColumnType("int");
 
                     b.Property<string>("ActionTakenNote")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Approval1Note")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Approval2Note")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int?>("Approved1ByUserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("Approved1On")
-                        .HasColumnType("datetime2");
-
                     b.Property<int?>("Approved2ByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTime?>("Approved2On")
-                        .HasColumnType("datetime2");
 
                     b.Property<int>("AreaId")
                         .HasColumnType("int");
@@ -124,6 +112,9 @@ namespace FBone.Migrations
                     b.Property<int>("StatusCode")
                         .HasColumnType("int");
 
+                    b.Property<string>("SupervisorNote")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Tags")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -133,9 +124,6 @@ namespace FBone.Migrations
 
                     b.Property<int?>("VerifiedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTime?>("VerifiedOn")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -955,16 +943,11 @@ namespace FBone.Migrations
                     b.Property<string>("TagForcesDaily")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("VerificatorId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("FacilityId");
 
                     b.HasIndex("ShiftEngFacilityId");
-
-                    b.HasIndex("VerificatorId");
 
                     b.ToTable("tArea");
                 });
@@ -1584,15 +1567,9 @@ namespace FBone.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("FBone.Database.Entities.tPosition", "Verificator")
-                        .WithMany()
-                        .HasForeignKey("VerificatorId");
-
                     b.Navigation("Facility");
 
                     b.Navigation("ShiftEngFacility");
-
-                    b.Navigation("Verificator");
                 });
 
             modelBuilder.Entity("FBone.Database.Entities.tUser", b =>

@@ -132,5 +132,8 @@ namespace FBone.Database.Entities
         public string NotifyForMocInitiate { get; set; }
         [Display(Name = "Additional emails to notify when 'Manual Startup override' act fully approved, separated by ;")]
         public string NotifyOnType5ActApproved { get; set; }
+        [Display(Name = "Audit verificator position")]
+        public int? VerificatorId { get; set; }
+        public tPosition Verificator { get; set; }
     }
 }

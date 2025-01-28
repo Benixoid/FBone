@@ -204,9 +204,6 @@
   <data name="statusinprogress" xml:space="preserve">
     <value>In progress</value>
   </data>
-  <data name="statusnotclosed" xml:space="preserve">
-    <value>Not closed</value>
-  </data>
   <data name="title" xml:space="preserve">
     <value>Audits list</value>
   </data>
@@ -215,5 +212,11 @@
   </data>
   <data name="unit" xml:space="preserve">
     <value>Unit</value>
+  </data>
+  <data name="tags" xml:space="preserve">
+    <value>Audit tags</value>
+  </data>
+  <data name="statusinapproval" xml:space="preserve">
+    <value>On approval</value>
   </data>
 </root>

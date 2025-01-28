@@ -41,6 +41,7 @@ namespace FBone.Database
         public virtual DbSet<NMTotalRecord> NMTotalRecords { get; set; }
         public virtual DbSet<Audit> Audits { get; set; }        
         public virtual DbSet<AuditFile> AuditFiles { get; set; }
+        public virtual DbSet<AuditHistory> AuditHistories { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -558,7 +558,7 @@ namespace FBone.Controllers
             entity.TagAlarmInhibited = area.TagAlarmInhibited;
             entity.TagAlarmDisabledYestd = area.TagAlarmDisabledYestd;
             entity.TagAlarmInhibitedYestd = area.TagAlarmInhibitedYestd;
-
+            entity.VerificatorId = area.VerificatorId;
 
             _dataManager.tArea.SaveArea(entity);
             return RedirectToAction(nameof(Areas));

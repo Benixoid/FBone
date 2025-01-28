@@ -7,14 +7,26 @@ namespace FBone.Service
 {
     public class Enums
     {
+        public enum AuditHistoryCode : int
+        {
+            Created = 1,
+            Updated = 2,
+            Submitted = 3,
+            ActionCompleted = 4,
+            Verified = 5,
+            Approved = 6,
+            Rejected = 7,
+            Closed = 8
+        }
         public enum AuditStatusCode : int
         {
             //used for Audit.StatusCode
             Draft = 1,
             InProgress = 2,
             OnVerification = 3,
-            OnApproval = 4,
-            Closed = 5            
+            OnApproval1 = 4,
+            OnApproval2 = 5,
+            Closed = 6            
         };
         public enum Roles : int
         {

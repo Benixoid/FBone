@@ -193,7 +193,7 @@
     <value>Мәліметтер бойынша іздеу: аудит нөмірі, тег нөмірі</value>
   </data>
   <data name="statusverification" xml:space="preserve">
-    <value>On Verification</value>
+    <value>Тексеруде</value>
   </data>
   <data name="statusclosed" xml:space="preserve">
     <value>Жабық</value>
@@ -202,10 +202,7 @@
     <value>Жоба</value>
   </data>
   <data name="statusinprogress" xml:space="preserve">
-    <value>In progress</value>
-  </data>
-  <data name="statusnotclosed" xml:space="preserve">
-    <value>Жабық емес</value>
+    <value>Орындалуда</value>
   </data>
   <data name="title" xml:space="preserve">
     <value>Аудиттер тізімі</value>
@@ -214,6 +211,12 @@
     <value>дейін</value>
   </data>
   <data name="unit" xml:space="preserve">
-    <value>Unit</value>
+    <value>Участок</value>
+  </data>
+  <data name="tags" xml:space="preserve">
+    <value>Тег нөмірі</value>
+  </data>
+  <data name="statusinapproval" xml:space="preserve">
+    <value>Мақұлдауда</value>
   </data>
 </root>

@@ -207,4 +207,97 @@
   <data name="remove_title" xml:space="preserve">
     <value>Remove item</value>
   </data>
+  <data name="audithtitle" xml:space="preserve">
+    <value>Audit history</value>
+  </data>
+  <data name="audithdate" xml:space="preserve">
+    <value>Audit date</value>
+  </data>
+  <data name="audithUser" xml:space="preserve">
+    <value>Event user</value>
+  </data>
+  <data name="audithevent" xml:space="preserve">
+    <value>Event</value>
+  </data>
+  <data name="comment" xml:space="preserve">
+    <value>Comment</value>
+  </data>
+  <data name="evt_created" xml:space="preserve">
+    <value>New audit created</value>
+  </data>
+  <data name="evt_updated" xml:space="preserve">
+    <value>Audit updated</value>
+  </data>
+  <data name="evt_submitted" xml:space="preserve">
+    <value>Audit submitted for action</value>
+  </data>
+  <data name="evt_actioncompleted" xml:space="preserve">
+    <value>Required action completed</value>
+  </data>
+  <data name="evt_verified" xml:space="preserve">
+    <value>Audit verified</value>
+  </data>
+  <data name="evt_approved" xml:space="preserve">
+    <value>Audit approved</value>
+  </data>
+  <data name="evt_rejected" xml:space="preserve">
+    <value>Audit rejected</value>
+  </data>
+  <data name="evt_closed" xml:space="preserve">
+    <value>Audit closed</value>
+  </data>
+  <data name="evt_unknown" xml:space="preserve">
+    <value>Unknow type of evet</value>
+  </data>
+  <data name="delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="confirm_delete" xml:space="preserve">
+    <value>Do you really want to delete it?</value>
+  </data>
+  <data name="tags_required" xml:space="preserve">
+    <value>At least one tag is required</value>
+  </data>
+  <data name="attachment_required" xml:space="preserve">
+    <value>You need to upload an audit file.</value>
+  </data>
+  <data name="complete" xml:space="preserve">
+    <value>Complete task</value>
+  </data>
+  <data name="reject" xml:space="preserve">
+    <value>Reject</value>
+  </data>
+  <data name="reject2" xml:space="preserve">
+    <value>Return audit</value>
+  </data>
+  <data name="rejectm" xml:space="preserve">
+    <value>Enter reject reason (&gt;10 chars)</value>
+  </data>
+  <data name="cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="completemessage_required" xml:space="preserve">
+    <value>Please enter complete note</value>
+  </data>
+  <data name="completemessage" xml:space="preserve">
+    <value>Complete note</value>
+  </data>
+  <data name="verify" xml:space="preserve">
+    <value>Confirm verification</value>
+  </data>
+  <data name="verifyemessage_required" xml:space="preserve">
+    <value>Please enter verification note</value>
+  </data>
+  <data name="verifymessage" xml:space="preserve">
+    <value>Verification note</value>
+  </data>
+  <data name="approvalmessage1" xml:space="preserve">
+    <value>Comment from the first approver</value>
+  </data>
+  <data name="approvalmessage2" xml:space="preserve">
+    <value>Comment from the second approver</value>
+  </data>
+  <data name="approve" xml:space="preserve">
+    <value>Approve</value>
+  </data>
 </root>

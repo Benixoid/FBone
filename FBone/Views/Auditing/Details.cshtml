@@ -3,8 +3,35 @@
 @using FBone.Service
 @model FBone.Models.Audits.AuditDetailsModel
 
-@{    
+@{
     var disabled = "";
+    var disabled_action = "disabled";
+    var disabled_verify = "disabled";
+    var disabled_approval1 = "disabled";
+    var disabled_approval2 = "disabled";
+    var disabledStyle = "";
+    if (Model.Audit.StatusCode == (int)Enums.AuditStatusCode.OnApproval1 && Model.CanApprove1)
+    {
+        disabled_approval1 = "";
+    }
+    if (Model.Audit.StatusCode == (int)Enums.AuditStatusCode.OnApproval2 && Model.CanApprove2)
+    {
+        disabled_approval2 = "";
+    }
+    if (Model.Audit.StatusCode == (int)Enums.AuditStatusCode.OnVerification && Model.CanVerify)
+    {
+        disabled_verify = "";
+    }
+    if (Model.Audit.StatusCode == (int)Enums.AuditStatusCode.InProgress && Model.CanComplete)
+    {
+        disabled_action = "";
+    }
+    if (!Model.CanEdit || Model.Audit.StatusCode != (int)Enums.AuditStatusCode.Draft)
+    {
+        disabled = "disabled";
+        disabledStyle = "background: #e9ecef";
+    }
+
     if (Model.Audit.Id == 0)
     {
         ViewData["Title"] = @localizer["create"];
@@ -25,7 +52,7 @@
             {
                 @localizer["statusdraft"]
             }
-            else if (Model.Audit.StatusCode == (int)Enums.AuditStatusCode.OnApproval)
+            else if (Model.Audit.StatusCode == (int)Enums.AuditStatusCode.OnApproval1 || Model.Audit.StatusCode == (int)Enums.AuditStatusCode.OnApproval2)
             {
                 @localizer["statusonapproval"]                
             }
@@ -46,18 +73,24 @@
 </div>
 <form asp-action="SaveAudit" onsubmit="return validateForm()">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    
+
     <input type="hidden" asp-for="@Model.Audit.Id" />
     <input type="hidden" asp-for="@Model.Audit.StatusCode" />
     <input type="hidden" asp-for="@Model.Audit.CreatedByUserID" />
     <input type="hidden" asp-for="@Model.Audit.Tags" id="audittags" />    
     <input type="hidden" asp-for="@Model.startApproval" id="startApproval" />
+    @if (Model.Audit.StatusCode == (int)Enums.AuditStatusCode.Draft){
+        <input type="hidden" asp-for="@Model.Audit.ActionTakenNote" />
+        <input type="hidden" asp-for="@Model.Audit.VerificationNote" />
+        <input type="hidden" asp-for="@Model.Audit.Approval1Note" />
+        <input type="hidden" asp-for="@Model.Audit.Approval2Note" />
+    }
 
     <div class="row">
         <div class="col-sm-5">
             <div class="form-group">
                 <label asp-for="@Model.Audit.Name" class="control-label">@localizer["name"]</label>
-                <input asp-for="@Model.Audit.Name" class="form-control" />
+                <input asp-for="@Model.Audit.Name" class="form-control" disabled="@(disabled != "" ? "disabled" : null)" />
                 <span asp-validation-for="@Model.Audit.Name" class="text-danger"></span>
             </div>
         </div>
@@ -89,7 +122,7 @@
         </div>
         <div class="col-sm-2">
             <label for="shiftdate">@localizer["shiftdate"]</label>
-            <input asp-for="@Model.Audit.ShiftDate" id="shiftdate" class="form-control" readonly="@(disabled == "" ? null: "readonly" )" onchange="dateChanged()"/>
+            <input asp-for="@Model.Audit.ShiftDate" id="shiftdate" class="form-control" disabled="@(disabled != "" ? "disabled" : null)" onchange="dateChanged()" />
             <span asp-validation-for="@Model.Audit.ShiftDate" class="text-danger"></span>
         </div>
         <div class="col-sm-2">
@@ -133,34 +166,36 @@
     </div>    
     <div class="row">
         <div class="col-md-5"></div>
-        <div class="col-md-2">
+        <div class="col-md-3">
             <div style="text-align: center">
                 <b>@localizer["taglistmessage"]</b>
             </div>
             <div style="text-align: center">
                 <label>@localizer["add_tag"]:</label>
-                <select class="my-form-control" asp-items="@Model.Tags" id="acttags" disabled="@(disabled != "" ? "disabled" : null)"></select>
-                <button title="@localizer["add_title"]" type="button" class="btn btn-outline-secondary btn-sm" aria-label="Left Align" onclick="AddNewLi();" @disabled>
+                <select class="my-form-control" asp-items="@Model.Tags" style="@disabledStyle" id="acttags" disabled="@(disabled != "" ? "disabled" : null)"></select>                
+                <button title="@localizer["add_title"]" type="button" style="@disabledStyle" class="btn btn-outline-secondary btn-sm" aria-label="Left Align" onclick="AddNewLi();" @disabled>
                     <svg width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
                         <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
                     </svg>
-                </button>
+                </button><br>
+                <span asp-validation-for="@Model.Audit.Tags" class="text-danger"></span>
             </div>
-            @if (!string.IsNullOrEmpty(Model.Audit.Tags))
-            {
-                <ul id="ultaglist">
+            <ul id="ultaglist">
+                @if (!string.IsNullOrEmpty(Model.Audit.Tags))
+                {
                     @foreach (var item in Model.Audit.Tags.Split("/-/"))
                     {
-                        <li id="@item">@item
-                            <button title="@localizer["remove_title"]" type="button" class="btn btn-outline-secondary btn-sm" aria-label="Left Align" onclick="RemoveLi('@item');" @disabled>
+                        <li id="@item">
+                            @item
+                            <button title="@localizer["remove_title"]" type="button" style="@disabledStyle" class="btn btn-outline-secondary btn-sm" aria-label="Left Align" onclick="RemoveLi('@item');" @disabled>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dash" viewBox="0 0 16 16">
                                     <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z" />
                                 </svg>
                             </button>
-                        </li>                        
+                        </li>
                     }
-                </ul>
-            }            
+                }                
+            </ul>            
         </div>
         <div class="col-md-1"></div>
     </div>
@@ -171,7 +206,7 @@
         </div>
         <div class="col-sm-7">
             <label>@localizer["personsinposition"]:</label>
-            <textarea asp-for="@Model.UsersInPosition" class="form-control" rows="4" id="personsinposition" readonly></textarea>
+            <textarea asp-for="@Model.UsersInPosition" class="form-control" style="background: #e9ecef" rows="4" id="personsinposition" readonly></textarea>
         </div>
     </div>
     <div class="row">
@@ -181,8 +216,55 @@
             <span asp-validation-for="@Model.Audit.RequiredActionNote" class="text-danger"></span>
         </div>
     </div>
-    <div class="row">
-        <div style="text-align: center">
+    @if (Model.Audit.StatusCode == (int)Enums.AuditStatusCode.InProgress ||
+        Model.Audit.StatusCode == (int)Enums.AuditStatusCode.OnVerification ||
+        Model.Audit.StatusCode == (int)Enums.AuditStatusCode.OnApproval1 ||
+        Model.Audit.StatusCode == (int)Enums.AuditStatusCode.OnApproval2 ||
+        Model.Audit.StatusCode == (int)Enums.AuditStatusCode.Closed){
+        <div class="row">
+            <div class="col-sm-10">
+                <label for="requiredaction">@localizer["completemessage"]</label>
+                <textarea asp-for="@Model.Audit.ActionTakenNote" class="form-control" rows="4" id="completemessage" disabled="@(disabled_action != "" ? "disabled" : null)"></textarea>                
+            </div>
+        </div>
+    }
+    
+    @if (Model.Audit.StatusCode == (int)Enums.AuditStatusCode.OnVerification ||
+        Model.Audit.StatusCode == (int)Enums.AuditStatusCode.OnApproval1 ||
+        Model.Audit.StatusCode == (int)Enums.AuditStatusCode.OnApproval2 ||
+        Model.Audit.StatusCode == (int)Enums.AuditStatusCode.Closed)
+    {
+        <div class="row">
+            <div class="col-sm-10">
+                <label for="requiredaction">@localizer["verifymessage"]</label>
+                <textarea asp-for="@Model.Audit.VerificationNote" class="form-control" rows="4" id="verifymessage" disabled="@(disabled_verify != "" ? "disabled" : null)"></textarea>
+            </div>
+        </div>
+    }
+    @if (Model.Audit.StatusCode == (int)Enums.AuditStatusCode.OnApproval1 ||
+        Model.Audit.StatusCode == (int)Enums.AuditStatusCode.OnApproval2 ||
+        Model.Audit.StatusCode == (int)Enums.AuditStatusCode.Closed)
+    {
+        <div class="row">
+            <div class="col-sm-10">
+                <label for="requiredaction">@localizer["approvalmessage1"]</label>
+                <textarea asp-for="@Model.Audit.Approval1Note" class="form-control" rows="4" id="approvalmessage1" disabled="@(disabled_approval1 != "" ? "disabled" : null)"></textarea>
+            </div>
+        </div>
+    }
+    @if (Model.Audit.StatusCode == (int)Enums.AuditStatusCode.OnApproval2 ||
+        Model.Audit.StatusCode == (int)Enums.AuditStatusCode.Closed)
+    {
+        <div class="row">
+            <div class="col-sm-10">
+                <label for="requiredaction">@localizer["approvalmessage2"]</label>
+                <textarea asp-for="@Model.Audit.Approval2Note" class="form-control" rows="4" id="approvalmessage2" disabled="@(disabled_approval2 != "" ? "disabled" : null)"></textarea>
+            </div>
+        </div>
+    }
+    
+    <div class="row" style="padding: 10px;">
+        <div style="text-align: center">            
             @if (Model.CanEdit && Model.Audit.StatusCode == (int)Enums.AuditStatusCode.Draft)
             {
                 <div class="form-group">
@@ -191,35 +273,203 @@
                     </div>
                 </div>
             }
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-md-3">
-                        <a asp-action="Index"
-                            asp-route-PageIndex="@Model.PageIndex"
-                            asp-route-itemperpage="@Model.ItemPerPage"
-                            asp-route-SelectedFacilityId="@Model.SelectedFacilityId"
-                            asp-route-SelectedAreaId="@Model.SelectedAreaId"
-                            asp-route-SelectedActStatus="@Model.SelectedAuditStatus"
-                            asp-route-SmartSearch="@Model.SmartSearch"
-                            asp-route-DateFromS="@Model.DateFrom"
-                            asp-route-DateToS="@Model.DateTo"
-                            class="btn btn-secondary">@localizer["backtolist"]</a>
-                        @if (Model.CanEdit)
-                        {
-                            <input type="submit" value="@localizer["saveaudit"]" class="btn btn-primary" />
-                        }
+        </div>
+    </div>
+    <div class="row" style="padding: 10px;">
+        <div style="text-align: center">
+            <a asp-action="Index"
+            asp-route-PageIndex="@Model.PageIndex"
+            asp-route-itemperpage="@Model.ItemPerPage"
+            asp-route-SelectedFacilityId="@Model.SelectedFacilityId"
+            asp-route-SelectedAreaId="@Model.SelectedAreaId"
+            asp-route-SelectedActStatus="@Model.SelectedAuditStatus"
+            asp-route-SmartSearch="@Model.SmartSearch"
+            asp-route-DateFromS="@Model.DateFrom"
+            asp-route-DateToS="@Model.DateTo"
+            class="btn btn-secondary">@localizer["backtolist"]</a>
+            @if (Model.CanEdit)
+            {
+                <input type="submit" value="@localizer["saveaudit"]" class="btn btn-primary" />
+            }
+</form>
+            @if (Model.CanEdit && Model.Audit.Id != 0 && Model.Audit.StatusCode == (int)Enums.AuditStatusCode.Draft)
+            {
+                <a class="btn btn-success" onclick="DeleteAudit(@Model.Audit.Id)"> @localizer["delete"]</a>
+            }
+            @if (Model.CanComplete)
+            {
+                <a class="btn btn-success" onclick="CompleteAction(@Model.Audit.Id)"> @localizer["complete"]</a>
+            }
+             @if (Model.CanVerify)
+            {
+                <a class="btn btn-success" onclick="VerifyAudit(@Model.Audit.Id)"> @localizer["verify"]</a>
+            }
+            @if (Model.CanApprove1)
+            {
+                <a class="btn btn-success" onclick="Approve1(@Model.Audit.Id)"> @localizer["approve"]</a>
+            }
+            @if (Model.CanApprove2)
+            {
+                <a class="btn btn-success" onclick="Approve2(@Model.Audit.Id)"> @localizer["approve"]</a>
+            }
+            @if (Model.CanComplete || Model.CanVerify || Model.CanApprove1 || Model.CanApprove2)
+            {                
+                <div class="modal" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="rejectModalLabel">@localizer["reject2"]</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form asp-controller="Auditing" asp-action="Reject" method="post" class="form-horizontal" role="form">
+                                <input type="hidden" asp-for="@Model.Audit.Id" id="auditid" name="auditid" />
+                                <div class="modal-body">
+                                    @localizer["rejectm"]
+                                    <textarea name="rejectcomment" id="rejectcomment" rows="5" cols="60"></textarea>
+                                </div>
+                                <div class="modal-footer">
+                                    <input type="submit" value="@localizer["reject"]" class="btn btn-primary" id="rejectbtn" disabled />
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@localizer["cancel"]</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
-            </div>
+                <a href="#" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectModal">@localizer["reject"]</a>
+            }
         </div>
     </div>    
-</form>
-    
+
+<div class="row">
+    <h2>@localizer["audithtitle"]</h2>
+    <div class="col-sm-6">
+        <table class="table" aria-describedby="history">
+            <thead>
+                <tr>
+                    <th class="text-center">@localizer["audithdate"]</th>
+                    <th class="text-center">@localizer["audithUser"]</th>
+                    <th class="text-center">@localizer["audithevent"]</th>
+                    <th class="text-center">@localizer["comment"]</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var history in @Model.AuditHistory)
+                {
+                    <tr>
+                        <td>
+                            @Html.Raw(history.EventDate)
+                        </td>
+                        <td>
+                            @Html.Raw(history.ActionUser.Name_EN)
+                        </td>
+                        <td>
+                            @if (history.HistoryCode == (int)Enums.AuditHistoryCode.Created)
+                            {
+                                @localizer["evt_created"]
+                            }
+                            else if (history.HistoryCode == (int)Enums.AuditHistoryCode.Updated)
+                            {
+                                @localizer["evt_updated"]
+                            }
+                            else if (history.HistoryCode == (int)Enums.AuditHistoryCode.Submitted)
+                            {
+                                @localizer["evt_submitted"]
+                            }
+                            else if (history.HistoryCode == (int)Enums.AuditHistoryCode.ActionCompleted)
+                            {
+                                @localizer["evt_actioncompleted"]
+                            }
+                            else if (history.HistoryCode == (int)Enums.AuditHistoryCode.Verified)
+                            {
+                                @localizer["evt_verified"]
+                            }
+                            else if (history.HistoryCode == (int)Enums.AuditHistoryCode.Approved)
+                            {
+                                @localizer["evt_approved"]
+                            }
+                            else if (history.HistoryCode == (int)Enums.AuditHistoryCode.Rejected)
+                            {
+                                @localizer["evt_rejected"]
+                            }
+                            else if (history.HistoryCode == (int)Enums.AuditHistoryCode.Closed)
+                            {
+                                @localizer["evt_closed"]
+                            }                            
+                            else
+                            {
+                                @localizer["evt_unknown"]
+                            }
+                        </td>
+                        <td>
+                            @Html.Raw(history.Comment)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
 
 @section scripts
 {
     @{await Html.RenderPartialAsync($"_ValidationScriptsPartial");}
     <script>
+        function Approve1(id){
+            var host = "@Model.URL";
+            var approvalmessage1 = $("#approvalmessage1");
+            var message = remove_linebreaks(approvalmessage1.val());
+            var url1 = host + "/Auditing/ApproveAudit1/?auditid=" + id + "&message=" + message;
+            window.location.href = url1;            
+        }
+        function Approve2(id){
+            var host = "@Model.URL";
+            var approvalmessage2 = $("#approvalmessage2");
+            var message = remove_linebreaks(approvalmessage2.val());
+            var url1 = host + "/Auditing/ApproveAudit2/?auditid=" + id + "&message=" + message;
+            window.location.href = url1;
+        }
+
+        function VerifyAudit(id){
+            var host = "@Model.URL";
+            var verifymessage = $("#verifymessage");
+            if (!verifymessage.val())
+            {
+                bootbox.alert("@localizer["verifyemessage_required"]");
+                return;
+            }
+            var message = remove_linebreaks(verifymessage.val());            
+            var url1 = host + "/Auditing/VerifyAudit/?auditid=" + id + "&message=" + message;
+            window.location.href = url1;            
+        }
+
+        function remove_linebreaks(str) {
+            return str.replace(/[\r\n]+/gm, "/-NN-/");
+        }
+
+        function CompleteAction(id){
+            var host = "@Model.URL";
+            var completemessage = $("#completemessage");
+            if (!completemessage.val())
+            {
+                bootbox.alert("@localizer["completemessage_required"]");
+                return;
+            }
+            var message = remove_linebreaks(completemessage.val());
+            var url1 = host + "/Auditing/CompleteAction/?auditid=" + id + "&message=" + message;
+            window.location.href = url1;            
+        }
+
+        function DeleteAudit(id) {
+            var host = "@Model.URL";
+            bootbox.confirm("@localizer["confirm_delete"]", 
+            function (result) {
+                if (result) {
+                    var url1 = host + "/Auditing/Delete/?auditid=" + id;
+                    window.location.href = url1;
+                }
+            });
+        }
+
         function positionChanged(){
             var actionowner = $("#actionowner");
             var personsinposition = $("#personsinposition");
@@ -238,6 +488,7 @@
             });
 
         }
+
         function clearAllLi(){
             var ultaglist = $("#ultaglist");
             ultaglist.empty();
@@ -441,6 +692,13 @@
             });
 
         }
+        
+        $('#rejectcomment').on('input', function() {
+            if ($('#rejectcomment').val().length>10)
+                $('#rejectbtn').prop('disabled', false);
+            else
+                $('#rejectbtn').prop('disabled', true);
+        });
 
         $(".startApprove").change(function() {
 

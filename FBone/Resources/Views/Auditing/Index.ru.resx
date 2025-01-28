@@ -193,7 +193,7 @@
     <value>Поиск по полям: номер аудита, номер тага</value>
   </data>
   <data name="statusverification" xml:space="preserve">
-    <value>On Verification</value>
+    <value>На проверке</value>
   </data>
   <data name="statusclosed" xml:space="preserve">
     <value>Закрыт</value>
@@ -202,10 +202,7 @@
     <value>Черновик</value>
   </data>
   <data name="statusinprogress" xml:space="preserve">
-    <value>In progress</value>
-  </data>
-  <data name="statusnotclosed" xml:space="preserve">
-    <value>Не закрытые</value>
+    <value>На исполнении</value>
   </data>
   <data name="title" xml:space="preserve">
     <value>Список аудитов</value>
@@ -215,5 +212,11 @@
   </data>
   <data name="unit" xml:space="preserve">
     <value>Участок</value>
+  </data>
+  <data name="tags" xml:space="preserve">
+    <value>Номер тага</value>
+  </data>
+  <data name="statusinapproval" xml:space="preserve">
+    <value>На утверждении</value>
   </data>
 </root>

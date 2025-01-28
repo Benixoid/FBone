@@ -103,6 +103,13 @@ namespace FBone.Database.DB_Helper
                     record.ActType = (int)Enums.EventTypeCode.Inactive;
                 else if (item.Act.Type == (int)Enums.ActTypeCode.inhibited)
                     record.ActType = (int)Enums.EventTypeCode.Inhibited;
+                else if (item.Act.Type == (int)Enums.ActTypeCode.force)
+                    record.ActType = (int)Enums.EventTypeCode.Force;
+                //else if (item.Act.Type == (int)Enums.ActTypeCode.manual)
+                //    record.ActType = (int)Enums.EventTypeCode.Force;
+
+
+
                 if (item.DeviceId != 0)
                 {
                     var device = _context.Device.FirstOrDefault(i => i.Id == item.DeviceId);

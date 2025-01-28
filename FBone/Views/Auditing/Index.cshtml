@@ -5,6 +5,11 @@
 
 @{
     ViewData["Title"] = @localizer["title"];
+    var draftCode = (int)Enums.AuditStatusCode.Draft;
+    var inprogressCode = (int)Enums.AuditStatusCode.InProgress;
+    var verificationCode = (int)Enums.AuditStatusCode.OnVerification;
+    var approvalCode = (int)Enums.AuditStatusCode.OnApproval1;
+    var closedCode = (int)Enums.AuditStatusCode.Closed;
     var createEnabled = "disabled";
     //var status = "";
     if (Model.CanCreateAudit)
@@ -15,14 +20,12 @@
 <div class="row">
     <div class="col-md-3">
         <h2>@localizer["actions"]</h2>
-
         <div class="my-space10">
             <a asp-controller="Auditing" asp-action="RegisterAudit" class="btn btn-primary @createEnabled">@localizer["createNewBtn"]</a>
         </div>
         <div class="my-space10">
             <a asp-controller="Auditing" asp-action="Index" class="btn btn-primary">@localizer["clearfilter"]</a>
         </div>
-
         <form asp-controller="Auditing" asp-action="Index" id="filterForm" method="post" class="form-horizontal" role="form">
             <input type="hidden" name="PageIndex" value="1">
             <input type="hidden" name="ItemPerPage" value="@Model.ItemPerPage">
@@ -42,45 +45,53 @@
                 <div class="row">
                     <b>@localizer["status"]</b>
                     <select class="my-form-control" id="SelectedAuditStatus" name="SelectedAuditStatus" onchange="this.form.submit();">
-                        @if (Model.SelectedAuditStatus == 1)
+                        @if (Model.SelectedAuditStatus == 0)
                         {
-                            <option value="1" selected="selected">...</option>
+                            <option value="0" selected="selected">...</option>
                         }
                         else
                         {
-                            <option value="1">...</option>
+                            <option value="0">...</option>
                         }
-                        @if (Model.SelectedAuditStatus == 2)
+                        @if (Model.SelectedAuditStatus == (int)Enums.AuditStatusCode.Draft)
                         {
-                            <option value="2" selected="selected">@localizer["statusnotclosed"]</option>
-                        }
-                        else
-                        {
-                            <option value="2">@localizer["statusnotclosed"]</option>
-                        }
-                        @if (Model.SelectedAuditStatus == 3)
-                        {
-                            <option value="3" selected="selected">@localizer["statusdraft"]</option>
+                            <option value="@draftCode" selected="selected">@localizer["statusdraft"]</option>
                         }
                         else
                         {
-                            <option value="3">@localizer["statusdraft"]</option>
+                            <option value="@draftCode">@localizer["statusdraft"]</option>
                         }
-                        @if (Model.SelectedAuditStatus == 4)
+                        @if (Model.SelectedAuditStatus == (int)Enums.AuditStatusCode.InProgress)
                         {
-                            <option value="4" selected="selected">@localizer["statusinapproval"]</option>
-                        }
-                        else
-                        {
-                            <option value="4">@localizer["statusinapproval"]</option>
-                        }
-                        @if (Model.SelectedAuditStatus == 5)
-                        {
-                            <option value="5" selected="selected">@localizer["statusactive"]</option>
+                            <option value="@inprogressCode" selected="selected">@localizer["statusinprogress"]</option>
                         }
                         else
                         {
-                            <option value="5">@localizer["statusactive"]</option>
+                            <option value="@inprogressCode">@localizer["statusinprogress"]</option>
+                        }
+                        @if (Model.SelectedAuditStatus == (int)Enums.AuditStatusCode.OnVerification)
+                        {
+                            <option value="@verificationCode" selected="selected">@localizer["statusverification"]</option>
+                        }
+                        else
+                        {
+                            <option value="@verificationCode">@localizer["statusverification"]</option>
+                        }
+                        @if (Model.SelectedAuditStatus == (int)Enums.AuditStatusCode.OnApproval1)
+                        {
+                            <option value="@approvalCode" selected="selected">@localizer["statusinapproval"]</option>
+                        }
+                        else
+                        {
+                            <option value="@approvalCode">@localizer["statusinapproval"]</option>
+                        }
+                        @if (Model.SelectedAuditStatus == (int)Enums.AuditStatusCode.Closed)
+                        {
+                            <option value="@closedCode" selected="selected">@localizer["statusclosed"]</option>
+                        }
+                        else
+                        {
+                            <option value="@closedCode">@localizer["statusclosed"]</option>
                         }
                     </select>
                 </div>
@@ -151,6 +162,9 @@
                             <th>
                                 @localizer["area"]
                             </th>
+                            <th>
+                                @localizer["tags"]
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -159,14 +173,14 @@
                             <tr>
                                 <td>
                                     <a asp-action="AuditDetails" asp-route-Audit.id="@item.Id"
-                                       asp-route-DateFrom="@Model.DateFromS"
-                                       asp-route-DateTo="@Model.DateToS"
-                                       asp-route-SelectedActStatus="@Model.SelectedAuditStatus"
-                                       asp-route-SelectedFacilityId="@Model.SelectedFacilityId"
-                                       asp-route-SelectedAreaId="@Model.SelectedAreaId"                                       
-                                       asp-route-SmartSearch="@Model.SmartSearch"
-                                       asp-route-PageIndex="@Model.PageIndex"
-                                       asp-route-ItemPerPage="@Model.ItemPerPage"> @item.Name</a>
+                                    asp-route-DateFrom="@Model.DateFromS"
+                                    asp-route-DateTo="@Model.DateToS"
+                                    asp-route-SelectedActStatus="@Model.SelectedAuditStatus"
+                                    asp-route-SelectedFacilityId="@Model.SelectedFacilityId"
+                                    asp-route-SelectedAreaId="@Model.SelectedAreaId"                                       
+                                    asp-route-SmartSearch="@Model.SmartSearch"
+                                    asp-route-PageIndex="@Model.PageIndex"
+                                    asp-route-ItemPerPage="@Model.ItemPerPage">#@item.Id - @item.Name</a>
                                 </td>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.CreatedAt)
@@ -177,28 +191,34 @@
                                 }
                                 else if (item.StatusCode == (int)Enums.AuditStatusCode.InProgress)
                                 {
-                                    <td class="bg_red">@localizer["statusinprogress"]</td>
+                                    <td class="bg_green">@localizer["statusinprogress"]</td>
                                 }
                                 else if (item.StatusCode == (int)Enums.AuditStatusCode.OnVerification)
                                 {
-                                    <td class="bg_green">@localizer["statusverification"]</td>
+                                    <td class="bg_yellow">@localizer["statusverification"]</td>
                                 }
-                                else if (item.StatusCode == (int)Enums.AuditStatusCode.OnApproval)
+                                else if (item.StatusCode == (int)Enums.AuditStatusCode.OnApproval1 || item.StatusCode == (int)Enums.AuditStatusCode.OnApproval2)
                                 {
-                                    <td class="bg_gray">@localizer["statusinapproval"]</td>
+                                    <td class="bg_yellow">@localizer["statusinapproval"]</td>
                                 }
                                 else if (item.StatusCode == (int)Enums.AuditStatusCode.Closed)
                                 {
-                                    <td class="bg_yellow">@localizer["statusclosed"]</td>
+                                    <td class="bg_gray">@localizer["statusclosed"]</td>
                                 }                                
                                 <td>
                                     @Html.DisplayFor(modelItem => item.CloseDate)
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.Facility.Name)
+                                    @Html.DisplayFor(modelItem => item.Area.Facility.Name)
                                 </td>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.Area.Name_EN)
+                                </td>
+                                <td>
+                                    @{
+                                        var tagstring = item.Tags.Replace("/-/", ", ");
+                                    }
+                                    @Html.Raw(tagstring)
                                 </td>
                             </tr>
                         }

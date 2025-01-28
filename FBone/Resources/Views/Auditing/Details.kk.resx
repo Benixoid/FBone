@@ -169,10 +169,10 @@
     <value>Жасалу күні/уақыты</value>
   </data>
   <data name="createdby" xml:space="preserve">
-    <value>Создан пользователем</value>
+    <value>Жасаған пайдаланушы</value>
   </data>
   <data name="closedat" xml:space="preserve">
-    <value>Дата/ время закрытия</value>
+    <value>Жабылу күні/уақыты</value>
   </data>
   <data name="taglistmessage" xml:space="preserve">
     <value>Аудит тегтерінің тізімі</value>
@@ -196,15 +196,108 @@
     <value>Add new tag</value>
   </data>
   <data name="responsible" xml:space="preserve">
-    <value>Ответственный</value>
+    <value>Жауапты</value>
   </data>
   <data name="requiredaction" xml:space="preserve">
-    <value>Необходимое действие</value>
+    <value>Қажетті әрекет</value>
   </data>
   <data name="personsinposition" xml:space="preserve">
     <value>Лауазымы бойынша жұмыс істейтін қызметкерлер</value>
   </data>
   <data name="remove_title" xml:space="preserve">
-    <value>Удалить элемент</value>
+    <value>Элементті жою</value>
+  </data>
+  <data name="audithtitle" xml:space="preserve">
+    <value>Аудит тарихы</value>
+  </data>
+  <data name="audithdate" xml:space="preserve">
+    <value>Күні</value>
+  </data>
+  <data name="audithUser" xml:space="preserve">
+    <value>Пайдаланушы</value>
+  </data>
+  <data name="audithevent" xml:space="preserve">
+    <value>Іс-шара</value>
+  </data>
+  <data name="comment" xml:space="preserve">
+    <value>Түсініктеме</value>
+  </data>
+  <data name="evt_created" xml:space="preserve">
+    <value>Жаңа аудит жасалды</value>
+  </data>
+  <data name="evt_updated" xml:space="preserve">
+    <value>Аудит жаңартылды/сақталды</value>
+  </data>
+  <data name="evt_submitted" xml:space="preserve">
+    <value>Аудит орындауға жіберілді</value>
+  </data>
+  <data name="evt_actioncompleted" xml:space="preserve">
+    <value>Қажетті әрекет аяқталды.</value>
+  </data>
+  <data name="evt_verified" xml:space="preserve">
+    <value>Аудит тексерілді</value>
+  </data>
+  <data name="evt_approved" xml:space="preserve">
+    <value>Аудит бекітілді</value>
+  </data>
+  <data name="evt_rejected" xml:space="preserve">
+    <value>Аудит қабылданбады</value>
+  </data>
+  <data name="evt_closed" xml:space="preserve">
+    <value>Аудит жабылды</value>
+  </data>
+  <data name="evt_unknown" xml:space="preserve">
+    <value>Белгісіз оқиға түрі</value>
+  </data>
+  <data name="delete" xml:space="preserve">
+    <value>Жою</value>
+  </data>
+  <data name="confirm_delete" xml:space="preserve">
+    <value>Жойғыңыз келетініне сенімдісіз бе?</value>
+  </data>
+  <data name="tags_required" xml:space="preserve">
+    <value>Кемінде бір тег қажет</value>
+  </data>
+  <data name="attachment_required" xml:space="preserve">
+    <value>Сізге аудит файлын жүктеп салу қажет.</value>
+  </data>
+  <data name="complete" xml:space="preserve">
+    <value>Тапсырманы аяқтау</value>
+  </data>
+  <data name="reject" xml:space="preserve">
+    <value>Қабылдамау</value>
+  </data>
+  <data name="reject2" xml:space="preserve">
+    <value>Аудитті қайтару</value>
+  </data>
+  <data name="rejectm" xml:space="preserve">
+    <value>Сіз аудитті қайтару себебін көрсетуіңіз керек (&gt;10 символ)</value>
+  </data>
+  <data name="cancel" xml:space="preserve">
+    <value>Жабу</value>
+  </data>
+  <data name="completemessage_required" xml:space="preserve">
+    <value>Аяқтау туралы түсініктеме енгізіңіз</value>
+  </data>
+  <data name="completemessage" xml:space="preserve">
+    <value>Аяқтау туралы түсініктеме</value>
+  </data>
+  <data name="verify" xml:space="preserve">
+    <value>Тексеруді растау</value>
+  </data>
+  <data name="verifyemessage_required" xml:space="preserve">
+    <value>Растау жазбасын енгізіңіз</value>
+  </data>
+  <data name="verifymessage" xml:space="preserve">
+    <value>Тексеру жазбасы</value>
+  </data>
+  <data name="approvalmessage1" xml:space="preserve">
+    <value>Бірінші мақұлдаушының түсініктемесі</value>
+  </data>
+  <data name="approvalmessage2" xml:space="preserve">
+    <value>Екінші мақұлдаушының түсініктемесі</value>
+  </data>
+  <data name="approve" xml:space="preserve">
+    <value>Мақұлдау</value>
   </data>
 </root>

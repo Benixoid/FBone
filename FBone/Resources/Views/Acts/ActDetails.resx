@@ -117,107 +117,232 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="acthdate" xml:space="preserve">
+    <value />
+  </data>
+  <data name="acthevent" xml:space="preserve">
+    <value />
+  </data>
+  <data name="acthtitle" xml:space="preserve">
+    <value />
+  </data>
+  <data name="acthUser" xml:space="preserve">
+    <value />
+  </data>
+  <data name="actnotes" xml:space="preserve">
+    <value />
+  </data>
+  <data name="acttype" xml:space="preserve">
+    <value />
+  </data>
+  <data name="approve" xml:space="preserve">
+    <value />
+  </data>
+  <data name="approved" xml:space="preserve">
+    <value />
+  </data>
   <data name="area" xml:space="preserve">
-    <value>Area</value>
+    <value />
   </data>
-  <data name="createdate" xml:space="preserve">
-    <value>Creation date</value>
+  <data name="bypasses" xml:space="preserve">
+    <value />
   </data>
-  <data name="actions" xml:space="preserve">
-    <value>Actions</value>
+  <data name="cause" xml:space="preserve">
+    <value />
   </data>
-  <data name="name" xml:space="preserve">
-    <value>Name</value>
+  <data name="close" xml:space="preserve">
+    <value />
   </data>
-  <data name="open" xml:space="preserve">
-    <value>Open</value>
+  <data name="crew" xml:space="preserve">
+    <value />
   </data>
-  <data name="status" xml:space="preserve">
-    <value>Status</value>
+  <data name="date" xml:space="preserve">
+    <value />
   </data>
-  <data name="clearfilter" xml:space="preserve">
-    <value>Reset filter</value>
+  <data name="delegate1" xml:space="preserve">
+    <value />
   </data>
-  <data name="closedate" xml:space="preserve">
-    <value>Close date</value>
+  <data name="device" xml:space="preserve">
+    <value />
   </data>
-  <data name="createNewBtn" xml:space="preserve">
-    <value>Create new audit</value>
+  <data name="edit" xml:space="preserve">
+    <value />
   </data>
-  <data name="facility" xml:space="preserve">
-    <value>Facility</value>
+  <data name="equipment" xml:space="preserve">
+    <value />
   </data>
-  <data name="filter" xml:space="preserve">
-    <value>Filter by:</value>
+  <data name="forces" xml:space="preserve">
+    <value />
   </data>
-  <data name="first" xml:space="preserve">
-    <value>First</value>
+  <data name="impact" xml:space="preserve">
+    <value />
   </data>
-  <data name="from" xml:space="preserve">
-    <value>from</value>
+  <data name="inactive" xml:space="preserve">
+    <value />
   </data>
-  <data name="last" xml:space="preserve">
-    <value>Last</value>
+  <data name="location" xml:space="preserve">
+    <value />
   </data>
-  <data name="next" xml:space="preserve">
-    <value>Next</value>
+  <data name="protect" xml:space="preserve">
+    <value />
   </data>
-  <data name="prev" xml:space="preserve">
-    <value>Prev</value>
+  <data name="reject" xml:space="preserve">
+    <value>Reject</value>
   </data>
-  <data name="show1" xml:space="preserve">
-    <value>Showed from</value>
+  <data name="s2of3" xml:space="preserve">
+    <value />
   </data>
-  <data name="show2" xml:space="preserve">
-    <value>till</value>
+  <data name="startapprove" xml:space="preserve">
+    <value />
   </data>
-  <data name="show3" xml:space="preserve">
-    <value>from</value>
+  <data name="taglistmessage" xml:space="preserve">
+    <value />
   </data>
-  <data name="show4" xml:space="preserve">
-    <value>items</value>
-  </data>
-  <data name="show5" xml:space="preserve">
-    <value>Page</value>
-  </data>
-  <data name="show6" xml:space="preserve">
-    <value>Show</value>
-  </data>
-  <data name="show7" xml:space="preserve">
-    <value>out of</value>
-  </data>
-  <data name="smartsearch" xml:space="preserve">
-    <value>Smart-search</value>
-  </data>
-  <data name="smartsearch_title" xml:space="preserve">
-    <value>Search on: Audit number, tag number</value>
-  </data>
-  <data name="statusverification" xml:space="preserve">
-    <value>On Verification</value>
-  </data>
-  <data name="statusclosed" xml:space="preserve">
-    <value>Closed</value>
-  </data>
-  <data name="statusdraft" xml:space="preserve">
-    <value>Draft</value>
-    <comment>1</comment>
-  </data>
-  <data name="statusinprogress" xml:space="preserve">
-    <value>In progress</value>
-  </data>
-  <data name="title" xml:space="preserve">
-    <value>Audits list</value>
-  </data>
-  <data name="to" xml:space="preserve">
-    <value>till</value>
+  <data name="tagname" xml:space="preserve">
+    <value />
   </data>
   <data name="unit" xml:space="preserve">
-    <value>Unit</value>
+    <value />
   </data>
-  <data name="tags" xml:space="preserve">
-    <value>Audit tags</value>
+  <data name="comment" xml:space="preserve">
+    <value />
+  </data>
+  <data name="inhibited" xml:space="preserve">
+    <value />
+  </data>
+  <data name="statusactive" xml:space="preserve">
+    <value />
+  </data>
+  <data name="statusclosed" xml:space="preserve">
+    <value />
+  </data>
+  <data name="statusdraft" xml:space="preserve">
+    <value />
   </data>
   <data name="statusinapproval" xml:space="preserve">
-    <value>On approval</value>
+    <value />
+  </data>
+  <data name="approvalstarted" xml:space="preserve">
+    <value />
+  </data>
+  <data name="approvedby" xml:space="preserve">
+    <value />
+  </data>
+  <data name="approvedh" xml:space="preserve">
+    <value />
+  </data>
+  <data name="closed" xml:space="preserve">
+    <value />
+  </data>
+  <data name="created" xml:space="preserve">
+    <value />
+  </data>
+  <data name="delegated" xml:space="preserve">
+    <value />
+  </data>
+  <data name="rejected" xml:space="preserve">
+    <value />
+  </data>
+  <data name="saved" xml:space="preserve">
+    <value />
+  </data>
+  <data name="unknown" xml:space="preserve">
+    <value />
+  </data>
+  <data name="translated" xml:space="preserve">
+    <value />
+  </data>
+  <data name="create" xml:space="preserve">
+    <value />
+  </data>
+  <data name="copyact" xml:space="preserve">
+    <value />
+  </data>
+  <data name="copied" xml:space="preserve">
+    <value />
+  </data>
+  <data name="statusapproved" xml:space="preserve">
+    <value />
+  </data>
+  <data name="statusinapprovaladd" xml:space="preserve">
+    <value />
+  </data>
+  <data name="approvalstartedadd" xml:space="preserve">
+    <value />
+  </data>
+  <data name="approveradd" xml:space="preserve">
+    <value />
+  </data>
+  <data name="startact" xml:space="preserve">
+    <value />
+  </data>
+  <data name="started" xml:space="preserve">
+    <value />
+  </data>
+  <data name="cantclose" xml:space="preserve">
+    <value />
+  </data>
+  <data name="close_confirm" xml:space="preserve">
+    <value />
+  </data>
+  <data name="backtolist" xml:space="preserve">
+    <value />
+  </data>
+  <data name="printact" xml:space="preserve">
+    <value />
+  </data>
+  <data name="saveact" xml:space="preserve">
+    <value />
+  </data>
+  <data name="addfgtags" xml:space="preserve">
+    <value />
+  </data>
+  <data name="title_fgblock" xml:space="preserve">
+    <value />
+  </data>
+  <data name="confirm_delete" xml:space="preserve">
+    <value />
+  </data>
+  <data name="confirm_return" xml:space="preserve">
+    <value />
+  </data>
+  <data name="delete" xml:space="preserve">
+    <value />
+  </data>
+  <data name="returndraft" xml:space="preserve">
+    <value />
+  </data>
+  <data name="returntodraft" xml:space="preserve">
+    <value />
+  </data>
+  <data name="cancel" xml:space="preserve">
+    <value />
+  </data>
+  <data name="reject2" xml:space="preserve">
+    <value />
+  </data>
+  <data name="rejectm" xml:space="preserve">
+    <value />
+  </data>
+  <data name="add_title" xml:space="preserve">
+    <value />
+  </data>
+  <data name="remove_title" xml:space="preserve">
+    <value />
+  </data>
+  <data name="delegate2" xml:space="preserve">
+    <value />
+  </data>
+  <data name="delegatem" xml:space="preserve">
+    <value />
+  </data>
+  <data name="nitifyMOC" xml:space="preserve">
+    <value />
+  </data>
+  <data name="manual" xml:space="preserve">
+    <value />
+  </data>
+  <data name="completemessage_required" xml:space="preserve">
+    <value />
   </data>
 </root>

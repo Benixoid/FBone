@@ -207,4 +207,97 @@
   <data name="remove_title" xml:space="preserve">
     <value>Удалить элемент</value>
   </data>
+  <data name="audithtitle" xml:space="preserve">
+    <value>История аудита</value>
+  </data>
+  <data name="audithdate" xml:space="preserve">
+    <value>Дата события</value>
+  </data>
+  <data name="audithUser" xml:space="preserve">
+    <value>Пользователь</value>
+  </data>
+  <data name="audithevent" xml:space="preserve">
+    <value>Событие</value>
+  </data>
+  <data name="comment" xml:space="preserve">
+    <value>Комментарий</value>
+  </data>
+  <data name="evt_created" xml:space="preserve">
+    <value>Создан новый аудит</value>
+  </data>
+  <data name="evt_updated" xml:space="preserve">
+    <value>Аудит обновлен/сохранен</value>
+  </data>
+  <data name="evt_submitted" xml:space="preserve">
+    <value>Аудит отправлен на исполнение</value>
+  </data>
+  <data name="evt_actioncompleted" xml:space="preserve">
+    <value>Необходимое действие выполнено</value>
+  </data>
+  <data name="evt_verified" xml:space="preserve">
+    <value>Аудит проверен</value>
+  </data>
+  <data name="evt_approved" xml:space="preserve">
+    <value>Аудит утвержден</value>
+  </data>
+  <data name="evt_rejected" xml:space="preserve">
+    <value>Аудит отклонен</value>
+  </data>
+  <data name="evt_closed" xml:space="preserve">
+    <value>Аудит закрыт</value>
+  </data>
+  <data name="evt_unknown" xml:space="preserve">
+    <value>Неизвестный тип события</value>
+  </data>
+  <data name="delete" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="confirm_delete" xml:space="preserve">
+    <value>Вы действительно хотите удалить?</value>
+  </data>
+  <data name="tags_required" xml:space="preserve">
+    <value>Требуется хотя бы один тег</value>
+  </data>
+  <data name="attachment_required" xml:space="preserve">
+    <value>Необходимо загрузить аудит файл</value>
+  </data>
+  <data name="complete" xml:space="preserve">
+    <value>Завершить задачу</value>
+  </data>
+  <data name="reject" xml:space="preserve">
+    <value>Отклонить</value>
+  </data>
+  <data name="reject2" xml:space="preserve">
+    <value>Возврат аудита</value>
+  </data>
+  <data name="rejectm" xml:space="preserve">
+    <value>Для отклонения необходимо указать причину (&gt;10 символов)</value>
+  </data>
+  <data name="cancel" xml:space="preserve">
+    <value>Закрыть</value>
+  </data>
+  <data name="completemessage_required" xml:space="preserve">
+    <value>Пожалуйста, введите комментарий о завершении</value>
+  </data>
+  <data name="completemessage" xml:space="preserve">
+    <value>Комментарий о завершении</value>
+  </data>
+  <data name="verify" xml:space="preserve">
+    <value>Подтвердить проверку</value>
+  </data>
+  <data name="verifyemessage_required" xml:space="preserve">
+    <value>Пожалуйста, введите проверочное примечание</value>
+  </data>
+  <data name="verifymessage" xml:space="preserve">
+    <value>Примечание о проверке</value>
+  </data>
+  <data name="approvalmessage1" xml:space="preserve">
+    <value>Комментарий первого утверждающего</value>
+  </data>
+  <data name="approvalmessage2" xml:space="preserve">
+    <value>Комментарий второго утверждающего</value>
+  </data>
+  <data name="approve" xml:space="preserve">
+    <value>Утвердить</value>
+  </data>
 </root>

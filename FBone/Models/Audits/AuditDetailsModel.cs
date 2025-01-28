@@ -1,5 +1,7 @@
-﻿using FBone.Database.Entities;
+﻿using DocumentFormat.OpenXml.Office2010.ExcelAc;
+using FBone.Database.Entities;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Collections.Generic;
 
 namespace FBone.Models.Audits
 {
@@ -13,6 +15,10 @@ namespace FBone.Models.Audits
         public int FileId { get; set; }
         public string FileName { get; set; }
         public bool CanEdit { get; set; }
+        public bool CanComplete { get; set; }
+        public bool CanVerify { get; set; }
+        public bool CanApprove1 { get; set; }
+        public bool CanApprove2 { get; set; }
         public int PageIndex { get; set; }
         public int ItemPerPage { get; set; }
         public int SelectedFacilityId { get; set; }
@@ -26,5 +32,6 @@ namespace FBone.Models.Audits
         public SelectList Tags { get; set; }
         public SelectList Positions { get; set; }
         public string UsersInPosition { get; set; }
+        public List<AuditHistory> AuditHistory { get; set; }
     }
 }

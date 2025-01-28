@@ -20,25 +20,34 @@ namespace FBone.Database.Entities
         [Display(Name = "Shift date")]
         [DataType(DataType.Date)]
         [Required]
-        public DateTime ShiftDate { get; set; }
-        public DateTime? CloseDate { get; set; }        
+        public DateTime ShiftDate { get; set; }        
         public int ActId { get; set; }
         public tAct Act { get; set; }
+        
         [Required]
         public string RequiredActionNote { get; set; }
         public string ActionTakenNote { get; set; }
-        public string VerificationNote { get; set; }
-        public string SupervisorNote { get; set; }
-        public int ActionOwnerPositionId { get; set; }
-        public tPosition ActionOwnerPosition { get; set; }
         public int? CompletedByUserId { get; set; }
         public tUser CompletedByUser { get; set; }
+        public int ActionOwnerPositionId { get; set; }
+        public tPosition ActionOwnerPosition { get; set; }
+        public DateTime? ActionCompletedOn { get; set; }
+
+        public string VerificationNote { get; set; }        
         public int? VerifiedByUserId { get; set; }
         public tUser VerifiedByUser { get; set; }
+        public DateTime? VerifiedOn { get; set; }
+
+        public string Approval1Note { get; set; }
+        public string Approval2Note { get; set; }
         public int? Approved1ByUserId { get; set; }
         public tUser Approved1ByUser { get; set; }
         public int? Approved2ByUserId { get; set; }
         public tUser Approved2ByUser { get; set; }
+        public DateTime? Approved1On { get; set; }
+        public DateTime? Approved2On { get; set; }
+        [Required]
         public string Tags { get; set; }
+        public DateTime? CloseDate { get; set; }
     }
 }
