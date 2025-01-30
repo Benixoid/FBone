@@ -127,7 +127,7 @@
         </div>
         <div class="col-sm-2">
             <label for="actid">@localizer["act"]:</label>
-            <select asp-for="@Model.Audit.ActId" class="form-select" asp-items="@Model.Acts" id="actid" disabled="@(disabled != "" ? "disabled" : null)"></select>
+            <select asp-for="@Model.Audit.ActId" class="form-select" asp-items="@Model.Acts" id="actid" onchange="loadTags()" disabled="@(disabled != "" ? "disabled" : null)"></select>
         </div>
     </div>
     <div class="row" style="padding: 10px;">
