@@ -23,7 +23,7 @@ namespace FBone.Controllers.api
         [HttpGet("GetActIdsByShiftDateAndArea")]        
         public List<int> GetActIdsByShiftDateAndArea([FromQuery] int areaid, [FromQuery] DateTime shiftDate)
         {
-            return _dataManager.tAct.getActByShiftDateAndArea(shiftDate, areaid).Select(i=>i.Id).ToList();
+            return _dataManager.tAct.getActListByShiftDateAndArea(shiftDate, areaid).Select(i=>i.Id).ToList();
         }
 
         [HttpGet("GetActTags")]

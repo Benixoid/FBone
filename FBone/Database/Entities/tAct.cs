@@ -97,6 +97,7 @@ namespace FBone.Database.Entities
         public bool Flag72h { get; set; }
         public bool MOCflag { get; set; }
         public bool isIPL { get; set; }
+        public bool isASD { get; set; }
         public int OrderColumn { get; set; }
 
     }

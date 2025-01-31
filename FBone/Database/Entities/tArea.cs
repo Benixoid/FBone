@@ -135,5 +135,8 @@ namespace FBone.Database.Entities
         [Display(Name = "Audit verificator position")]
         public int? VerificatorId { get; set; }
         public tPosition Verificator { get; set; }
+        [Display(Name = "ASD tags(acts) approver")]
+        public int? AsdApproverId { get; set; }
+        public tPosition AsdApprover { get; set; }
     }
 }

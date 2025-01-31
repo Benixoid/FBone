@@ -284,7 +284,15 @@ namespace FBone.Database.DB_Helper
             return false;
         }
 
-        internal List<tAct> getActByShiftDateAndArea(DateTime shiftDate, int areaId)
+        public bool isASD(int actid)
+        {
+            var tags = _context.tActItems.Where(i => i.ActId == actid).AsNoTracking().Select(i => i.TagName).ToList();
+            if (tags.Any())
+                return _context.Tag.Where(i => tags.Contains(i.Tagnumber) && i.isASD).Any();
+            return false;
+        }
+
+        internal List<tAct> getActListByShiftDateAndArea(DateTime shiftDate, int areaId)
         {
             DateTime start = new DateTime(shiftDate.Year, shiftDate.Month, shiftDate.Day, 6, 0, 0);
             DateTime end = start.AddDays(1);

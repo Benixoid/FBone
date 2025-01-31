@@ -416,7 +416,7 @@ namespace FBone.Controllers
             model.Areas = new SelectList(_dataManager.tArea.GetAreasByFacility(model.Audit.FacilityId),"Id", "Name_EN");
             var positions = _dataManager.tPosition.GetActivePositions();
             model.Positions = new SelectList(positions, "Id", "Name");
-            var actList = _dataManager.tAct.getActByShiftDateAndArea(model.Audit.ShiftDate, model.Audit.AreaId).ToList();
+            var actList = _dataManager.tAct.getActListByShiftDateAndArea(model.Audit.ShiftDate, model.Audit.AreaId).ToList();
             
             List<tActItems> actItems = new();
             if (actList.Count > 0) {
@@ -444,7 +444,7 @@ namespace FBone.Controllers
                 if (model.Audit.StatusCode == (int)Enums.AuditStatusCode.OnVerification)
                 {
                     var verificatorId = _dataManager.tArea.GetAreaById(model.Audit.AreaId).VerificatorId ?? default;
-                    model.CanVerify = IsUserOrB2B(verificatorId,user.Id);
+                    model.CanVerify = IsUserOrB2B(verificatorId, user.Id);
                 }
                     
                 if (model.Audit.StatusCode == (int)Enums.AuditStatusCode.OnApproval1)

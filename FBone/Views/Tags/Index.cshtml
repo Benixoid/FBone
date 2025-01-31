@@ -52,6 +52,9 @@
                 @Html.DisplayNameFor(model => model.Tags.FirstOrDefault().isIPL)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.Tags.FirstOrDefault().isASD)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.Tags.FirstOrDefault().isForBulkInsert)
             </th>
         </tr>
@@ -92,6 +95,9 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.isIPL)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.isASD)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.isForBulkInsert)

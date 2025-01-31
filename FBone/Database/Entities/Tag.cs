@@ -27,6 +27,6 @@ namespace FBone.Database.Entities
         public bool isFG { get; set; }
         public bool isIPL { get; set; }
         public bool isForBulkInsert { get; set; }
-
+        public bool isASD { get; set; }
     }
 }

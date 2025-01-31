@@ -78,6 +78,11 @@
                     <input class="form-check-input" asp-for="@Model.Tag.isForBulkInsert" /> @Html.DisplayNameFor(model => model.Tag.isForBulkInsert)
                 </label>
             </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="@Model.Tag.isASD" /> @Html.DisplayNameFor(model => model.Tag.isASD)
+                </label>
+            </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
                 <a asp-action="Index" asp-route-SearchString="@Model.SearchString" class="btn btn-secondary">Back to List</a>

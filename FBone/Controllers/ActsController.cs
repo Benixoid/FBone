@@ -1047,7 +1047,21 @@ namespace FBone.Controllers
 
             //if current user can approve
             if (model.Act.StatusId == (int) Enums.ActStatusCode.InApproval)
-                model.CanApprove = CanApprove(user, act) != 0;
+            {
+                if (model.Act.isASD && model.Act.is1Approved && !model.Act.is2Approved)
+                {
+                    var userAsd = _dataManager.tUser.GetUserById(model.Act.Approver2);
+                    if (user.PositionId == userAsd.PositionId)
+                    {
+                        //model.Act.Approver2 = user.Id;
+                        model.CanApprove = true;
+                        act.Approver2 = user.Id;
+                        _dataManager.tAct.Save(act);
+                    }
+                }
+                else 
+                    model.CanApprove = CanApprove(user, act) != 0;
+            }
 
             //if current user can approve next shift
             if (model.Act.StatusId == (int) Enums.ActStatusCode.InApprovalAdd && model.Act.ApproverAdd != 0 && model.Act.ApproverPosAdd != 0)
@@ -1121,6 +1135,53 @@ namespace FBone.Controllers
             }
             return res;
         }
+        private void PrepareIfAsdTagsExist(tAct act)
+        {
+            bool isASD = _dataManager.tAct.isASD(act.Id);
+            if (!isASD)            
+                return;
+            var area = _dataManager.tArea.GetAreaById(act.AreaId);
+            
+            if (area.AsdApproverId == null)
+            {
+                //TODO: notify ???
+                return;
+            }
+            var asdUsers = _dataManager.tUser.GetUsersByPosition(area.AsdApproverId ?? default, "EN");
+            if (!asdUsers.Any())
+            {
+                //TODO: notify ???
+                return;
+            }
+            if (act.ApproverPos7 != 0)
+            {
+                //TODO: notify ???
+                return;
+            }
+            ShiftApproversDown(act);
+            act.isASD = true;            
+            act.ApproverPos2 = area.AsdApproverId ?? default;
+            act.Approver2 = asdUsers.FirstOrDefault().Id;
+            _dataManager.tAct.Save(act);
+        }
+
+        private void ShiftApproversDown(tAct act)
+        {
+            act.Approver7 = act.Approver6;
+            act.ApproverPos7 = act.ApproverPos6;
+
+            act.Approver6 = act.Approver5;
+            act.ApproverPos6 = act.ApproverPos5;
+
+            act.Approver5 = act.Approver4;
+            act.ApproverPos5 = act.ApproverPos4;
+
+            act.Approver4 = act.Approver3;
+            act.ApproverPos4 = act.ApproverPos3;
+
+            act.Approver3 = act.Approver2;
+            act.ApproverPos3 = act.ApproverPos2;
+        }
         // POST: tActs/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -1169,8 +1230,9 @@ namespace FBone.Controllers
                             act.isIPL = true;
                             _dataManager.tAct.Save(act);
                         }
+                        PrepareIfAsdTagsExist(act);                        
                         _dataManager.ActHistory.AddHistory(act.Id, user.Id, (int)Enums.ActHistoryActionCodes.approvalstarted, "");
-                        //Notify first approver                        
+                        //Notify first approver
                         var mailto = new List<MailAddress> { new MailAddress(_dataManager.tUser.GetUserById(act.Approver1).Email) };
                         
                         string actURL = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/Acts/ActDetails/{act.Id}";
