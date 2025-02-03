@@ -1,4 +1,6 @@
-﻿using FBone.Database;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using FastReport.Utils;
+using FBone.Database;
 using FBone.Database.Entities;
 using FBone.Models.Audits;
 using FBone.Service;
@@ -14,6 +16,7 @@ using System.Linq;
 using System.Net.Http.Headers;
 using System.Net.Mail;
 using System.Threading.Tasks;
+using Config = FBone.Service.Config;
 
 namespace FBone.Controllers
 {
@@ -171,13 +174,33 @@ namespace FBone.Controllers
 
             ProceedEmailPreparation(audit.Id, "AuditCompleted", mailto, null);            
         }
-        internal void NotifyOwnerOnReject(Audit audit)
+        internal void NotifyOnReject(Audit audit)
         {
-            var mailto = new List<MailAddress>()
+            var mailto = new List<MailAddress>();
+            List<MailAddress> mailcc = null;
+            if (audit.StatusCode == (int)Enums.AuditStatusCode.Draft)
             {
-                new MailAddress(audit.CreatedByUser.Email)
-            };
-            ProceedEmailPreparation(audit.Id, "AuditRejected", mailto, null);
+                mailto.Add(new MailAddress(audit.CreatedByUser.Email));
+            } else if (audit.StatusCode == (int)Enums.AuditStatusCode.InProgress)
+            {
+                var actionUsers = _dataManager.tUser.GetUsersByPosition(audit.ActionOwnerPositionId, "EN");
+                foreach (var useritem in actionUsers)
+                {
+                    mailto.Add(new MailAddress(useritem.Email));
+                }
+                mailcc = [new MailAddress(audit.CreatedByUser.Email)];
+            }
+            else if (audit.StatusCode == (int)Enums.AuditStatusCode.OnVerification)
+            {
+                var verificatorId = _dataManager.tArea.GetAreaById(audit.AreaId).VerificatorId ?? default;
+                var verificatorUsers = _dataManager.tUser.GetUsersByPosition(verificatorId, "EN");
+                foreach (var useritem in verificatorUsers)
+                {
+                    mailto.Add(new MailAddress(useritem.Email));
+                }
+                mailcc = [new MailAddress(audit.CreatedByUser.Email)];
+            }
+            ProceedEmailPreparation(audit.Id, "AuditRejected", mailto, mailcc);
         }
         internal void NotifyApprover2(Audit audit)
         {
@@ -307,6 +330,31 @@ namespace FBone.Controllers
             }
             return null;
         }
+        [HttpPost]
+        public IActionResult Reject(int auditId, string rejectcomment)
+        {
+            var user = _dataManager.tUser.GetUserByCAI(User.Identity.Name);
+            var audit = _dataManager.AuditTable.GetAuditById(auditId);
+            var verificatorId = _dataManager.tArea.GetAreaById(audit.AreaId).VerificatorId ?? default;
+            audit.CreatedByUser = null;
+            var canReject =
+                (audit.StatusCode == (int)Enums.AuditStatusCode.InProgress && IsUserOrB2B(audit.ActionOwnerPositionId, user.Id)) ||
+                (audit.StatusCode == (int)Enums.AuditStatusCode.OnVerification && IsUserOrB2B(verificatorId, user.Id)) ||
+                (audit.StatusCode == (int)Enums.AuditStatusCode.OnApproval1 && IsUserOrB2B(Config.AuditApproverPosition1, user.Id)) ||
+                (audit.StatusCode == (int)Enums.AuditStatusCode.OnApproval2 && IsUserOrB2B(Config.AuditApproverPosition1, user.Id));
+            if (!canReject)
+            {
+                return RedirectToAction("Denied", "Access");
+            }
+
+            if (Config.AuditRejectMode.ToUpper().Equals("STEP"))
+                RejectOneStepBack(audit);
+            else
+                RejectToDraft(audit);
+            NotifyOnReject(audit);
+            _dataManager.AuditTable.CreateAuditHistoryRecord(audit.Id, user.Id, (int)Enums.AuditHistoryCode.Rejected, rejectcomment);
+            return RedirectToAction("Index");
+        }
         public IActionResult RegisterAudit()
         {
             var userHelper = new UserHelper(_dataManager);
@@ -374,28 +422,42 @@ namespace FBone.Controllers
             model.AuditList = auditList;
             return View(model);
         }
-        [HttpPost]
-        public IActionResult Reject(int auditId, string rejectcomment)
+        internal int GetPrevState(Audit audit)
         {
-            var user = _dataManager.tUser.GetUserByCAI(User.Identity.Name);
-            var audit = _dataManager.AuditTable.GetAuditById(auditId);
-            var verificatorId = _dataManager.tArea.GetAreaById(audit.AreaId).VerificatorId ?? default;            
-            audit.CreatedByUser = null;
-            var canReject = 
-                (audit.StatusCode == (int)Enums.AuditStatusCode.InProgress && IsUserOrB2B(audit.ActionOwnerPositionId, user.Id)) ||
-                (audit.StatusCode == (int)Enums.AuditStatusCode.OnVerification && IsUserOrB2B(verificatorId, user.Id)) ||
-                (audit.StatusCode == (int)Enums.AuditStatusCode.OnApproval1 && IsUserOrB2B(Config.AuditApproverPosition1, user.Id)) ||
-                (audit.StatusCode == (int)Enums.AuditStatusCode.OnApproval2 && IsUserOrB2B(Config.AuditApproverPosition1, user.Id));
-            if (!canReject)
+            int res;
+            if (audit.StatusCode == (int)Enums.AuditStatusCode.OnApproval1 || audit.StatusCode == (int)Enums.AuditStatusCode.OnApproval2)
             {
-                return RedirectToAction("Denied", "Access");
+                res = (int)Enums.AuditStatusCode.OnVerification;
+                audit.Approved1ByUserId = null;
+                audit.Approved2ByUserId = null;
+                audit.Approved1On = null;
+                audit.Approved2On = null;
+            }                
+            else if (audit.StatusCode == (int)Enums.AuditStatusCode.OnVerification)
+            {
+                res = (int)Enums.AuditStatusCode.InProgress;
+                audit.VerifiedByUserId = null;
+                audit.VerifiedOn = null;
             }
+            else
+            {
+                res = (int)Enums.AuditStatusCode.Draft;
+                audit.CompletedByUserId = null;
+                audit.ActionCompletedOn = null;
+            }                
+            return res;
+        }
+        public void RejectOneStepBack(Audit audit)
+        {
+            var newState = GetPrevState(audit);
+            audit.StatusCode = newState;
+            _dataManager.AuditTable.Save(audit);
+        }
+        public void RejectToDraft(Audit audit)
+        {            
             audit.StatusCode = (int)Enums.AuditStatusCode.Draft;
             ClearAudit(audit);
             _dataManager.AuditTable.Save(audit);
-            _dataManager.AuditTable.CreateAuditHistoryRecord(audit.Id,user.Id,(int)Enums.AuditHistoryCode.Rejected,rejectcomment);
-            NotifyOwnerOnReject(audit);
-            return RedirectToAction("Index");
         }
         private void ClearAudit(Audit audit)
         {

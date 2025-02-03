@@ -21,7 +21,7 @@
         public static int ReportingDefaultReportIt { get; set; }
         public static int AuditApproverPosition1 { get; set; }
         public static int AuditApproverPosition2 { get; set; }
-
+        public static string AuditRejectMode { get; set; }
         public static string GetConnectionString()
         {
             string conn_string = "";
