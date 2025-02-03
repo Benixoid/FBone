@@ -300,4 +300,13 @@
   <data name="approve" xml:space="preserve">
     <value>Утвердить</value>
   </data>
+  <data name="addall_title" xml:space="preserve">
+    <value>Добавить все теги из акта</value>
+  </data>
+  <data name="duedate" xml:space="preserve">
+    <value>Срок выполнения</value>
+  </data>
+  <data name="linktoverdocs" xml:space="preserve">
+    <value>Ссылка на подтверждающие документы</value>
+  </data>
 </root>

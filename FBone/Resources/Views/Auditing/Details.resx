@@ -300,4 +300,13 @@
   <data name="approve" xml:space="preserve">
     <value>Approve</value>
   </data>
+  <data name="addall_title" xml:space="preserve">
+    <value>Add all tags from act</value>
+  </data>
+  <data name="duedate" xml:space="preserve">
+    <value>Due date</value>
+  </data>
+  <data name="linktoverdocs" xml:space="preserve">
+    <value>Link to verification documents</value>
+  </data>
 </root>

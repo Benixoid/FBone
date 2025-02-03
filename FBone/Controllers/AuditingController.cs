@@ -40,7 +40,7 @@ namespace FBone.Controllers
             _dataManager.AuditTable.CreateAuditHistoryRecord(audit.Id, user.Id, (int)Enums.AuditHistoryCode.Submitted, "");
             NotifyActionOwner(audit);
         }        
-        public IActionResult CompleteAction(int auditId, string message)
+        public IActionResult CompleteAction(int auditId, string message, string link)
         {
             message = message.Replace("/-NN-/", Environment.NewLine);
             var audit = _dataManager.AuditTable.GetAuditById(auditId);
@@ -52,6 +52,7 @@ namespace FBone.Controllers
                 return RedirectToAction("Denied", "Access");
 
             audit.ActionTakenNote = message;
+            audit.LinkToVerificationDocs = link;
             audit.CompletedByUserId = user.Id;
             audit.ActionCompletedOn = DateTime.Now;
             audit.StatusCode=(int)Enums.AuditStatusCode.OnVerification;
@@ -420,14 +421,17 @@ namespace FBone.Controllers
             
             List<tActItems> actItems = new();
             if (actList.Count > 0) {
-                model.Acts = new SelectList(actList, "Id", "Id");
-                actItems = _dataManager.tActItems.GetActItemsByActId(actList[0].Id).ToList();
-                model.Tags = new SelectList(actItems, "TagName", "TagName");
+                model.Acts = new SelectList(actList, "Id", "Id");                
                 if (model.Audit.Id == 0)
                 {
                     model.Audit.ActId = actList[0].Id;
-                    //model.Audit.Tags = "111/-/222/-/333/-/444";
+                    actItems = _dataManager.tActItems.GetActItemsByActId(actList[0].Id).ToList();                    
                 }
+                else
+                {
+                    actItems = _dataManager.tActItems.GetActItemsByActId(model.Audit.ActId).ToList();
+                }
+                model.Tags = new SelectList(actItems, "TagName", "TagName");
             }
             model.AuditHistory = new List<AuditHistory>();
             if (model.Audit.Id != 0)

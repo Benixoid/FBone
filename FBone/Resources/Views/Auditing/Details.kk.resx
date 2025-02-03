@@ -300,4 +300,13 @@
   <data name="approve" xml:space="preserve">
     <value>Мақұлдау</value>
   </data>
+  <data name="addall_title" xml:space="preserve">
+    <value>Барлық тегтерді акттен қосу</value>
+  </data>
+  <data name="duedate" xml:space="preserve">
+    <value>Аяқталу күні</value>
+  </data>
+  <data name="linktoverdocs" xml:space="preserve">
+    <value>Тексеру құжаттарына сілтеме</value>
+  </data>
 </root>

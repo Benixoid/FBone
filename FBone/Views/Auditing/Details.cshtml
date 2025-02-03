@@ -109,7 +109,12 @@
                 <label asp-for="@Model.Audit.CloseDate" class="control-label">@localizer["closedat"]</label>
                 <input asp-for="@Model.Audit.CloseDate" class="form-control" disabled />
             </div>
-        }        
+        }     
+        <div class="col-sm-2">
+            <label for="DueDate">@localizer["duedate"]</label>
+            <input asp-for="@Model.Audit.DueDate" id="DueDate" class="form-control" disabled="@(disabled != "" ? "disabled" : null)" />
+            <span asp-validation-for="@Model.Audit.DueDate" class="text-danger"></span>
+        </div>
     </div>
     <div class="row">
         <div class="col-sm-2">
@@ -177,7 +182,14 @@
                     <svg width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
                         <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
                     </svg>
-                </button><br>
+                </button>
+                <button title="@localizer["addall_title"]" type="button" style="@disabledStyle" class="btn btn-outline-secondary btn-sm" aria-label="Left Align" onclick="AddAllLi();" @disabled>
+                    <svg width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+                        <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5" />
+                        <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z" />
+                    </svg>
+                </button>
+                <br>
                 <span asp-validation-for="@Model.Audit.Tags" class="text-danger"></span>
             </div>
             <ul id="ultaglist">
@@ -226,6 +238,21 @@
                 <label for="requiredaction">@localizer["completemessage"]</label>
                 <textarea asp-for="@Model.Audit.ActionTakenNote" class="form-control" rows="4" id="completemessage" disabled="@(disabled_action != "" ? "disabled" : null)"></textarea>                
             </div>
+        </div>
+        <div class="row">
+            @if (Model.CanComplete && Model.Audit.StatusCode == (int)Enums.AuditStatusCode.InProgress)
+            {
+                <div class="form-group">
+                    <label asp-for="@Model.Audit.LinkToVerificationDocs" class="control-label">@localizer["linktoverdocs"]</label>
+                    <input asp-for="@Model.Audit.LinkToVerificationDocs" id="linktoverdocs" class="form-control" />
+                </div>
+            }
+            else {
+                <div class="form-group">
+                    <label asp-for="@Model.Audit.Name" class="control-label">@localizer["linktoverdocs"]</label>
+                    <a target="_blank" href="@Model.Audit.LinkToVerificationDocs">@Model.Audit.LinkToVerificationDocs</a>                    
+                </div>
+            }            
         </div>
     }
     
@@ -449,13 +476,14 @@
         function CompleteAction(id){
             var host = "@Model.URL";
             var completemessage = $("#completemessage");
+            var linktoverdocs = $("#linktoverdocs");
             if (!completemessage.val())
             {
                 bootbox.alert("@localizer["completemessage_required"]");
                 return;
             }
             var message = remove_linebreaks(completemessage.val());
-            var url1 = host + "/Auditing/CompleteAction/?auditid=" + id + "&message=" + message;
+            var url1 = host + "/Auditing/CompleteAction/?auditid=" + id + "&message=" + message + "&link=" + linktoverdocs.val();
             window.location.href = url1;            
         }
 
@@ -496,32 +524,56 @@
             audittags.val('');
         }
 
-        function AddNewLi(){
-            
+        function AddAllLi(){
+            clearAllLi();
             var audittags = $("#audittags");
-            var tagList = [];
-            if (audittags.val().length>0)
-                tagList = audittags.val().split("/-/");
-            console.log(tagList);
+            var ultaglist = $("#ultaglist");
+            //var cmbActTags = $("#acttags");
+            //var arr = [];
+            //cmbActTags.each(function(){
+                //arr.push(this.value);
+            //});
+            //console.log(arr);
+            var arr = [];
+            var bb = $('#acttags option');
+            bb.each(function(){
+                var val = this.label
+                arr.push(val);
+                ultaglist.append(getLi(val));
+            });
+            if (arr.length>0)
+            {
+                audittags.val(arr.join('/-/'));
+            }                
+        }
+
+        function AddNewLi() {
             var cmbActTags = $("#acttags");
-            var itemToAdd = cmbActTags.val();            
-            var index = tagList.indexOf('' + itemToAdd);
-            if (index === -1){
-                tagList.push(itemToAdd);
-                console.log(tagList.length);
-                if (tagList.length>1)
-                    audittags.val(tagList.join('/-/'));
-                else
-                    audittags.val(itemToAdd);
-                var ultaglist = $("#ultaglist");
-                ultaglist.append(getLi(itemToAdd));
-            }
+            if (cmbActTags.val())
+            {
+                var audittags = $("#audittags");
+                var tagList = [];
+                if (audittags.val().length>0)
+                    tagList = audittags.val().split("/-/");
+
+                var itemToAdd = cmbActTags.val();
+                var index = tagList.indexOf('' + itemToAdd);
+                if (index === -1){
+                    tagList.push(itemToAdd);
+                    if (tagList.length>1)
+                        audittags.val(tagList.join('/-/'));
+                    else
+                        audittags.val(itemToAdd);
+                    var ultaglist = $("#ultaglist");
+                    ultaglist.append(getLi(itemToAdd));
+                }
+            }            
         }
 
         function getLi(tagName) {
             var title="@localizer["remove_title"]"
             var li = '<li id="' + tagName +'">' + tagName;
-            li += '<button title="' + title + '" type="button" class="btn btn-outline-secondary btn-sm" aria-label="Left Align" onclick=\'RemoveLi("'+tagName+'");\'>';
+            li += '&nbsp;<button title="' + title + '" type="button" class="btn btn-outline-secondary btn-sm" aria-label="Left Align" onclick=\'RemoveLi("'+tagName+'");\'>';
             li += '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dash" viewBox="0 0 16 16"><path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z"></path></svg></button></li>';
             
             return li;

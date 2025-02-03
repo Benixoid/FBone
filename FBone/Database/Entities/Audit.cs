@@ -49,5 +49,8 @@ namespace FBone.Database.Entities
         [Required]
         public string Tags { get; set; }
         public DateTime? CloseDate { get; set; }
+        [DataType(DataType.Date)]
+        public DateTime? DueDate { get; set; }
+        public string LinkToVerificationDocs { get; set; }
     }
 }
