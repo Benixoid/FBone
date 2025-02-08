@@ -388,15 +388,6 @@ namespace FBone.Controllers
         }
         public IActionResult Index(AuditListModel val)
         {
-            var mailto = new List<MailAddress>();            
-            mailto.Add(new MailAddress("test1@mail.ru"));
-            mailto.Add(new MailAddress("test2@mail.ru"));
-            mailto.Add(new MailAddress("test3@mail.ru"));
-            mailto.Add(new MailAddress("test1@mail.ru"));
-            mailto.Add(new MailAddress("test1@mail.ru"));
-            mailto.Add(new MailAddress("test1@mail.ru"));
-            RemoveDuplicateEmails(mailto);
-
             var user = _dataManager.tUser.GetUserByCAI(User.Identity.Name);
             var listPageSizeItems = GeneralHelper.GetDefaultPageItems();
             var formatS = "dd-MM-yyyy";
