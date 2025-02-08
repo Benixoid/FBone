@@ -81,8 +81,7 @@ namespace FBone.Database.DB_Helper
             if (!string.IsNullOrEmpty(val.SmartSearch))
             {
                 prepList = prepList.Where(i =>
-                    i.Id.ToString().Contains(val.SmartSearch)                    
-                    || i.Name.Contains(val.SmartSearch)
+                    i.Id.ToString().Contains(val.SmartSearch)
                     || i.Tags.Contains(val.SmartSearch)                
                 );
             }

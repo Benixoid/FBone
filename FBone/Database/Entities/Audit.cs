@@ -6,9 +6,7 @@ namespace FBone.Database.Entities
 {
     public class Audit
     {
-        public int Id { get; set; }
-        [Required]
-        public string Name { get; set; }
+        public int Id { get; set; }        
         public DateTime CreatedAt { get; set; }
         public int CreatedByUserID { get; set; }
         public tUser CreatedByUser { get; set; }

@@ -86,7 +86,7 @@
         <input type="hidden" asp-for="@Model.Audit.Approval2Note" />
     }
 
-    <div class="row">
+    @* <div class="row">
         <div class="col-sm-5">
             <div class="form-group">
                 <label asp-for="@Model.Audit.Name" class="control-label">@localizer["name"]</label>
@@ -94,7 +94,7 @@
                 <span asp-validation-for="@Model.Audit.Name" class="text-danger"></span>
             </div>
         </div>
-    </div>    
+    </div>     *@
     <div class="row">
         <div class="col-sm-2">
             <label asp-for="@Model.Audit.CreatedAt" class="control-label">@localizer["createdat"]</label>
@@ -249,7 +249,7 @@
             }
             else {
                 <div class="form-group">
-                    <label asp-for="@Model.Audit.Name" class="control-label">@localizer["linktoverdocs"]</label>
+                    <label class="control-label">@localizer["linktoverdocs"]</label>
                     <a target="_blank" href="@Model.Audit.LinkToVerificationDocs">@Model.Audit.LinkToVerificationDocs</a>                    
                 </div>
             }            

@@ -240,16 +240,19 @@ namespace FBone.Controllers
         }
         internal void ProceedEmailPreparation(int auditId, string templateName, List<MailAddress> mailto, List<MailAddress> mailcc)
         {
-            string actURL = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/Auditing/Details/{auditId}";
+            string actURL = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/Auditing/AuditDetails?audit.id={auditId}";
             var emailTemplate = _dataManager.EmailTemplate.GetEmailTemplateByEmailId(templateName);
             string subject = emailTemplate.Subject;
 
             string body = emailTemplate.Body
                 .Replace("@number@", auditId.ToString())
                 .Replace("@AuditURL@", actURL);
-
+            mailto = RemoveDuplicateEmails(mailto);
+            mailcc = RemoveDuplicateEmails(mailcc);
             MailHelper.SendMail(mailto, mailcc, subject, body);
         }
+        internal List<MailAddress> RemoveDuplicateEmails(List<MailAddress> mailList) => mailList.Distinct().ToList();            
+        
         public AuditingController(DataManager dataManager)
         {
             _dataManager = dataManager;
@@ -336,7 +339,7 @@ namespace FBone.Controllers
             var user = _dataManager.tUser.GetUserByCAI(User.Identity.Name);
             var audit = _dataManager.AuditTable.GetAuditById(auditId);
             var verificatorId = _dataManager.tArea.GetAreaById(audit.AreaId).VerificatorId ?? default;
-            audit.CreatedByUser = null;
+            //audit.CreatedByUser = null;
             var canReject =
                 (audit.StatusCode == (int)Enums.AuditStatusCode.InProgress && IsUserOrB2B(audit.ActionOwnerPositionId, user.Id)) ||
                 (audit.StatusCode == (int)Enums.AuditStatusCode.OnVerification && IsUserOrB2B(verificatorId, user.Id)) ||
@@ -385,6 +388,15 @@ namespace FBone.Controllers
         }
         public IActionResult Index(AuditListModel val)
         {
+            var mailto = new List<MailAddress>();            
+            mailto.Add(new MailAddress("test1@mail.ru"));
+            mailto.Add(new MailAddress("test2@mail.ru"));
+            mailto.Add(new MailAddress("test3@mail.ru"));
+            mailto.Add(new MailAddress("test1@mail.ru"));
+            mailto.Add(new MailAddress("test1@mail.ru"));
+            mailto.Add(new MailAddress("test1@mail.ru"));
+            RemoveDuplicateEmails(mailto);
+
             var user = _dataManager.tUser.GetUserByCAI(User.Identity.Name);
             var listPageSizeItems = GeneralHelper.GetDefaultPageItems();
             var formatS = "dd-MM-yyyy";
