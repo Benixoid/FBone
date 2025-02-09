@@ -401,8 +401,7 @@ namespace FBone.Controllers
                 ItemPerPageList = new SelectList(listPageSizeItems, "Id", "Name"),
                 ItemPerPage = val.ItemPerPage != 0 ? val.ItemPerPage : listPageSizeItems[0].Id,
                 PageIndex = val.PageIndex != 0 ? val.PageIndex : 1,
-                SelectedFacilityId = val.SelectedFacilityId == 0 ? user.FacilityId : val.SelectedFacilityId,
-                Facilities = new SelectList(_dataManager.tFacility.GetFacilities(), "Id", "Name"),
+                SelectedFacilityId = val.SelectedFacilityId,                
                 SmartSearch = val.SmartSearch,
                 SelectedAreaId = val.SelectedAreaId != 0 ? val.SelectedAreaId : -1,
                 SelectedAuditStatus = val.SelectedAuditStatus,
@@ -410,6 +409,9 @@ namespace FBone.Controllers
                 DateTo = val.DateTo == new DateTime(1, 1, 1) ? DateTime.Today : val.DateTo
 
             };
+            var facilityList = _dataManager.tFacility.GetFacilities().ToList();
+            facilityList.Insert(0, new tFacility { Id = 0, Name = "..." });
+            model.Facilities = new SelectList(facilityList, "Id", "Name");
             model.Areas = _dataManager.tArea.GetAreasByFacility(model.SelectedFacilityId, true);
             if (!string.IsNullOrEmpty(val.DateFromS))
                 model.DateFrom = DateTime.ParseExact(val.DateFromS, formatS, provider);

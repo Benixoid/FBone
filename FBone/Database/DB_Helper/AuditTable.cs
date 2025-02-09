@@ -60,8 +60,12 @@ namespace FBone.Database.DB_Helper
             var prepList = _context.Audits
                 .Include(i => i.Area)
                 .Include(j => j.Area.Facility)
-                .Where(i => i.Area.FacilityId == val.SelectedFacilityId && i.CreatedAt >= val.DateFrom && i.CreatedAt <= val.DateTo.AddDays(1))
+                //.Where(i => i.Area.FacilityId == val.SelectedFacilityId && i.CreatedAt >= val.DateFrom && i.CreatedAt <= val.DateTo.AddDays(1))
+                .Where(i => i.CreatedAt >= val.DateFrom && i.CreatedAt <= val.DateTo.AddDays(1))
                 .AsNoTracking();
+
+            if (val.SelectedFacilityId > 0)
+                prepList = prepList.Where(i => i.FacilityId == val.SelectedFacilityId);
 
             if (val.SelectedAreaId > 0)
                 prepList = prepList.Where(i => i.AreaId == val.SelectedAreaId);

@@ -219,4 +219,7 @@
   <data name="statusinapproval" xml:space="preserve">
     <value>Мақұлдауда</value>
   </data>
+  <data name="duedate" xml:space="preserve">
+    <value>Мерзімі</value>
+  </data>
 </root>

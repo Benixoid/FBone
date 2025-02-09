@@ -154,6 +154,9 @@
                                 @localizer["status"]
                             </th>
                             <th>
+                                @localizer["duedate"]
+                            </th>
+                            <th>
                                 @localizer["closedate"]
                             </th>
                             <th>
@@ -204,7 +207,10 @@
                                 else if (item.StatusCode == (int)Enums.AuditStatusCode.Closed)
                                 {
                                     <td class="bg_gray">@localizer["statusclosed"]</td>
-                                }                                
+                                }
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.DueDate)
+                                </td>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.CloseDate)
                                 </td>

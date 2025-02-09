@@ -219,4 +219,7 @@
   <data name="statusinapproval" xml:space="preserve">
     <value>На утверждении</value>
   </data>
+  <data name="duedate" xml:space="preserve">
+    <value>Срок выполнения</value>
+  </data>
 </root>
