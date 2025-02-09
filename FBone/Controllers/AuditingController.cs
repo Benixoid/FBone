@@ -23,6 +23,7 @@ namespace FBone.Controllers
     public class AuditingController : Controller
     {
         private readonly DataManager _dataManager;
+        
         public IActionResult Delete(int auditId)
         {
             var audit = _dataManager.AuditTable.GetAuditById(auditId);
@@ -200,6 +201,8 @@ namespace FBone.Controllers
                 }
                 mailcc = [new MailAddress(audit.CreatedByUser.Email)];
             }
+            else 
+                return;
             ProceedEmailPreparation(audit.Id, "AuditRejected", mailto, mailcc);
         }
         internal void NotifyApprover2(Audit audit)
@@ -247,8 +250,8 @@ namespace FBone.Controllers
             string body = emailTemplate.Body
                 .Replace("@number@", auditId.ToString())
                 .Replace("@AuditURL@", actURL);
-            mailto = RemoveDuplicateEmails(mailto);
-            mailcc = RemoveDuplicateEmails(mailcc);
+            mailto = mailto != null ? RemoveDuplicateEmails(mailto) : null;
+            mailcc = mailcc != null ? RemoveDuplicateEmails(mailcc) : null;
             MailHelper.SendMail(mailto, mailcc, subject, body);
         }
         internal List<MailAddress> RemoveDuplicateEmails(List<MailAddress> mailList) => mailList.Distinct().ToList();            
@@ -344,7 +347,7 @@ namespace FBone.Controllers
                 (audit.StatusCode == (int)Enums.AuditStatusCode.InProgress && IsUserOrB2B(audit.ActionOwnerPositionId, user.Id)) ||
                 (audit.StatusCode == (int)Enums.AuditStatusCode.OnVerification && IsUserOrB2B(verificatorId, user.Id)) ||
                 (audit.StatusCode == (int)Enums.AuditStatusCode.OnApproval1 && IsUserOrB2B(Config.AuditApproverPosition1, user.Id)) ||
-                (audit.StatusCode == (int)Enums.AuditStatusCode.OnApproval2 && IsUserOrB2B(Config.AuditApproverPosition1, user.Id));
+                (audit.StatusCode == (int)Enums.AuditStatusCode.OnApproval2 && IsUserOrB2B(Config.AuditApproverPosition2, user.Id));
             if (!canReject)
             {
                 return RedirectToAction("Denied", "Access");
