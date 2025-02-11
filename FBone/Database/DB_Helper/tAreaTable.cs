@@ -75,6 +75,9 @@ namespace FBone.Database.DB_Helper
 
         internal void SaveArea(tArea entity)
         {
+            entity.AsdApproverId = entity.AsdApproverId == 0 ? null : entity.AsdApproverId;
+            entity.VerificatorId = entity.VerificatorId == 0 ? null : entity.VerificatorId;
+            
             if (entity.Id == 0)
                 _context.Entry(entity).State = EntityState.Added;
             else
